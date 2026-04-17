@@ -1,6 +1,6 @@
 # StudentHub Frontend
 
-Plain HTML, CSS, JS, and JSON conversion of the provided Figma-generated React design.
+HTML, CSS, JS, and JSON conversion of the Figma-generated React design.
 
 ## Pages
 - index.html
