@@ -1,0 +1,71 @@
+[
+  {
+    "id": 1,
+    "title": "Tech Career Fair 2026",
+    "date": "March 28, 2026",
+    "time": "10:00 AM - 4:00 PM",
+    "location": "Student Union Building, Main Hall",
+    "image": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&q=80",
+    "summary": "Meet recruiters and explore internships and full-time roles.",
+    "description": "Join the annual Tech Career Fair where top companies recruit talented students. Network with industry professionals, explore internships and full-time roles, and learn about careers in software engineering, data science, product management, and more.",
+    "mapEmbedUrl": "https://www.google.com/maps?q=San%20Jose%20State%20University&output=embed",
+    "featured": true
+  },
+  {
+    "id": 2,
+    "title": "Annual Spring Festival",
+    "date": "April 5, 2026",
+    "time": "2:00 PM - 8:00 PM",
+    "location": "Central Campus Quad",
+    "image": "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1200&q=80",
+    "summary": "Music, food, games, and campus energy.",
+    "description": "Celebrate spring with live performances, food trucks, arts vendors, and interactive games. This free event is a great way to unwind, meet people, and enjoy campus life.",
+    "mapEmbedUrl": "https://www.google.com/maps?q=San%20Jose%20State%20University&output=embed",
+    "featured": true
+  },
+  {
+    "id": 3,
+    "title": "Guest Lecture: AI & Future",
+    "date": "March 30, 2026",
+    "time": "6:00 PM - 7:30 PM",
+    "location": "Engineering Building, Auditorium 101",
+    "image": "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=1200&q=80",
+    "summary": "A speaker session on AI trends and careers.",
+    "description": "Hear from a leading AI researcher on the future of machine learning, ethical considerations, and career paths in artificial intelligence.",
+    "mapEmbedUrl": "https://www.google.com/maps?q=San%20Jose%20State%20University&output=embed",
+    "featured": true
+  },
+  {
+    "id": 4,
+    "title": "Campus Startup Pitch Night",
+    "date": "April 2, 2026",
+    "time": "5:00 PM - 9:00 PM",
+    "location": "Innovation Center, Main Stage",
+    "image": "https://images.unsplash.com/photo-1511578314322-379afb476865?w=1200&q=80",
+    "summary": "Student founders pitch ideas to judges and mentors.",
+    "description": "Watch student teams present startup ideas to investors and experts. Get inspired, network, and learn how campus ventures grow.",
+    "mapEmbedUrl": "https://www.google.com/maps?q=San%20Jose%20State%20University&output=embed"
+  },
+  {
+    "id": 5,
+    "title": "Student Art Exhibition",
+    "date": "April 8, 2026",
+    "time": "12:00 PM - 6:00 PM",
+    "location": "Fine Arts Building, Gallery Space",
+    "image": "https://images.unsplash.com/photo-1531243269054-5ebf6f34081e?w=1200&q=80",
+    "summary": "Student paintings, photos, and digital work.",
+    "description": "Explore paintings, sculptures, photography, digital art, and mixed media created by student artists from across campus.",
+    "mapEmbedUrl": "https://www.google.com/maps?q=San%20Jose%20State%20University&output=embed"
+  },
+  {
+    "id": 6,
+    "title": "Wellness & Mental Health Workshop",
+    "date": "April 10, 2026",
+    "time": "3:00 PM - 5:00 PM",
+    "location": "Health & Wellness Center, Room 204",
+    "image": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=1200&q=80",
+    "summary": "Tools for stress management and student wellbeing.",
+    "description": "Join licensed counselors for practical strategies on mindfulness, time management, and campus support resources.",
+    "mapEmbedUrl": "https://www.google.com/maps?q=San%20Jose%20State%20University&output=embed"
+  }
+]
