@@ -1,0 +1,80 @@
+[
+  {
+    "id": 1,
+    "name": "Study Materials",
+    "description": "Access lecture notes, presentations, and study guides.",
+    "icon": "📘",
+    "fullDescription": "Access a collection of lecture notes, presentations, study guides, and practice exams shared by students and professors.",
+    "details": [
+      { "label": "Access", "value": "Available 24/7 through student portal" },
+      { "label": "Requirements", "value": "Valid student login credentials" },
+      { "label": "Support", "value": "Contact library@university.edu" }
+    ],
+    "badges": ["Free"]
+  },
+  {
+    "id": 2,
+    "name": "Tutoring Services",
+    "description": "Peer tutors and academic support services for all subjects.",
+    "icon": "🎓",
+    "fullDescription": "Connect with tutors and academic support services across all subjects. Book one-on-one or group sessions.",
+    "details": [
+      { "label": "Location", "value": "Academic Success Center, Room 201" },
+      { "label": "Hours", "value": "Monday-Friday: 9 AM - 7 PM" },
+      { "label": "Booking", "value": "Reserve online or walk in" }
+    ],
+    "badges": ["Student Only"]
+  },
+  {
+    "id": 3,
+    "name": "Academic Calendar",
+    "description": "Important dates, exams, and registration deadlines.",
+    "icon": "🗓️",
+    "fullDescription": "Stay informed about major academic dates, breaks, deadlines, and exam schedules.",
+    "details": [
+      { "label": "Access", "value": "Available on portal and mobile app" },
+      { "label": "Sync", "value": "Export to Google, Apple, or Outlook" },
+      { "label": "Updates", "value": "Updated weekly" }
+    ],
+    "badges": ["Free"]
+  },
+  {
+    "id": 4,
+    "name": "Research Papers",
+    "description": "Academic journals and digital library databases.",
+    "icon": "📄",
+    "fullDescription": "Access journals, papers, and research databases including JSTOR, IEEE, SpringerLink, and more.",
+    "details": [
+      { "label": "Access", "value": "On-campus or via VPN" },
+      { "label": "Databases", "value": "JSTOR, IEEE, SpringerLink" },
+      { "label": "Help", "value": "Research librarians available" }
+    ],
+    "badges": ["Free", "Student Only"]
+  },
+  {
+    "id": 5,
+    "name": "Career Center",
+    "description": "Resume help, career counseling, and job search support.",
+    "icon": "💼",
+    "fullDescription": "Receive help with resumes, interviews, job search strategy, and career planning.",
+    "details": [
+      { "label": "Location", "value": "Career Development Center" },
+      { "label": "Services", "value": "Resume review, mock interviews" },
+      { "label": "Hours", "value": "Monday-Friday: 9 AM - 5 PM" }
+    ],
+    "badges": ["Free"]
+  },
+  {
+    "id": 6,
+    "name": "Online Courses",
+    "description": "Supplementary courses and educational video content.",
+    "icon": "🎥",
+    "fullDescription": "Learn from online platforms like Coursera and LinkedIn Learning with student access.",
+    "details": [
+      { "label": "Platforms", "value": "Coursera, LinkedIn Learning, Udemy" },
+      { "label": "Access", "value": "Free with student email" },
+      { "label": "Certificates", "value": "Available on select courses" }
+    ],
+    "badges": ["Free", "Student Only"]
+  }
+]

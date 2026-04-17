@@ -1,0 +1,86 @@
+[
+  {
+    "id": 1,
+    "title": "Spotify Premium Student",
+    "offer": "50% off on Premium subscription with valid student ID",
+    "icon": "🏷️",
+    "isFeatured": true,
+    "fullDescription": "Enjoy ad-free music streaming with Spotify Premium at half price with student verification.",
+    "details": [
+      { "label": "Discount", "value": "50% off - $5.99/month" },
+      { "label": "Requirements", "value": "Valid university email" },
+      { "label": "Website", "value": "spotify.com/student" }
+    ],
+    "badges": ["50% Off", "Student Only"]
+  },
+  {
+    "id": 2,
+    "title": "Amazon Prime Student",
+    "offer": "6 months free trial, then 50% off Prime membership",
+    "icon": "🏷️",
+    "isFeatured": true,
+    "fullDescription": "Get six months free, then pay half-price for Amazon Prime Student.",
+    "details": [
+      { "label": "Free Trial", "value": "6 months free" },
+      { "label": "Benefits", "value": "Shipping, Prime Video, student deals" },
+      { "label": "Verification", "value": "Student verification required" }
+    ],
+    "badges": ["Free Trial", "Student Only"]
+  },
+  {
+    "id": 3,
+    "title": "Campus Bookstore",
+    "offer": "20% off all textbooks this week",
+    "icon": "🏷️",
+    "isFeatured": false,
+    "fullDescription": "Save on textbooks and course materials with this limited-time campus offer.",
+    "details": [
+      { "label": "Discount", "value": "20% off all textbooks" },
+      { "label": "Location", "value": "Student Union Building" },
+      { "label": "Valid Until", "value": "End of this week" }
+    ],
+    "badges": ["20% Off", "Limited Time"]
+  },
+  {
+    "id": 4,
+    "title": "Local Cafe",
+    "offer": "Buy one coffee, get one free with student ID",
+    "icon": "🏷️",
+    "isFeatured": false,
+    "fullDescription": "Bring a friend and show your student ID for a coffee deal near campus.",
+    "details": [
+      { "label": "Offer", "value": "Buy 1 get 1 free" },
+      { "label": "Location", "value": "456 College Ave" },
+      { "label": "Requirement", "value": "Valid student ID" }
+    ],
+    "badges": ["Student Only"]
+  },
+  {
+    "id": 5,
+    "title": "Gym Membership",
+    "offer": "50% off annual membership for students",
+    "icon": "🏷️",
+    "isFeatured": true,
+    "fullDescription": "Join a local gym at a student rate with access to classes and equipment.",
+    "details": [
+      { "label": "Discount", "value": "50% off annual membership" },
+      { "label": "Location", "value": "123 Campus Drive" },
+      { "label": "Requirement", "value": "Bring student ID" }
+    ],
+    "badges": ["50% Off", "Student Only"]
+  },
+  {
+    "id": 6,
+    "title": "Movie Theater",
+    "offer": "$5 tickets every Tuesday with student ID",
+    "icon": "🏷️",
+    "isFeatured": false,
+    "fullDescription": "Enjoy discounted movie tickets every Tuesday with your student ID.",
+    "details": [
+      { "label": "Price", "value": "$5 tickets" },
+      { "label": "When", "value": "Every Tuesday" },
+      { "label": "Location", "value": "Downtown Plaza" }
+    ],
+    "badges": ["Student Only"]
+  }
+]
