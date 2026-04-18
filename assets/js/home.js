@@ -1,4 +1,4 @@
-import { injectLayout, setContent, fetchJSON, renderModalShell, openModal, escapeHTML } from './app.js';
+import { injectLayout, setContent, fetchJSON, renderModalShell, openModal, escapeHTML, setupCarousel } from './app.js';
 
 function eventCard(event) {
   return `
@@ -37,18 +37,34 @@ async function init() {
   setContent(`
     <section class="container section-tight"><div class="hero-copy lead">Discover events, resources, and exclusive deals for university students</div></section>
     <section class="container section">
-      <div class="section-head"><h2>Featured Events</h2><a href="events.html">See More →</a></div>
-      <div class="horizontal-scroll"><div class="horizontal-list">${events.filter((e) => e.featured).map(eventCard).join('')}</div></div>
+      <div class="section-head"><h2>Featured Events</h2></div>
+        <div class="carousel-section">
+        <button class="carousel-btn left hidden" aria-label="Scroll left">&#10094;</button>
+        <div class="carousel-track" id="events-row">${events.filter((e) => e.featured).map(eventCard).join('')}</div>
+        <button class="carousel-btn right" aria-label="Scroll right">&#10095;</button>
+        </div>
     </section>
     <section class="container section">
-      <div class="section-head"><h2>Academic Resources</h2><a href="resources.html">See More →</a></div>
-      <div class="grid">${resources.slice(0, 3).map((item) => infoCard(item, 'blue')).join('')}</div>
+      <div class="section-head"><h2>Academic Resources</h2></div>
+      <div class="carousel-section">
+      <button class="carousel-btn left hidden" aria-label="Scroll left">&#10094;</button>
+      <div class="carousel-track" id="resources-row">${resources.map((item) => infoCard(item, 'blue')).join('')}</div>
+      <button class="carousel-btn right" aria-label="Scroll right">&#10095;</button>
+      </div>
     </section>
     <section class="container section">
-      <div class="section-head"><h2>Deals & Discounts</h2><a href="deals.html">See More →</a></div>
-      <div class="grid">${deals.slice(0, 6).map((item) => infoCard(item, 'yellow')).join('')}</div>
+      <div class="section-head"><h2>Deals & Discounts</h2></div>
+      <div class="carousel-section">
+        <button class="carousel-btn left hidden" aria-label="Scroll left">&#10094;</button>
+      <div class="carousel-track" id="deals-row">${deals.map((item) => infoCard(item, 'yellow')).join('')}</div>
+          <button class="carousel-btn right" aria-label="Scroll right">&#10095;</button>
+      </div>
     </section>
   `);
+
+  setupCarousel('events-row');
+  setupCarousel('resources-row');
+  setupCarousel('deals-row');
 
   document.querySelectorAll('[data-modal-id]').forEach((button) => {
     button.addEventListener('click', () => {
