@@ -152,6 +152,70 @@ document.addEventListener('click', (e) => {
 });
 }
 
+export function setupCarousel(trackId) {
+  const track = document.getElementById(trackId);
+  if (!track) return;
+
+  const section = track.closest('.carousel-section');
+  if (!section) return;
+
+  const leftBtn = section.querySelector('.carousel-btn.left');
+  const rightBtn = section.querySelector('.carousel-btn.right');
+
+  if (!leftBtn || !rightBtn) return;
+
+  const updateButtons = () => {
+    const maxScrollLeft = track.scrollWidth - track.clientWidth;
+
+    if (track.scrollLeft <= 5) {
+      leftBtn.classList.add('hidden');
+    } else {
+      leftBtn.classList.remove('hidden');
+    }
+
+    if (track.scrollLeft >= maxScrollLeft - 5) {
+      rightBtn.classList.add('hidden');
+    } else {
+      rightBtn.classList.remove('hidden');
+    }
+  };
+
+  const scrollAmount = () => {
+    const card = track.querySelector('.card, .info-card');
+    if(!card) return 700;
+
+    const gap = 24;
+    return card.offsetWidth + gap;
+  };
+
+  rightBtn.addEventListener('click', () => {
+    console.log('right clicked', trackId);
+
+    track.scrollBy({ left: 400, behavior: 'smooth' });
+  });
+
+  leftBtn.addEventListener('click', () => {
+    track.scrollBy({ left: -scrollAmount(), behavior: 'smooth' });
+  });
+
+
+
+  track.addEventListener('scroll', updateButtons);
+  window.addEventListener('resize', updateButtons);
+
+  track.addEventListener('wheel', (e) => {
+    if(Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      track.scrollBy({
+        left: e.deltaY,
+        behavior: 'smooth'
+      });
+      e.preventDefault();
+    }
+  });
+
+  updateButtons();
+}
+
 export function setContent(html) {
   const pageContent = document.getElementById('page-content');
   if (pageContent) pageContent.innerHTML = html;
