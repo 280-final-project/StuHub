@@ -5,7 +5,7 @@ HTML, CSS, JS, and JSON conversion of the Figma-generated React design.
 ## Pages
 - index.html
 - events.html
-- event.html?id=1
+- event.html
 - resources.html
 - deals.html
 - add-event.html
