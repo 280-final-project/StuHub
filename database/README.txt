@@ -20,7 +20,7 @@ items -- the table that holds all of the student events on campus
     -(true if the item goes on for a limited time, otherwise timeframe is permanent)
  + timeframe        | TEXT
  + loc_is_coordinate| BOOLEAN
-    -(true if location is in person, provide longitude and latitude in Decimal Degrees form, otherwise provide a link or short description
+    -(true if location is in person, provide longitude and latitude in Decimal Degrees form, otherwise provide a link or short description)
  + loc_content      | TEXT
  + img_url          | TEXT
  + created_at       | TIMESTAMPTZ
