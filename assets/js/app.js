@@ -1,5 +1,7 @@
 const NAV_ITEMS = [
   { href: 'home.html', label: 'Home' },
+  { href: 'login.html', label: 'Login' },
+  { href: 'signup.html', label: 'Sign Up' },
   { href: 'events.html', label: 'Events' },
   { href: 'resources.html', label: 'Resources' },
   { href: 'deals.html', label: 'Deals' },
