@@ -3,11 +3,56 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CampusHub - Home</title>
+    <title>CampusHub</title>
     <link rel="stylesheet" href="./assets/css/styles.css" />
   </head>
-  <body>
-    <div data-app></div>
-    <script type="module" src="./assets/js/home.js"></script>
+  <body class="landing-body">
+
+    <header class="landing-header">
+      <div class="brand">CampusHub</div>
+      <div class="actions">
+        <a href="login.html" class="btn btn-secondary">Login</a>
+        <a href="signup.html" class="btn btn-primary">Sign Up</a>
+      </div>
+    </header>
+
+    <main class="landing-hero">
+      <div class="hero-content">
+        <h1>CampusHub</h1>
+        <p class="hero-line hero-line-1" data-text="Discover campus events, academic resources, and student deals."></p>
+        <p class="hero-line hero-line-2" data-text="Everything in one place for San Jose State University students."></p>
+
+        <a href="home.html" class="btn btn-primary explore-btn" id="explore-btn">
+          Explore <span class="explore-arrow">→</span>
+        </a>
+      </div>
+    </main>     
+    <script>
+  function animateLine(selector, startDelay = 0, step = 35) {
+    const element = document.querySelector(selector);
+    if (!element) return 0;
+
+    const text = element.dataset.text || '';
+    element.innerHTML = '';
+
+    [...text].forEach((char, index) => {
+      const span = document.createElement('span');
+      span.className = 'letter';
+      span.textContent = char === ' ' ? '\u00A0' : char;
+      span.style.animationDelay = `${startDelay + index * step}ms`;
+      element.appendChild(span);
+    });
+
+    return startDelay + text.length * step;
+  }
+
+  const firstLineEnd = animateLine('.hero-line-1', 300, 28);
+  const secondLineEnd = animateLine('.hero-line-2', firstLineEnd + 180, 28);
+
+  setTimeout(() => {
+    document.getElementById('explore-btn')?.classList.add('show');
+  }, secondLineEnd + 100);
+</script>
+
   </body>
-</html>
+  </html>

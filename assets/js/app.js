@@ -1,5 +1,5 @@
 const NAV_ITEMS = [
-  { href: 'index.html', label: 'Home' },
+  { href: 'home.html', label: 'Home' },
   { href: 'events.html', label: 'Events' },
   { href: 'resources.html', label: 'Resources' },
   { href: 'deals.html', label: 'Deals' },
@@ -15,7 +15,7 @@ export function injectLayout(activePage = '') {
       <div class="page-frame">
         <header class="site-header">
           <div class="inner">
-            <a class="brand" href="index.html">CampusHub</a>
+            <a class="brand" href="home.html">CampusHub</a>
             <div class="nav-links">
               ${NAV_ITEMS.map((item) => `<a href="${item.href}" class="${activePage === item.label ? 'active' : ''}">${item.label}</a>`).join('')}
               <div class="search-wrap">
@@ -55,7 +55,7 @@ export function injectLayout(activePage = '') {
 
   
       const searchItems = [
-        { label: 'Home', url: 'index.html', type: 'Page' },
+        { label: 'Home', url: 'home.html', type: 'Page' },
         { label: 'Events', url: 'events.html', type: 'Page' },
         { label: 'Resources', url: 'resources.html', type: 'Page' },
         { label: 'Deals', url: 'deals.html', type: 'Page' },

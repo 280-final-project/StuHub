@@ -3,7 +3,7 @@
 HTML, CSS, JS, and JSON conversion of the Figma-generated React design.
 
 ## Pages
-- index.html
+- home.html
 - events.html
 - event.html
 - resources.html
@@ -13,4 +13,4 @@ HTML, CSS, JS, and JSON conversion of the Figma-generated React design.
 - about.html
 
 ## Run
-Open the folder in VSCode and use Live Server on `index.html`.
+Open the folder in VSCode and use Live Server on `home.html`.
