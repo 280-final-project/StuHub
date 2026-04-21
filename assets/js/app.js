@@ -223,9 +223,14 @@ export function setContent(html) {
   if (pageContent) pageContent.innerHTML = html;
 }
 
+const API_BASE_URL = "http://localhost:3000";
+
 export async function fetchJSON(path) {
-  const response = await fetch(path);
-  if (!response.ok) throw new Error(`Failed to load ${path}`);
+  const isFullUrl = path.startsWith("http://") || path.startsWith("https://");
+  const url = isFullUrl ? path : `${API_BASE_URL}${path}`;
+
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Failed to load ${url}`);
   return response.json();
 }
 
