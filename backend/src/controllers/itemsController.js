@@ -42,6 +42,24 @@ const createItem = async (req, res) => {
     img_url
   } = req.body;
 
+  if (!item_name || !loc_content) {
+    return res.status(400).json({
+      error: "item_name and loc_content are required"
+    });
+  }
+
+  if (typeof is_timed !== "boolean" && is_timed !== undefined) {
+    return res.status(400).json({
+      error: "is_timed must be true or false"
+    });
+  }
+
+  if (typeof loc_is_coordinate !== "boolean" && loc_is_coordinate !== undefined) {
+    return res.status(400).json({
+      error: "loc_is_coordinate must be true or false"
+    });
+  }
+
   try {
     const result = await pool.query(
       `INSERT INTO items
@@ -50,12 +68,12 @@ const createItem = async (req, res) => {
       RETURNING *`,
       [
         item_name,
-        item_desc,
-        is_timed,
-        timeframe,
-        loc_is_coordinate,
+        item_desc || null,
+        is_timed ?? null,
+        timeframe || null,
+        loc_is_coordinate ?? null,
         loc_content,
-        img_url
+        img_url || null
       ]
     );
 
