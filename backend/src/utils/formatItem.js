@@ -6,7 +6,6 @@ function formatItem(item) {
     timeframe: item.timeframe,
     location: item.loc_content,
     image: item.img_url,
-    isCoordinate: item.loc_is_coordinate
   };
 }
 

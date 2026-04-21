@@ -37,7 +37,6 @@ const createItem = async (req, res) => {
     item_desc,
     is_timed,
     timeframe,
-    loc_is_coordinate,
     loc_content,
     img_url
   } = req.body;
@@ -54,24 +53,17 @@ const createItem = async (req, res) => {
     });
   }
 
-  if (typeof loc_is_coordinate !== "boolean" && loc_is_coordinate !== undefined) {
-    return res.status(400).json({
-      error: "loc_is_coordinate must be true or false"
-    });
-  }
-
   try {
     const result = await pool.query(
       `INSERT INTO items
-      (item_name, item_desc, is_timed, timeframe, loc_is_coordinate, loc_content, img_url)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      (item_name, item_desc, is_timed, timeframe, loc_content, img_url)
+      VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *`,
       [
         item_name,
         item_desc || null,
         is_timed ?? null,
         timeframe || null,
-        loc_is_coordinate ?? null,
         loc_content,
         img_url || null
       ]
@@ -83,5 +75,4 @@ const createItem = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
-
 module.exports = { getAllItems, getItemById, createItem };
