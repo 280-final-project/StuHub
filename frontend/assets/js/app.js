@@ -1,83 +1,125 @@
-const NAV_ITEMS = [
-  { href: 'home.html', label: 'Home' },
-  { href: 'login.html', label: 'Login' },
-  { href: 'signup.html', label: 'Sign Up' },
-  { href: 'events.html', label: 'Events' },
-  { href: 'resources.html', label: 'Resources' },
-  { href: 'deals.html', label: 'Deals' },
-  { href: 'add-event.html', label: 'Add Event' }
-];
+function getNavItems() {
+  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 
-export function injectLayout(activePage = '') {
+  if (isLoggedIn) {
+    return [
+      { href: 'home.html', label: 'Home' },
+      { href: 'events.html', label: 'Events' },
+      { href: 'resources.html', label: 'Resources' },
+      { href: 'deals.html', label: 'Deals' },
+      { href: 'add-event.html', label: 'Add Event' }
+    ];
+  }
+
+  return [
+    { href: 'home.html', label: 'Home' },
+    { href: 'login.html', label: 'Login' },
+    { href: 'signup.html', label: 'Sign Up' },
+    { href: 'events.html', label: 'Events' },
+    { href: 'resources.html', label: 'Resources' },
+    { href: 'deals.html', label: 'Deals' }
+  ];
+}
+
+export function injectLayout(activePage = '', layoutType = 'full') {
+  const navItems = getNavItems();
   const app = document.querySelector('[data-app]');
   if (!app) return;
+
+  const isAuth = layoutType === 'auth';
+
+  const authAction =
+    activePage === 'Login'
+      ? `<a href="signup.html" class="btn btn-primary">Sign Up</a>`
+      : `<a href="login.html" class="btn btn-secondary">Login</a>`;
 
   app.innerHTML = `
     <div class="page-shell">
       <div class="page-frame">
         <header class="site-header">
-          <div class="inner">
+          <div class="inner${isAuth ? ' auth-inner' : ''}">
             <a class="brand" href="home.html">CampusHub</a>
-            <div class="nav-links">
-              ${NAV_ITEMS.map((item) => `<a href="${item.href}" class="${activePage === item.label ? 'active' : ''}">${item.label}</a>`).join('')}
-              <div class="search-wrap">
-                <span class="icon">🔎</span>
-                <input
-                  type="text"
-                  id="site-search"
-                  placeholder="Search..."
-                  aria-label="Search"
-                  autocomplete="off"
-                  autocorrect="off"
-                  autocapitalize="off"
-                  spellcheck="false"
-                />
-                <div class="search-suggestions" id="search-suggestions"></div>
-              </div>
-            </div>
+
+            ${
+              isAuth
+                ? `<div class="actions">${authAction}</div>`
+                : `
+                  <div class="nav-links">
+                    ${navItems.map(
+                      (item) =>
+                        `<a href="${item.href}" class="${
+                          activePage === item.label ? 'active' : ''
+                        }">${item.label}</a>`
+                    ).join('')}
+                    <div class="search-wrap">
+                      <span class="icon">🔎</span>
+                      <input
+                        type="text"
+                        id="site-search"
+                        placeholder="Search..."
+                        aria-label="Search"
+                        autocomplete="off"
+                        autocorrect="off"
+                        autocapitalize="off"
+                        spellcheck="false"
+                      />
+                      <div class="search-suggestions" id="search-suggestions"></div>
+                    </div>
+                  </div>
+                `
+            }
           </div>
         </header>
+
         <main id="page-content"></main>
-        <footer class="site-footer">
-          <div class="inner">
-            <div class="brand" style="font-size:1.15rem;">CampusHub</div>
-            <div class="nav-links">
-              <a href="about.html">About</a>
-              <a href="about.html#contact">Contact</a>
-            </div>
-          </div>
-          <div class="container footer-bottom">Built with ❤️ by the CampusHub Team</div>
-        </footer>
+
+        ${
+          isAuth
+            ? ''
+            : `
+              <footer class="site-footer">
+                <div class="inner">
+                  <div class="brand" style="font-size:1.15rem;">CampusHub</div>
+                  <div class="nav-links">
+                    <a href="about.html">About</a>
+                    <a href="about.html#contact">Contact</a>
+                  </div>
+                </div>
+                <div class="container footer-bottom">Built with ❤️ by the CampusHub Team</div>
+              </footer>
+            `
+        }
       </div>
     </div>
   `;
 
+  if (isAuth) return;
+
   const searchInput = document.getElementById('site-search');
   const suggestionsBox = document.getElementById('search-suggestions');
 
-  
-      const searchItems = [
-        { label: 'Home', url: 'home.html', type: 'Page' },
-        { label: 'Events', url: 'events.html', type: 'Page' },
-        { label: 'Resources', url: 'resources.html', type: 'Page' },
-        { label: 'Deals', url: 'deals.html', type: 'Page' },
-        { label: 'Add Event', url: 'add-event.html', type: 'Page' },
-        { label: 'About', url: 'about.html', type: 'Page' },
+  const searchItems = [
+    { label: 'Home', url: 'home.html', type: 'Page' },
+    { label: 'Events', url: 'events.html', type: 'Page' },
+    { label: 'Resources', url: 'resources.html', type: 'Page' },
+    { label: 'Deals', url: 'deals.html', type: 'Page' },
+    { label: 'Add Event', url: 'add-event.html', type: 'Page' },
+    { label: 'About', url: 'about.html', type: 'Page' },
 
-        { label: 'Tech Career Fair 2026', url: 'event.html?id=1', type: 'Event' },
-        { label: 'Annual Spring Festival', url: 'event.html?id=2', type: 'Event' },
-        { label: 'Guest Lecture: AI & Future', url: 'event.html?id=3', type: 'Event' },
+    { label: 'Tech Career Fair 2026', url: 'event.html?id=1', type: 'Event' },
+    { label: 'Annual Spring Festival', url: 'event.html?id=2', type: 'Event' },
+    { label: 'Guest Lecture: AI & Future', url: 'event.html?id=3', type: 'Event' },
 
-        { label: 'Study Materials', url: 'resources.html', type: 'Resource' },
-        { label: 'Tutoring Services', url: 'resources.html', type: 'Resource' },
-        { label: 'Academic Calendar', url: 'resources.html', type: 'Resource' },
+    { label: 'Study Materials', url: 'resources.html', type: 'Resource' },
+    { label: 'Tutoring Services', url: 'resources.html', type: 'Resource' },
+    { label: 'Academic Calendar', url: 'resources.html', type: 'Resource' },
 
-        { label: 'Spotify Premium Student', url: 'deals.html', type: 'Deal' },
-        { label: 'Amazon Prime Student', url: 'deals.html', type: 'Deal' },
-        { label: 'Campus Bookstore', url: 'deals.html', type: 'Deal' }
-      ];
+    { label: 'Spotify Premium Student', url: 'deals.html', type: 'Deal' },
+    { label: 'Amazon Prime Student', url: 'deals.html', type: 'Deal' },
+    { label: 'Campus Bookstore', url: 'deals.html', type: 'Deal' }
+  ];
 
-      if (searchInput && suggestionsBox) {
+  if (searchInput && suggestionsBox) {
     searchInput.addEventListener('input', () => {
       const query = searchInput.value.trim().toLowerCase();
 
@@ -144,14 +186,6 @@ export function injectLayout(activePage = '') {
       }
     });
   }
-
-
-document.addEventListener('click', (e) => {
-  if (!e.target.closest('.search-wrap')) {
-    suggestionsBox.innerHTML = '';
-    suggestionsBox.classList.remove('show');
-  }
-});
 }
 
 export function setupCarousel(trackId) {
