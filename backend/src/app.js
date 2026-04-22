@@ -3,6 +3,7 @@ const cors = require("cors");
 
 const authRoutes = require("./routes/authRoutes");
 const itemsRoutes = require("./routes/itemsRoutes");
+const reviewsRoutes = require("./routes/reviewsRoutes");
 const errorHandler = require("./middleware/errorHandler");
 
 const app = express();
@@ -14,16 +15,14 @@ app.get("/", (req, res) => {
   res.send("StudentHub backend running");
 });
 
-// health check route
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
-// routes
 app.use("/items", itemsRoutes);
 app.use("/auth", authRoutes);
+app.use("/", reviewsRoutes);
 
-// error handler (always last)
 app.use(errorHandler);
 
 module.exports = app;
