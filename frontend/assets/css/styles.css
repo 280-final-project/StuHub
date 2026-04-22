@@ -677,3 +677,9 @@ textarea { min-height: 150px; resize: vertical; }
 .toggle-password:hover {
   opacity: 1;
 }
+
+.google-auth-wrap{
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: center;
+}
