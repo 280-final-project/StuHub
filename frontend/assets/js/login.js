@@ -1,7 +1,7 @@
 import { injectLayout, setContent } from './app.js';
 
 function init() {
-  injectLayout('Login');
+  injectLayout('Login', 'auth');
 
   setContent(`
     <div class="auth-page">
@@ -33,7 +33,7 @@ function init() {
             required
           >
           <img
-            src="assets/icons/eye.png"
+            src="../assets/icons/eye.png"
             id="toggle-password"
             class="toggle-password"
             alt="toggle password"
@@ -60,8 +60,8 @@ toggleBtn.addEventListener('click', () => {
   passwordInput.type = isHidden ? 'text' : 'password';
 
   toggleBtn.src = isHidden
-    ? 'assets/icons/eye-off.png'
-    : 'assets/icons/eye.png';
+    ? '../assets/icons/eye-off.png'
+    : '../assets/icons/eye.png';
 });
 
   const form = document.getElementById('login-form');
@@ -93,7 +93,8 @@ toggleBtn.addEventListener('click', () => {
     }
 
     console.log({ email, password });
-    alert('Login will be connected to backend next.');
+    localStorage.setItem('isLoggedIn', 'true');
+    window.location.href = 'home.html';
   });
 }
 

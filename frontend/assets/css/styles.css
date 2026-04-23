@@ -53,7 +53,7 @@ button { cursor: pointer; }
   gap: 2rem;
   padding: 1.25rem 4rem;
 }
-.brand { font-size: 1.5rem; font-weight: 600; }
+.brand { font-size: 1.5rem; font-weight: 600;}
 .nav-links { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
 .nav-links a { color: var(--muted); font-size: 0.95rem; }
 .nav-links a.active { color: var(--text); }
@@ -131,6 +131,9 @@ button { cursor: pointer; }
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow);
 }
+.form-card .btn{
+  margin-top: 0.75rem;
+}
 .card { overflow: hidden; }
 .card-body { padding: 1.5rem; }
 .card h3,
@@ -195,8 +198,11 @@ button { cursor: pointer; }
   border-radius: var(--radius-sm);
 }
 
-.form-card { max-width: 520px; margin: 0 auto; padding: 2.5rem 2rem; border-radius: 16px; }
-.form-group { margin-bottom: 1.8rem; }
+.form-card { max-width: 520px; margin: 0 auto; padding: 2.5rem 2rem; border-radius: 16px; display: flex; flex-direction: column; gap: 0;}
+.form-group { display: flex; flex-direction: column; margin-bottom: 1.5rem;}
+.form-group label{
+  margin-bottom: 0.35rem;
+}
 .form-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
 label { display: block; margin-bottom: 0.55rem; font-weight: 600; }
 input[type='email'],
@@ -223,11 +229,15 @@ textarea { min-height: 150px; resize: vertical; }
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  padding: 0.9rem 1.5rem;
+  height: 52px;
   border: 1px solid transparent;
   font-weight: 600;
+  transition: all 0.2s ease;
 }
-.btn-primary { background: var(--primary); color: #fff; font-size: 1rem; height: 52px; }
+.btn:hover {
+  transform: translateY(-1px);
+}
+.btn-primary { background: var(--primary); color: #fff; font-size: 1rem; }
 .btn-secondary { background: var(--surface); border-color: #d1d5db; }
 .full-width { width: 100%; }
 .note { text-align: center; font-size: 0.85rem; color: var(--muted); margin-top: 0.8rem; }
@@ -315,11 +325,10 @@ textarea { min-height: 150px; resize: vertical; }
 }
 
 .error-text {
-  display: block;
-  min-height: 18px;
-  margin-top: 6px;
+  display: none;
+  margin-top: 4px;
   font-size: 0.85rem;
-  color: #dc2626;
+  color: red;
 }
 
 .invalid {
@@ -491,11 +500,30 @@ textarea { min-height: 150px; resize: vertical; }
   position: relative;
   z-index: 2;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   padding: 1.5rem 3rem;
 }
+.landing-header .actions{
+  display: flex;
+  gap: 1rem;
+}
 
+.landing-header .actions .btn {
+  height: 52px;
+  width: 140px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  padding: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.landing-actions .actions .btn-secondary{
+  font-size: 1.05rem;
+}
 .landing-header .brand {
   font-size: 1.6rem;
   font-weight: 600;
@@ -591,6 +619,22 @@ textarea { min-height: 150px; resize: vertical; }
 .auth-card {
   width: 100%;
   max-width: 520px;
+}
+
+.auth-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.auth-inner .btn{
+  height: 44px;
+  padding: 0 1.4rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+}
+.auth-inner .btn-primary {
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
 }
 
 .auth-page {
