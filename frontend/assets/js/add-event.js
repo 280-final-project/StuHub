@@ -1,5 +1,9 @@
 import { injectLayout, setContent } from './app.js';
 
+// import { injectLayout, setContent, requireLogin } from './app.js';
+
+// if (!requireLogin()) return;
+
 function init() {
   injectLayout('Add Event');
   setContent(`

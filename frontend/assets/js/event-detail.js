@@ -1,5 +1,9 @@
 import { injectLayout, setContent, escapeHTML } from './app.js';
 
+// import { injectLayout, setContent, requireLogin } from './app.js';
+
+// if (!requireLogin()) return;
+
 function buildMapEmbedUrl(location) {
   if (!location) return '';
   return `https://www.google.com/maps?q=${encodeURIComponent(location)}&output=embed`;
@@ -50,14 +54,24 @@ async function loadPage() {
         reviews.length === 0
           ? `<p>No reviews yet.</p>`
           : reviews.map(r => `
-            <div class="card">
-              <div class="card-body">
-                <h3>${escapeHTML(r.review_header || 'Untitled')}</h3>
-                <p>${escapeHTML(r.review_desc || '')}</p>
+              <div class="card">
+                <div class="card-body">
+                  <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                    <img
+                      src="${escapeHTML(r.pfp_url || 'https://via.placeholder.com/40')}"
+                      alt="${escapeHTML(r.user_name || 'User')}"
+                      style="width:40px; height:40px; border-radius:50%; object-fit:cover;"
+                      onerror="this.src='https://via.placeholder.com/40'"
+                    />
+                    <strong>${escapeHTML(r.user_name || 'User')}</strong>
+                  </div>
+
+                  <h3>${escapeHTML(r.review_header || 'Untitled')}</h3>
+                  <p>${escapeHTML(r.review_desc || '')}</p>
+                </div>
               </div>
-            </div>
-          `).join('')
-      }
+            `).join('')
+                  }
 
       <h3 style="margin-top:2rem;">Add a Review</h3>
 
@@ -86,33 +100,40 @@ async function loadPage() {
   const form = document.getElementById("reviewForm");
 
   form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const review_header = document.getElementById("reviewHeader").value;
-    const review_desc = document.getElementById("reviewDesc").value;
+  const review_header = document.getElementById("reviewHeader").value;
+  const review_desc = document.getElementById("reviewDesc").value;
 
-    try {
-      await fetch("http://localhost:5000/reviews", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          review_header,
-          review_desc,
-          user_id: null,
-          item_id: id
-        })
-      });
+  const token = localStorage.getItem("token");
 
-      // reload page to show new review
-      window.location.reload();
+  if (!token) {
+    alert("Please log in with Google before submitting a review.");
+    window.location.href = "login.html";
+    return;
+  }
 
-    } catch (err) {
-      console.error(err);
-      alert("Failed to submit review");
-    }
-  });
+  try {
+    await fetch("http://localhost:5000/reviews", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        review_header,
+        review_desc,
+        item_id: id
+      })
+    });
+
+    window.location.reload();
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to submit review");
+  }
+});
 }
 
 loadPage().catch(console.error);
