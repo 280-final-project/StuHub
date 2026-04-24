@@ -22,13 +22,13 @@ function handleGoogleResponse(response) {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || 'Login failed');
+        throw new Error(data.error || data.message || 'Login failed');
       }
 
       const ADMIN_EMAILS = [
         'vedjigneshkumar.dabhi@sjsu.edu',
         'prabhjotsingh@sjsu.edu',
-        'rafael.caculba@sjsu.edu',
+        'email3@sjsu.edu',
         'email4@sjsu.edu'
       ];
 
@@ -59,8 +59,8 @@ function initGoogleButton() {
   google.accounts.id.renderButton(googleBtnWrap, {
     theme: 'outline',
     size: 'large',
-    shape: 'pill',
-    width: 320,
+    shape: 'rectangular',
+    width: 420,
     text: 'continue_with',
   });
 }
@@ -69,68 +69,43 @@ function init() {
   injectLayout('Login', 'auth');
 
   setContent(`
-    <div class="auth-page">
-      <section class="auth-header">
-        <h1 class="page-title">Login</h1>
-        <p class="page-subtitle">Sign in to continue with your SJSU Google account.</p>
-      </section>
+    <div class="auth-hero auth-hero-login">
+      <div class="auth-overlay"></div>
 
-      <form class="form-card auth-card" id="login-form">
-        <div class="form-group">
-          <label for="login-email">SJSU Email</label>
-          <input
-            id="login-email"
-            type="email"
-            placeholder="name@sjsu.edu"
-            disabled
-          >
+      <section class="auth-shell">
+        <div class="auth-brand-row">
+          <a href="index.html" class="auth-brand-link">
+            <span class="auth-brand-icon">🏛️</span>
+            <span>CampusHub</span>
+          </a>
         </div>
 
-        <div class="form-group password-group">
-          <label for="login-password">Password</label>
-          <div class="password-wrapper">
-            <input
-              id="login-password"
-              type="password"
-              placeholder="Enter password"
-              disabled
-            >
-            <img
-              src="../assets/icons/eye.png"
-              id="toggle-password"
-              class="toggle-password"
-              alt="Show password"
-            >
+        <div class="auth-mock-card">
+          <div class="auth-avatar-circle">👤</div>
+
+          <h1 class="auth-big-title">Welcome Back</h1>
+          <p class="auth-big-subtitle">Sign in to continue to CampusHub</p>
+
+          <div id="google-login-button" class="google-auth-wrap auth-google-big"></div>
+
+          <div class="auth-trust-row">
+            <span class="auth-trust-icon">🛡️</span>
+            <p>Secure login with your SJSU Google account</p>
           </div>
+
+          <p class="auth-switch-text">
+            Don’t have an account?
+            <a href="signup.html">Sign Up</a>
+          </p>
         </div>
 
-        <div id="google-login-button" class="google-auth-wrap"></div>
-
-        <p class="note">
-          Email/password login is not available right now. Please use Google Sign-In.
+        <p class="auth-legal">
+          By continuing, you agree to our Terms of Service
+          and Privacy Policy.
         </p>
-
-        <p class="note">
-          Don’t have an account?
-          <a href="signup.html">Sign Up</a>
-        </p>
-      </form>
+      </section>
     </div>
   `);
-
-  const passwordInput = document.getElementById('login-password');
-  const toggleBtn = document.getElementById('toggle-password');
-
-  toggleBtn.addEventListener('click', () => {
-    const isHidden = passwordInput.type === 'password';
-    passwordInput.type = isHidden ? 'text' : 'password';
-    toggleBtn.src = isHidden
-      ? '../assets/icons/eye-off.png'
-      : '../assets/icons/eye.png';
-  });
-
-  const form = document.getElementById('login-form');
-  form.addEventListener('submit', (e) => e.preventDefault());
 
   setTimeout(initGoogleButton, 200);
 }
