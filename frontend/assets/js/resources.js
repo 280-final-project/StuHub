@@ -1,3 +1,5 @@
+import { injectLayout, setContent } from './app.js';
+
 const resources = [
   {
     title: "Career Center",
@@ -231,38 +233,68 @@ const resources = [
   }
 ];
 
-const container = document.getElementById("resources-container");
-const modal = document.getElementById("resource-modal");
-const modalTitle = document.getElementById("modal-title");
-const modalDesc = document.getElementById("modal-desc");
-const modalDetails = document.getElementById("modal-details");
-const modalClose = document.getElementById("modal-close");
+function renderResources() {
+  const container = document.getElementById('resources-container');
+  const modal = document.getElementById('resource-modal');
+  const modalTitle = document.getElementById('modal-title');
+  const modalDesc = document.getElementById('modal-desc');
+  const modalDetails = document.getElementById('modal-details');
+  const modalClose = document.getElementById('modal-close');
 
-resources.forEach((resource) => {
-  const card = document.createElement("div");
-  card.className = "card info-card resource-card";
-  card.innerHTML = `
-    <div class="icon-chip blue">📘</div>
-    <h3>${resource.title}</h3>
-    <p>${resource.desc}</p>
-  `;
+  resources.forEach((resource) => {
+    const card = document.createElement('div');
+    card.className = 'info-card resource-card';
+    card.innerHTML = `
+      <div class="icon-chip blue">📘</div>
+      <h3>${resource.title}</h3>
+      <p>${resource.desc}</p>
+    `;
 
-  card.addEventListener("click", () => {
-    modalTitle.textContent = resource.title;
-    modalDesc.textContent = resource.desc;
-    modalDetails.innerHTML = resource.details;
-    modal.classList.add("open");
+    card.addEventListener('click', () => {
+      modalTitle.textContent = resource.title;
+      modalDesc.textContent = resource.desc;
+      modalDetails.innerHTML = resource.details;
+      modal.classList.add('open');
+    });
+
+    container.appendChild(card);
   });
 
-  container.appendChild(card);
-});
+  modalClose.addEventListener('click', () => {
+    modal.classList.remove('open');
+  });
 
-modalClose.addEventListener("click", () => {
-  modal.classList.remove("open");
-});
+  window.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.classList.remove('open');
+    }
+  });
+}
 
-window.addEventListener("click", (e) => {
-  if (e.target === modal) {
-    modal.classList.remove("open");
-  }
-});
+function init() {
+  injectLayout('Resources');
+
+  setContent(`
+    <section class="container section">
+      <div class="page-header resources-header">
+        <h1 class="page-title">Resources</h1>
+        <p class="page-subtitle">Explore important campus resources for SJSU students.</p>
+      </div>
+
+      <div id="resources-container" class="resources-grid"></div>
+    </section>
+
+    <div id="resource-modal" class="modal">
+      <div class="modal-panel resource-modal-panel">
+        <button class="modal-close" id="modal-close">✕</button>
+        <h2 id="modal-title"></h2>
+        <p id="modal-desc"></p>
+        <div id="modal-details" class="resource-modal-details"></div>
+      </div>
+    </div>
+  `);
+
+  renderResources();
+}
+
+init();
