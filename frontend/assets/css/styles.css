@@ -683,3 +683,12 @@ textarea { min-height: 150px; resize: vertical; }
   display: flex;
   justify-content: center;
 }
+
+.resource-card {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.resource-card:hover {
+  transform: translateY(-4px);
+}
