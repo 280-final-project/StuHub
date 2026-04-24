@@ -41,6 +41,8 @@ const createItem = async (req, res) => {
     img_url
   } = req.body;
 
+  const user_id = req.user.user_id;
+
   if (!item_name || !loc_content) {
     return res.status(400).json({
       error: "item_name and loc_content are required"
@@ -56,16 +58,17 @@ const createItem = async (req, res) => {
   try {
     const result = await pool.query(
       `INSERT INTO items
-      (item_name, item_desc, is_timed, timeframe, loc_content, img_url)
-      VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING *`,
+       (item_name, item_desc, is_timed, timeframe, loc_content, img_url, user_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING *`,
       [
         item_name,
         item_desc || null,
         is_timed ?? null,
         timeframe || null,
         loc_content,
-        img_url || null
+        img_url || null,
+        user_id
       ]
     );
 
