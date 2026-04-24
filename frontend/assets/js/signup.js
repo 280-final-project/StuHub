@@ -5,7 +5,7 @@ const BACKEND_URL = 'http://localhost:5000';
 
 function handleGoogleResponse(response) {
   if (!response?.credential) {
-    alert('Google sign-in failed.');
+    alert('Google sign-up failed.');
     return;
   }
 
@@ -49,8 +49,8 @@ function initGoogleButton() {
   google.accounts.id.renderButton(googleBtnWrap, {
     theme: 'outline',
     size: 'large',
-    shape: 'pill',
-    width: 320,
+    shape: 'rectangular',
+    width: 420,
     text: 'signup_with',
   });
 }
@@ -59,49 +59,49 @@ function init() {
   injectLayout('Sign Up', 'auth');
 
   setContent(`
-    <div class="auth-page">
-      <section class="auth-header">
-        <h1 class="page-title">Sign Up</h1>
-        <p class="page-subtitle">Create your CampusHub account with Google.</p>
+    <div class="auth-hero auth-hero-signup">
+      <div class="auth-overlay"></div>
+
+      <section class="auth-shell">
+        <div class="auth-brand-row">
+          <a href="index.html" class="auth-brand-link">
+            <span class="auth-brand-icon">🏛️</span>
+            <span>CampusHub</span>
+          </a>
+        </div>
+
+        <div class="auth-mock-card">
+          <div class="auth-avatar-circle auth-avatar-combo">
+  <span class="avatar-user">👤</span>
+  <span class="avatar-plus">＋</span>
+</div>
+
+
+          <h1 class="auth-big-title">Create Your Account</h1>
+          <p class="auth-big-subtitle">Join CampusHub with your SJSU Google account</p>
+
+          <div id="google-signup-button" class="google-auth-wrap auth-google-big"></div>
+
+          <div class="auth-trust-row">
+            <span class="auth-trust-icon">🛡️</span>
+            <p>Safe, secure, and trusted by SJSU students</p>
+          </div>
+
+          <p class="auth-switch-text">
+            Already have an account?
+            <a href="login.html">Log In</a>
+          </p>
+        </div>
+
+        <p class="auth-legal">
+          By continuing, you agree to our
+          <a href="#">Terms of Service</a>
+          and
+          <a href="#">Privacy Policy</a>.
+        </p>
       </section>
-
-      <form class="form-card auth-card" id="signup-form">
-        <div class="form-group">
-          <label for="signup-name">Full Name</label>
-          <input
-            id="signup-name"
-            type="text"
-            placeholder="Your Google profile name"
-            disabled
-          >
-        </div>
-
-        <div class="form-group">
-          <label for="signup-email">SJSU Email</label>
-          <input
-            id="signup-email"
-            type="email"
-            placeholder="name@sjsu.edu"
-            disabled
-          >
-        </div>
-
-        <div id="google-signup-button" class="google-auth-wrap"></div>
-
-        <p class="note">
-          Your account will be created automatically when you continue with Google.
-        </p>
-
-        <p class="note">
-          Already have an account?
-          <a href="login.html">Login</a>
-        </p>
-      </form>
     </div>
   `);
-
-  const form = document.getElementById('signup-form');
-  form.addEventListener('submit', (e) => e.preventDefault());
 
   setTimeout(initGoogleButton, 200);
 }

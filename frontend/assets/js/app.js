@@ -28,47 +28,46 @@ export function injectLayout(activePage = '', layoutType = 'full') {
   if (!app) return;
 
   const isAuth = layoutType === 'auth';
+  const brandHref = isAuth ? 'index.html' : 'home.html';
 
-  const authAction =
-    activePage === 'Login'
-      ? `<a href="signup.html" class="btn btn-primary">Sign Up</a>`
-      : `<a href="login.html" class="btn btn-secondary">Login</a>`;
+  
 
   app.innerHTML = `
     <div class="page-shell">
       <div class="page-frame">
         <header class="site-header">
-          <div class="inner${isAuth ? ' auth-inner' : ''}">
-            <a class="brand" href="home.html">CampusHub</a>
+          <div class="inner">
+            <a class="brand" href="${brandHref}">CampusHub</a>
 
             ${
-              isAuth
-                ? `<div class="actions">${authAction}</div>`
-                : `
-                  <div class="nav-links">
-                    ${navItems.map(
-                      (item) =>
-                        `<a href="${item.href}" class="${
-                          activePage === item.label ? 'active' : ''
-                        }">${item.label}</a>`
-                    ).join('')}
-                    <div class="search-wrap">
-                      <span class="icon">🔎</span>
-                      <input
-                        type="text"
-                        id="site-search"
-                        placeholder="Search..."
-                        aria-label="Search"
-                        autocomplete="off"
-                        autocorrect="off"
-                        autocapitalize="off"
-                        spellcheck="false"
-                      />
-                      <div class="search-suggestions" id="search-suggestions"></div>
-                    </div>
-                  </div>
-                `
-            }
+  isAuth
+    ? ''
+    : `
+      <div class="nav-links">
+        ${navItems.map(
+          (item) =>
+            `<a href="${item.href}" class="${
+              activePage === item.label ? 'active' : ''
+            }">${item.label}</a>`
+        ).join('')}
+
+        <div class="search-wrap">
+          <span class="icon">🔎</span>
+          <input
+            type="text"
+            id="site-search"
+            placeholder="Search..."
+            aria-label="Search"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+          />
+          <div class="search-suggestions" id="search-suggestions"></div>
+        </div>
+      </div>
+    `
+}
           </div>
         </header>
 
