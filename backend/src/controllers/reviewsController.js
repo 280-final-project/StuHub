@@ -6,10 +6,10 @@ const getReviewsByItem = async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT r.*, u.user_name, u.pfp_url
-        FROM reviews r
-        JOIN users u ON r.user_id = u.user_id
-        WHERE r.item_id = $1
-        ORDER BY r.created_at DESC`,
+      FROM reviews r
+      LEFT JOIN users u ON r.user_id = u.user_id
+      WHERE r.item_id = $1
+      ORDER BY r.created_at DESC`,
       [id]
     );
 
@@ -21,7 +21,7 @@ const getReviewsByItem = async (req, res) => {
 };
 
 const createReview = async (req, res) => {
-  console.log("USER:", req.user);
+  console.log("USER:", req.user);      //<==== delete after testing
   const { review_header, review_desc, item_id } = req.body;
   const user_id = req.user.user_id;
   
