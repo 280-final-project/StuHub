@@ -1,3 +1,4 @@
+const { requireAuth } = require("../middleware/authMiddleware");
 const express = require("express");
 const router = express.Router();
 
@@ -9,6 +10,6 @@ const {
 
 router.get("/", getAllItems);
 router.get("/:id", getItemById);
-router.post("/", createItem);
+router.post("/", requireAuth, createItem);
 
 module.exports = router;
