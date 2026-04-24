@@ -1,6 +1,6 @@
 import { injectLayout, setContent } from './app.js';
 
-const GOOGLE_CLIENT_ID = 'PASTE_YOUR_GOOGLE_CLIENT_ID_HERE';
+const GOOGLE_CLIENT_ID = '749012738925-c24pfprho3d126q0rvsn1pdb0q24b9on.apps.googleusercontent.com';
 const BACKEND_URL = 'http://localhost:5000';
 
 function handleGoogleResponse(response) {
@@ -20,8 +20,9 @@ function handleGoogleResponse(response) {
   })
     .then(async (res) => {
       const data = await res.json();
+
       if (!res.ok) {
-        throw new Error(data?.message || 'Authentication failed');
+        throw new Error(data.error || data.message || 'Sign up failed');
       }
 
       localStorage.setItem('isLoggedIn', 'true');
@@ -61,7 +62,6 @@ function init() {
     <div class="auth-page">
       <section class="auth-header">
         <h1 class="page-title">Sign Up</h1>
-
         <p class="page-subtitle">Create your CampusHub account with Google.</p>
       </section>
 
@@ -91,71 +91,19 @@ function init() {
         <p class="note">
           Your account will be created automatically when you continue with Google.
         </p>
->>>>>>> 8fc94ab (Save frontend before pulling backend)
 
         <p class="note">
           Already have an account?
           <a href="login.html">Login</a>
         </p>
-      </div>
+      </form>
     </div>
   `);
 
-<<<<<<< HEAD
-  window.handleSignupCredentialResponse = async (response) => {
-    const idToken = response.credential;
-
-    const res = await fetch("http://localhost:5000/auth/google", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ idToken })
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      console.error(data);
-      alert(data.error || "Google sign up failed");
-      return;
-    }
-
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
-    localStorage.setItem("isLoggedIn", "true");
-
-    window.location.href = "home.html";
-  };
-
-  
-
-  setTimeout(() => {
-    if (!window.google) {
-      console.error("Google script not loaded");
-      return;
-    }
-
-    google.accounts.id.initialize({
-      client_id: "749012738925-c24pfprho3d126q0rvsn1pdb0q24b9on.apps.googleusercontent.com",
-      callback: handleSignupCredentialResponse
-    });
-
-    google.accounts.id.renderButton(
-  document.getElementById("google-signup-btn"),
-  {
-    theme: "outline",
-    size: "large",
-    text: "signup_with"   
-  }
-);
-  }, 500);
-=======
   const form = document.getElementById('signup-form');
   form.addEventListener('submit', (e) => e.preventDefault());
 
   setTimeout(initGoogleButton, 200);
->>>>>>> 8fc94ab (Save frontend before pulling backend)
 }
 
 init();
