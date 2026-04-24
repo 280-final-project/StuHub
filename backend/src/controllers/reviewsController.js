@@ -5,7 +5,11 @@ const getReviewsByItem = async (req, res) => {
 
   try {
     const result = await pool.query(
-      "SELECT * FROM reviews WHERE item_id = $1 ORDER BY created_at DESC",
+      `SELECT r.*, u.user_name, u.pfp_url
+        FROM reviews r
+        JOIN users u ON r.user_id = u.user_id
+        WHERE r.item_id = $1
+        ORDER BY r.created_at DESC`,
       [id]
     );
 
@@ -17,7 +21,10 @@ const getReviewsByItem = async (req, res) => {
 };
 
 const createReview = async (req, res) => {
-  const { review_header, review_desc, user_id, item_id } = req.body;
+  console.log("USER:", req.user);
+  const { review_header, review_desc, item_id } = req.body;
+  const user_id = req.user.user_id;
+  
 
   if (!item_id) {
     return res.status(400).json({ error: "item_id is required" });
