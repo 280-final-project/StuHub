@@ -2,14 +2,15 @@ function getNavItems() {
   const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 
   if (isLoggedIn) {
-    return [
-      { href: 'home.html', label: 'Home' },
-      { href: 'events.html', label: 'Events' },
-      { href: 'resources.html', label: 'Resources' },
-      { href: 'deals.html', label: 'Deals' },
-      { href: 'add-event.html', label: 'Add Event' }
-    ];
-  }
+  return [
+    { href: 'home.html', label: 'Home' },
+    { href: 'events.html', label: 'Events' },
+    { href: 'resources.html', label: 'Resources' },
+    { href: 'deals.html', label: 'Deals' },
+    { href: 'add-event.html', label: 'Add Event' },
+    { href: '#', label: 'Logout' }
+  ];
+}
 
   return [
     { href: 'home.html', label: 'Home' },
@@ -92,6 +93,20 @@ export function injectLayout(activePage = '', layoutType = 'full') {
       </div>
     </div>
   `;
+  const logoutLink = Array.from(document.querySelectorAll('.nav-links a'))
+  .find(link => link.textContent === 'Logout');
+
+    if (logoutLink) {
+      logoutLink.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        localStorage.setItem("isLoggedIn", "false");
+
+        window.location.href = "/frontend/HTML/index.html";
+      });
+    }
 
   if (isAuth) return;
 
@@ -325,4 +340,16 @@ export function escapeHTML(value = '') {
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#39;');
+}
+
+export function requireLogin() {
+  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+  const token = localStorage.getItem('token');
+
+  if (!isLoggedIn || !token) {
+    window.location.href = 'login.html';
+    return false;
+  }
+
+  return true;
 }
