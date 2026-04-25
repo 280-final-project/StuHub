@@ -168,7 +168,7 @@ function init() {
     const timeframe = `${startDate} ${startTime} - ${endDate} ${endTime}`;
 
     try {
-      const response = await fetch('http://localhost:5001/items', {
+      const response = await fetch('https://studenthub-backend-rpn0.onrender.com/items', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

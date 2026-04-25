@@ -1,6 +1,6 @@
-import { injectLayout, setContent, escapeHTML, requireLogin } from './app.js';
+import { injectLayout, setContent, escapeHTML } from './app.js';
 
-if (!requireLogin()) return;
+
 
 function buildMapEmbedUrl(location) {
   if (!location) return '';
@@ -13,7 +13,7 @@ async function loadPage() {
   const params = new URLSearchParams(window.location.search);
   const id = Number(params.get('id') || 1);
 
-  const eventRes = await fetch(`http://localhost:5001/items/${id}`);
+  const eventRes = await fetch(`https://studenthub-backend-rpn0.onrender.com/items/${id}`);
   const event = await eventRes.json();
 
   if (!event || event.error) {
@@ -21,7 +21,7 @@ async function loadPage() {
     return;
   }
 
-  const reviewsRes = await fetch(`http://localhost:5001/items/${id}/reviews`);
+  const reviewsRes = await fetch(`https://studenthub-backend-rpn0.onrender.com/items/${id}/reviews`);
   const reviews = await reviewsRes.json();
 
   setContent(`
@@ -31,6 +31,17 @@ async function loadPage() {
         <img class="detail-image" src="${event.image || 'https://via.placeholder.com/800x400'}" alt="${escapeHTML(event.title)}">
         <div class="detail-panel">
           <h1>${escapeHTML(event.title)}</h1>
+
+          <div class="meta" style="display:flex; align-items:center; gap:10px; margin-top:8px;">
+              <img
+                src="${event.pfp_url || 'https://via.placeholder.com/32'}"
+                alt="${escapeHTML(event.user_name || 'User')}"
+                style="width:32px; height:32px; border-radius:50%; object-fit:cover;"
+                onerror="this.src='https://via.placeholder.com/32'"
+              />
+              <span>Posted by ${escapeHTML(event.user_name || 'User')}</span>
+            </div>
+
           <div class="meta">📅 <span>${escapeHTML(event.timeframe || 'TBA')}</span></div>
           <div class="meta">📍 <span>${escapeHTML(event.location || 'TBA')}</span></div>
           <p style="margin-top:1.25rem;">${escapeHTML(event.description || '')}</p>
@@ -109,7 +120,7 @@ async function loadPage() {
     }
 
     try {
-      await fetch("http://localhost:5001/reviews", {
+      await fetch("https://studenthub-backend-rpn0.onrender.com/reviews", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
