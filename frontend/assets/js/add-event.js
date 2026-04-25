@@ -1,11 +1,10 @@
-import { injectLayout, setContent } from './app.js';
-
-// import { injectLayout, setContent, requireLogin } from './app.js';
+import { injectLayout, setContent, requireLogin } from './app.js';
 
 // if (!requireLogin()) return;
 
 function init() {
   injectLayout('Add Event');
+
   setContent(`
     <section class="container page-header">
       <h1 class="page-title">Add Event</h1>
@@ -58,13 +57,8 @@ function init() {
         </div>
 
         <div class="form-group">
-          <label for="image">Event Image</label>
-          <label class="upload-box" for="image">
-            <div style="font-size:2rem; margin-bottom:0.75rem;">⤴</div>
-            <div id="upload-label">Click to upload image</div>
-            <small>PNG, JPG up to 10MB</small>
-          </label>
-          <input id="image" name="image" type="file" accept="image/*" hidden>
+          <label for="image">Event Image URL</label>
+          <input id="image-url" name="image-url" type="text" placeholder="Paste image URL">
         </div>
 
         <button class="btn btn-primary full-width" type="submit">Submit Event</button>
@@ -72,9 +66,6 @@ function init() {
       </form>
     </section>
   `);
-
-  const imageInput = document.getElementById('image');
-  const uploadLabel = document.getElementById('upload-label');
 
   const startDateInput = document.getElementById('start-date');
   const endDateInput = document.getElementById('end-date');
@@ -92,10 +83,6 @@ function init() {
 
   startDateInput.setAttribute('min', minDateStr);
   endDateInput.setAttribute('min', minDateStr);
-
-  imageInput.addEventListener('change', () => {
-    uploadLabel.textContent = imageInput.files?.[0]?.name || 'Click to upload image';
-  });
 
   startDateInput.addEventListener('change', () => {
     if (startDateInput.value && startDateInput.value < minDateStr) {
@@ -142,7 +129,7 @@ function init() {
     }
   });
 
-  document.getElementById('event-form').addEventListener('submit', (event) => {
+  document.getElementById('event-form').addEventListener('submit', async (event) => {
     event.preventDefault();
 
     const startDate = startDateInput.value;
@@ -165,17 +152,51 @@ function init() {
       return;
     }
 
-    console.log({
-      title: document.getElementById('title').value,
-      startDate,
-      endDate,
-      startTime,
-      endTime,
-      location: document.getElementById('location').value,
-      description: document.getElementById('description').value,
-    });
+    const token = localStorage.getItem('token');
 
-    window.location.href = 'confirmation.html';
+    if (!token) {
+      alert('Please log in with Google before submitting an event.');
+      window.location.href = 'login.html';
+      return;
+    }
+
+    const title = document.getElementById('title').value.trim();
+    const location = document.getElementById('location').value.trim();
+    const description = document.getElementById('description').value.trim();
+    const imageUrl = document.getElementById('image-url').value.trim();
+
+    const timeframe = `${startDate} ${startTime} - ${endDate} ${endTime}`;
+
+    try {
+      const response = await fetch('http://localhost:5001/items', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          item_name: title,
+          item_desc: description,
+          is_timed: true,
+          timeframe,
+          loc_content: location,
+          img_url: imageUrl || null
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error(data);
+        alert(data.error || 'Failed to submit event');
+        return;
+      }
+
+      window.location.href = 'confirmation.html';
+    } catch (err) {
+      console.error(err);
+      alert('Failed to submit event');
+    }
   });
 }
 

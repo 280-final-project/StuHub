@@ -1,9 +1,5 @@
 import { injectLayout, setContent, fetchJSON, renderModalShell, openModal, escapeHTML, setupCarousel } from './app.js';
 
-//import { injectLayout, setContent, requireLogin } from './app.js';
-
-//if (!requireLogin()) return;
-
 function eventCard(event) {
   return `
     <a class="card" href="event.html?id=${event.id}">
