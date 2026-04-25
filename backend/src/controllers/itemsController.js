@@ -3,7 +3,11 @@ const pool = require("../config/db");
 
 const getAllItems = async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM items");
+    const result = await pool.query(`
+      SELECT i.*, u.user_name, u.pfp_url
+      FROM items i
+      LEFT JOIN users u ON i.user_id = u.user_id
+    `);
     res.json(result.rows.map(formatItem));
   } catch (err) {
     console.error(err);
@@ -16,7 +20,10 @@ const getItemById = async (req, res) => {
 
   try {
     const result = await pool.query(
-      "SELECT * FROM items WHERE item_id = $1",
+      `SELECT i.*, u.user_name, u.pfp_url
+      FROM items i
+      LEFT JOIN users u ON i.user_id = u.user_id
+      WHERE i.item_id = $1`,
       [id]
     );
 
