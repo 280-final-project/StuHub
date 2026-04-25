@@ -7,7 +7,10 @@ const getAllItems = async (req, res) => {
       SELECT i.*, u.user_name, u.pfp_url
       FROM items i
       LEFT JOIN users u ON i.user_id = u.user_id
+      WHERE i.approval_status = 'approved'
+      ORDER BY i.created_at DESC
     `);
+
     res.json(result.rows.map(formatItem));
   } catch (err) {
     console.error(err);
@@ -23,7 +26,7 @@ const getItemById = async (req, res) => {
       `SELECT i.*, u.user_name, u.pfp_url
       FROM items i
       LEFT JOIN users u ON i.user_id = u.user_id
-      WHERE i.item_id = $1`,
+      WHERE i.item_id = $1 AND i.approval_status = 'approved'`,
       [id]
     );
 
@@ -65,9 +68,9 @@ const createItem = async (req, res) => {
   try {
     const result = await pool.query(
       `INSERT INTO items
-       (item_name, item_desc, is_timed, timeframe, loc_content, img_url, user_id)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
-       RETURNING *`,
+      (item_name, item_desc, is_timed, timeframe, loc_content, img_url, user_id, approval_status)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING *`,
       [
         item_name,
         item_desc || null,
@@ -75,7 +78,8 @@ const createItem = async (req, res) => {
         timeframe || null,
         loc_content,
         img_url || null,
-        user_id
+        user_id,
+        'pending'
       ]
     );
 
@@ -85,4 +89,56 @@ const createItem = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
-module.exports = { getAllItems, getItemById, createItem };
+
+const getPendingItems = async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT i.*, u.user_name, u.pfp_url
+      FROM items i
+      LEFT JOIN users u ON i.user_id = u.user_id
+      WHERE i.approval_status = 'pending'
+      ORDER BY i.created_at DESC
+    `);
+
+    res.json(result.rows.map(formatItem));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+const updateItemApprovalStatus = async (req, res) => {
+  const { id } = req.params;
+  const { approval_status } = req.body;
+
+  if (!['approved', 'rejected'].includes(approval_status)) {
+    return res.status(400).json({ error: "approval_status must be approved or rejected" });
+  }
+
+  try {
+    const result = await pool.query(
+      `UPDATE items
+       SET approval_status = $1,
+           updated_at = NOW()
+       WHERE item_id = $2
+       RETURNING *`,
+      [approval_status, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Item not found" });
+    }
+
+    res.json(formatItem(result.rows[0]));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+module.exports = {
+  getAllItems,
+  getItemById,
+  createItem,
+  getPendingItems,
+  updateItemApprovalStatus
+};
