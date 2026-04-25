@@ -45,6 +45,7 @@ async function loadPage() {
 
     <section class="container section-tight">
       <h2>Reviews</h2>
+      <div class="reviews-list">
 
       ${
         reviews.length === 0
@@ -68,6 +69,8 @@ async function loadPage() {
               </div>
             `).join('')
       }
+
+        </div>
 
       <h3 style="margin-top:2rem;">Add a Review</h3>
 
@@ -108,19 +111,19 @@ async function loadPage() {
       return;
     }
 
-    try {
-      await fetch("http://localhost:5001/reviews", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          review_header,
-          review_desc,
-          item_id: id
-        })
-      });
+  try {
+    await fetch("http://localhost:5000/reviews", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        review_header,
+        review_desc,
+        item_id: id
+      })
+    });
 
       window.location.reload();
     } catch (err) {
