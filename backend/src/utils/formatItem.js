@@ -6,6 +6,10 @@ function formatItem(item) {
     timeframe: item.timeframe,
     location: item.loc_content,
     image: item.img_url,
+
+    // new fields
+    user_name: item.user_name,
+    pfp_url: item.pfp_url,
   };
 }
 
