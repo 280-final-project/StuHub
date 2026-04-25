@@ -123,7 +123,7 @@ async function loadPage() {
     }
 
     try {
-      await fetch("http://localhost:5001/reviews", {
+      await fetch("https://studenthub-backend-rpn0.onrender.com/reviews", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
