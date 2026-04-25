@@ -1,7 +1,7 @@
 import { injectLayout, setContent } from './app.js';
 
 const GOOGLE_CLIENT_ID = '749012738925-c24pfprho3d126q0rvsn1pdb0q24b9on.apps.googleusercontent.com';
-const BACKEND_URL = 'http://localhost:5001';
+const BACKEND_URL = 'https://studenthub-backend-rpn0.onrender.com';
 
 function handleGoogleResponse(response) {
   if (!response?.credential) {
