@@ -1,13 +1,9 @@
 import { injectLayout, setContent, escapeHTML } from './app.js';
 
-// import { injectLayout, setContent, requireLogin } from './app.js';
-
-// if (!requireLogin()) return;
-
 async function init() {
   injectLayout('Events');
 
-  const response = await fetch('http://localhost:5000/items');
+  const response = await fetch('http://localhost:5001/items');
   const events = await response.json();
 
   setContent(`
