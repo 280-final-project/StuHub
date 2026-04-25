@@ -1,8 +1,6 @@
-import { injectLayout, setContent, escapeHTML } from './app.js';
+import { injectLayout, setContent, escapeHTML, requireLogin } from './app.js';
 
-// import { injectLayout, setContent, requireLogin } from './app.js';
-
-// if (!requireLogin()) return;
+if (!requireLogin()) return;
 
 function buildMapEmbedUrl(location) {
   if (!location) return '';
@@ -15,7 +13,7 @@ async function loadPage() {
   const params = new URLSearchParams(window.location.search);
   const id = Number(params.get('id') || 1);
 
-  const eventRes = await fetch(`http://localhost:5000/items/${id}`);
+  const eventRes = await fetch(`http://localhost:5001/items/${id}`);
   const event = await eventRes.json();
 
   if (!event || event.error) {
@@ -23,7 +21,7 @@ async function loadPage() {
     return;
   }
 
-  const reviewsRes = await fetch(`http://localhost:5000/items/${id}/reviews`);
+  const reviewsRes = await fetch(`http://localhost:5001/items/${id}/reviews`);
   const reviews = await reviewsRes.json();
 
   setContent(`
@@ -42,9 +40,7 @@ async function loadPage() {
 
     <section class="container section-tight">
       <h2>Location</h2>
-      <iframe class="map-frame"
-        src="${buildMapEmbedUrl(event.location)}">
-      </iframe>
+      <iframe class="map-frame" src="${buildMapEmbedUrl(event.location)}"></iframe>
     </section>
 
     <section class="container section-tight">
@@ -71,7 +67,7 @@ async function loadPage() {
                 </div>
               </div>
             `).join('')
-                  }
+      }
 
       <h3 style="margin-top:2rem;">Add a Review</h3>
 
@@ -96,44 +92,42 @@ async function loadPage() {
     </section>
   `);
 
-  // attach form handler AFTER rendering
   const form = document.getElementById("reviewForm");
 
   form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const review_header = document.getElementById("reviewHeader").value;
-  const review_desc = document.getElementById("reviewDesc").value;
+    const review_header = document.getElementById("reviewHeader").value;
+    const review_desc = document.getElementById("reviewDesc").value;
 
-  const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-  if (!token) {
-    alert("Please log in with Google before submitting a review.");
-    window.location.href = "login.html";
-    return;
-  }
+    if (!token) {
+      alert("Please log in with Google before submitting a review.");
+      window.location.href = "login.html";
+      return;
+    }
 
-  try {
-    await fetch("http://localhost:5000/reviews", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        review_header,
-        review_desc,
-        item_id: id
-      })
-    });
+    try {
+      await fetch("http://localhost:5001/reviews", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          review_header,
+          review_desc,
+          item_id: id
+        })
+      });
 
-    window.location.reload();
-
-  } catch (err) {
-    console.error(err);
-    alert("Failed to submit review");
-  }
-});
+      window.location.reload();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to submit review");
+    }
+  });
 }
 
 loadPage().catch(console.error);

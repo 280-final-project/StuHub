@@ -271,7 +271,7 @@ export function setContent(html) {
   if (pageContent) pageContent.innerHTML = html;
 }
 
-const API_BASE_URL = "http://localhost:3000";
+const API_BASE_URL = "http://localhost:5001";
 
 export async function fetchJSON(path) {
   const isFullUrl = path.startsWith("http://") || path.startsWith("https://");
