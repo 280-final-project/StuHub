@@ -14,7 +14,7 @@ function init() {
     <section class="container section">
       <div class="page-header">
         <h1 class="page-title">Admin Dashboard</h1>
-        <p class="page-subtitle">Manage CampusHub content and publish events.</p>
+        <p class="page-subtitle">Manage CampusHub content and review event submissions.</p>
       </div>
 
       <div class="admin-grid">
@@ -24,11 +24,11 @@ function init() {
           <p>Create and publish an event directly from the admin dashboard.</p>
         </a>
 
-        <div class="info-card admin-card">
+        <a class="info-card admin-card" href="admin-manage-events.html">
           <div class="icon-chip blue">🛠️</div>
           <h3>Manage Events</h3>
-          <p>Edit, delete, and organize events later from this dashboard.</p>
-        </div>
+          <p>Review pending event requests and track approved or rejected events.</p>
+        </a>
 
         <a class="info-card admin-card" href="events.html">
           <div class="icon-chip blue">👀</div>

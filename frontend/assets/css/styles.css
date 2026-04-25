@@ -1316,3 +1316,129 @@ textarea { min-height: 150px; resize: vertical; }
   color: var(--muted);
   text-align: center;
 }
+
+.admin-event-form {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.admin-event-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.admin-event-form label {
+  display: block;
+  margin-bottom: 0.45rem;
+  font-weight: 600;
+}
+
+.admin-event-form input,
+.admin-event-form textarea,
+.admin-event-form select {
+  width: 100%;
+  padding: 0.95rem 1rem;
+  border: 1px solid #d8dee8;
+  border-radius: 16px;
+  background: #fff;
+  font: inherit;
+  color: #111827;
+  outline: none;
+  box-shadow: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-event-form input:focus,
+.admin-event-form textarea:focus,
+.admin-event-form select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+.admin-event-form textarea {
+  min-height: 180px;
+  resize: vertical;
+}
+
+.admin-event-form .form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.admin-event-form input[type="date"],
+.admin-event-form input[type="time"] {
+  appearance: none;
+  -webkit-appearance: none;
+  background: #fff;
+  border-radius: 16px;
+}
+
+@media (max-width: 768px) {
+  .admin-event-form .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-event-form {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.admin-event-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.admin-event-form label {
+  display: block;
+  margin-bottom: 0.45rem;
+  font-weight: 600;
+}
+
+.admin-event-form input,
+.admin-event-form textarea,
+.admin-event-form select {
+  width: 100%;
+  padding: 0.95rem 1rem;
+  border: 1px solid #d8dee8;
+  border-radius: 16px;
+  background: #fff;
+  font: inherit;
+  color: #111827;
+  outline: none;
+  box-shadow: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-event-form input:focus,
+.admin-event-form textarea:focus,
+.admin-event-form select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+.admin-event-form textarea {
+  min-height: 180px;
+  resize: vertical;
+}
+
+.admin-event-form .form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.admin-event-form input[type="date"],
+.admin-event-form input[type="time"] {
+  appearance: none;
+  -webkit-appearance: none;
+  background: #fff;
+  border-radius: 16px;
+}
+
+@media (max-width: 768px) {
+  .admin-event-form .form-row {
+    grid-template-columns: 1fr;
+  }
+}
