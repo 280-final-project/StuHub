@@ -140,9 +140,3 @@ SJSU-Software-Engineering-Project/
 - Passwords are hashed before being stored in the database
 - Restricted routes require authentication
 - Input validation on all API endpoints
-
----
-
-## 📄 Documentation
-- [Design Document](./docs/Design_Document_Group-8.pdf)
-- [Product Backlog](./docs/Software_Engineering_Project_Backlog.pdf)
