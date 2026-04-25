@@ -32,18 +32,9 @@ function init() {
           </div>
         </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label for="start-time">Start Time</label>
-            <input id="start-time" name="start-time" type="time" required>
-            <small class="error-text" id="start-time-error"></small>
-          </div>
-
-          <div class="form-group">
-            <label for="end-time">End Time</label>
-            <input id="end-time" name="end-time" type="time" required>
-            <small class="error-text" id="end-time-error"></small>
-          </div>
+        <div class="form-group">
+          <label for="eventDate">Event Date</label>
+          <input type="date" id="eventDate" />
         </div>
 
         <div class="form-group">
@@ -62,7 +53,7 @@ function init() {
         </div>
 
         <button class="btn btn-primary full-width" type="submit">Submit Event</button>
-        <p class="note">Event will be visible after approval</p>
+        <p class="form-note">Event will be visible after approval (may take up to 48 hours).</p>
       </form>
     </section>
   `);
@@ -132,15 +123,11 @@ function init() {
   document.getElementById('event-form').addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    const startDate = startDateInput.value;
-    const endDate = endDateInput.value;
+    const eventDate = document.getElementById('eventDate').value;
     const startTime = startTimeInput.value;
     const endTime = endTimeInput.value;
 
-    if (startDate < minDateStr) {
-      alert('Start date must be at least 3 days from today.');
-      return;
-    }
+    
 
     if (endDate < startDate) {
       alert('End date must be after start date.');

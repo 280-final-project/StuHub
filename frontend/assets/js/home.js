@@ -1,80 +1,187 @@
-import { injectLayout, setContent, fetchJSON, renderModalShell, openModal, escapeHTML, setupCarousel } from './app.js';
+import { injectLayout, setContent } from './app.js';
 
-function eventCard(event) {
-  return `
-    <a class="card" href="event.html?id=${event.id}">
-      <img class="card-image" src="${event.image}" alt="${escapeHTML(event.title)}">
-      <div class="card-body">
-        <h3>${escapeHTML(event.title)}</h3>
-        <div class="meta">📅 <span>${escapeHTML(event.date)}</span></div>
-        <div class="meta">🕒 <span>${escapeHTML(event.time)}</span></div>
-      </div>
-    </a>`;
-}
-
-function infoCard(item, tone) {
-  const title = item.name || item.title;
-  const description = item.description || item.offer;
-  const toneClass = tone === 'yellow' ? 'yellow' : 'blue';
-  return `
-    <button class="info-card" data-modal-id="${item.id}" data-type="${tone}">
-      ${item.isFeatured ? '<span class="badge featured">Featured</span>' : ''}
-      <span class="icon-chip ${toneClass}">${item.icon || (tone === 'yellow' ? '🏷️' : '📘')}</span>
-      <h3>${escapeHTML(title)}</h3>
-      <p>${escapeHTML(description)}</p>
-    </button>`;
-}
-
-async function init() {
+function init() {
   injectLayout('Home');
-  renderModalShell();
-  const [events, resources, deals] = await Promise.all([
-    fetchJSON('./data/events.json'),
-    fetchJSON('./data/resources.json'),
-    fetchJSON('./data/deals.json')
-  ]);
-
   setContent(`
-    <section class="container section-tight"><div class="hero-copy lead">Discover events, resources, and exclusive deals for university students</div></section>
-    <section class="container section">
-      <div class="section-head"><h2>Featured Events</h2></div>
-        <div class="carousel-section">
-        <button class="carousel-btn left hidden" aria-label="Scroll left">&#10094;</button>
-        <div class="carousel-track" id="events-row">${events.filter((e) => e.featured).map(eventCard).join('')}</div>
-        <button class="carousel-btn right" aria-label="Scroll right">&#10095;</button>
+    <section class="home-hero">
+      <div class="container home-hero-inner">
+        <div class="home-hero-copy">
+          <span class="eyebrow">SJSU Student Platform</span>
+          <h1 class="hero-title">Discover campus events, resources, and student deals in one place.</h1>
+          <p class="hero-subtitle">
+            CampusHub helps SJSU students stay connected, save money, and find the support they need throughout the semester.
+          </p>
+
+          <div class="hero-actions">
+            <a href="events.html" class="btn btn-primary">Explore Events</a>
+            <a href="resources.html" class="btn btn-secondary">Browse Resources</a>
+          </div>
         </div>
-    </section>
-    <section class="container section">
-      <div class="section-head"><h2>Academic Resources</h2></div>
-      <div class="carousel-section">
-      <button class="carousel-btn left hidden" aria-label="Scroll left">&#10094;</button>
-      <div class="carousel-track" id="resources-row">${resources.map((item) => infoCard(item, 'blue')).join('')}</div>
-      <button class="carousel-btn right" aria-label="Scroll right">&#10095;</button>
+
+        <div class="home-hero-card">
+          <div class="hero-stat">
+            <span class="hero-stat-number">16+</span>
+            <span class="hero-stat-label">Campus Resources</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-number">10+</span>
+            <span class="hero-stat-label">Student Deals</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-number">24/7</span>
+            <span class="hero-stat-label">Easy Access</span>
+          </div>
+        </div>
       </div>
     </section>
+
     <section class="container section">
-      <div class="section-head"><h2>Deals & Discounts</h2></div>
-      <div class="carousel-section">
-        <button class="carousel-btn left hidden" aria-label="Scroll left">&#10094;</button>
-      <div class="carousel-track" id="deals-row">${deals.map((item) => infoCard(item, 'yellow')).join('')}</div>
-          <button class="carousel-btn right" aria-label="Scroll right">&#10095;</button>
+      <div class="section-heading">
+        <h2>Quick Access</h2>
+        <p>Jump into the most important parts of CampusHub.</p>
+      </div>
+
+      <div class="quick-grid">
+        <a href="events.html" class="info-card quick-card">
+          <div class="icon-chip blue">📅</div>
+          <h3>Events</h3>
+          <p>Explore campus events, workshops, fairs, and student activities.</p>
+        </a>
+
+        <a href="resources.html" class="info-card quick-card">
+          <div class="icon-chip blue">📘</div>
+          <h3>Resources</h3>
+          <p>Find academic, wellness, financial, and student support resources.</p>
+        </a>
+
+        <a href="deals.html" class="info-card quick-card">
+          <div class="icon-chip blue">💸</div>
+          <h3>Deals</h3>
+          <p>Save money with student discounts, offers, and campus promotions.</p>
+        </a>
+      </div>
+    </section>
+
+    <section class="container section">
+      <div class="section-heading section-heading-row">
+        <div>
+          <h2>Upcoming Events</h2>
+          <p>Stay updated with what’s happening around campus.</p>
+        </div>
+        <a href="events.html" class="text-link">View All</a>
+      </div>
+
+      <div class="home-preview-grid">
+        <article class="info-card preview-card">
+          <div class="preview-badge">Career</div>
+          <h3>Tech Career Fair 2026</h3>
+          <p class="preview-meta">Feb 12 • Event Center</p>
+          <p>Meet recruiters, explore internships, and connect with industry professionals.</p>
+        </article>
+
+        <article class="info-card preview-card">
+          <div class="preview-badge">Community</div>
+          <h3>Annual Spring Festival</h3>
+          <p class="preview-meta">Mar 08 • Tower Lawn</p>
+          <p>Enjoy student performances, food stalls, and cultural celebrations on campus.</p>
+        </article>
+
+        <article class="info-card preview-card">
+          <div class="preview-badge">Academic</div>
+          <h3>Guest Lecture: AI & Future</h3>
+          <p class="preview-meta">Apr 02 • Engineering Building</p>
+          <p>Join a guest speaker session on AI trends, careers, and innovation.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="container section">
+      <div class="section-heading section-heading-row">
+        <div>
+          <h2>Essential Resources</h2>
+          <p>Start with the most useful campus services for students.</p>
+        </div>
+        <a href="resources.html" class="text-link">View All</a>
+      </div>
+
+      <div class="home-preview-grid">
+        <article class="info-card preview-card">
+          <div class="icon-chip blue">💼</div>
+          <h3>Career Center</h3>
+          <p>Resume reviews, interview prep, job fairs, and career support.</p>
+        </article>
+
+        <article class="info-card preview-card">
+          <div class="icon-chip blue">🩺</div>
+          <h3>Student Wellness Center</h3>
+          <p>Medical services, counseling, wellness care, and health support.</p>
+        </article>
+
+        <article class="info-card preview-card">
+          <div class="icon-chip blue">🥫</div>
+          <h3>Spartan Food Pantry</h3>
+          <p>Free groceries and basic needs support for students in need.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="container section">
+      <div class="section-heading section-heading-row">
+        <div>
+          <h2>Featured Deals</h2>
+          <p>Popular student savings and promotions.</p>
+        </div>
+        <a href="deals.html" class="text-link">View All</a>
+      </div>
+
+      <div class="home-preview-grid">
+        <article class="info-card preview-card">
+          <div class="icon-chip blue">🎵</div>
+          <h3>Spotify Premium Student</h3>
+          <p>Get discounted premium music streaming with student verification.</p>
+        </article>
+
+        <article class="info-card preview-card">
+          <div class="icon-chip blue">📦</div>
+          <h3>Amazon Prime Student</h3>
+          <p>Enjoy shipping benefits, shopping offers, and student pricing.</p>
+        </article>
+
+        <article class="info-card preview-card">
+          <div class="icon-chip blue">📚</div>
+          <h3>Campus Bookstore Offers</h3>
+          <p>Check discounts on textbooks, merchandise, and school essentials.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="container section">
+      <div class="section-heading">
+        <h2>Why CampusHub?</h2>
+        <p>Everything students need, organized in one simple place.</p>
+      </div>
+
+      <div class="benefits-grid">
+        <div class="info-card benefit-card">
+          <div class="icon-chip blue">⚡</div>
+          <h3>Fast Access</h3>
+          <p>Find important events, services, and student deals quickly.</p>
+        </div>
+
+        <div class="info-card benefit-card">
+          <div class="icon-chip blue">🎓</div>
+          <h3>Student-Focused</h3>
+          <p>Built specifically around the needs of SJSU students.</p>
+        </div>
+
+        <div class="info-card benefit-card">
+          <div class="icon-chip blue">🤝</div>
+          <h3>Campus Connection</h3>
+          <p>Stay involved with opportunities happening across campus.</p>
+        </div>
       </div>
     </section>
   `);
-
-  setupCarousel('events-row');
-  setupCarousel('resources-row');
-  setupCarousel('deals-row');
-
-  document.querySelectorAll('[data-modal-id]').forEach((button) => {
-    button.addEventListener('click', () => {
-      const id = Number(button.dataset.modalId);
-      const type = button.dataset.type;
-      const pool = type === 'yellow' ? deals : resources;
-      const selected = pool.find((entry) => entry.id === id);
-      if (selected) openModal(selected);
-    });
-  });
 }
 
-init().catch(console.error);
+init();

@@ -56,6 +56,7 @@ async function loadPage() {
 
     <section class="container section-tight">
       <h2>Reviews</h2>
+      <div class="reviews-list">
 
       ${
         reviews.length === 0
@@ -79,6 +80,8 @@ async function loadPage() {
               </div>
             `).join('')
       }
+
+        </div>
 
       <h3 style="margin-top:2rem;">Add a Review</h3>
 
@@ -120,7 +123,7 @@ async function loadPage() {
     }
 
     try {
-      await fetch("https://studenthub-backend-rpn0.onrender.com/reviews", {
+      await fetch("http://localhost:5001/reviews", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
