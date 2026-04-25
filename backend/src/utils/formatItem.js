@@ -10,6 +10,8 @@ function formatItem(item) {
     // new fields
     user_name: item.user_name,
     pfp_url: item.pfp_url,
+
+    //approval_status: item.approval_status,
   };
 }
 
