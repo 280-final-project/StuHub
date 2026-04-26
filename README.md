@@ -5,7 +5,7 @@ A web-based platform for San Jose State University students to discover events, 
 - Arvin Andiappan
 - Prabhjot Singh
 - Rafael Caculba
-- Ved Jigneshkumar Dabhi
+- Ved Dabhi
 
 **Course:** CMPE 131 - Software Engineering I  
 **Professor:** Ishie Eswar  
