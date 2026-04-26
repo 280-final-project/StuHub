@@ -1,4 +1,4 @@
-# StudentHub 🎓
+# CampusHub 🎓
 A web-based platform for San Jose State University students to discover events, academic resources, and deals — all in one place.
 
 ## 👥 Team
@@ -14,7 +14,7 @@ A web-based platform for San Jose State University students to discover events, 
 ---
 
 ## 📋 About the Project
-StudentHub allows SJSU students to:
+CampusHub allows SJSU students to:
 - Browse current campus events
 - Discover local deals and discounts
 - Access academic resources
@@ -25,7 +25,7 @@ StudentHub allows SJSU students to:
 ---
 
 ## 🏗️ Architecture
-StudentHub follows a **3-Tier Client-Server Architecture**:
+CampusHub follows a **3-Tier Client-Server Architecture**:
 
 ```
 User → Frontend (HTML/CSS/JS) → Backend (Node.js/Express) → Database (PostgreSQL)
