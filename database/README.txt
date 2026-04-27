@@ -13,18 +13,20 @@ ON DELETE CASCADE - whenever the thing that the foreign key references is delete
 
 
 items -- the table that holds all of the student events on campus
- + item_id          | INT         | PRIMARY KEY GENERATED ALWAYS AS IDENTITY
- + item_name        | TEXT        | NOT NULL
- + item_desc        | TEXT
- + is_timed         | BOOLEAN
-    -(true if the item goes on for a limited time, otherwise timeframe is permanent)
- + timeframe        | TEXT
- + loc_is_coordinate| BOOLEAN    
-    -(true if location is in person, provide longitude and latitude in Decimal Degrees form, otherwise provide a link or short description)
- + loc_content      | TEXT
- + img_url          | TEXT
- + created_at       | TIMESTAMPTZ
- + updated_at       | TIMESTAMPTZ
+ items -- the table that holds all of the student events on campus
+ + item_id            | INT         | PRIMARY KEY GENERATED ALWAYS AS IDENTITY
+ + item_name          | TEXT        | NOT NULL
+ + item_desc          | TEXT
+ + is_timed           | BOOLEAN
+ + timeframe          | TEXT
+ + loc_is_coordinate  | BOOLEAN
+ + loc_content        | TEXT
+ + img_url            | TEXT
+ + user_id            | INT         | FOREIGN KEY REFERENCES users(user_id)
+ + approval_status    | TEXT        | NOT NULL DEFAULT 'pending'
+    -(used for admin moderation: pending, approved, rejected)
+ + created_at         | TIMESTAMPTZ
+ + updated_at         | TIMESTAMPTZ
  
 users -- this table holds all of the users
  + user_id            | INT         | PRIMARY KEY GENERATED ALWAYS AS IDENTITY
