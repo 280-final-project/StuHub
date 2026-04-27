@@ -359,7 +359,24 @@ ALTER TABLE ONLY public.reviews
     ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES public.users(user_id);
 
 
--- Completed on 2026-04-22 20:01:26
+
+ALTER TABLE public.users
+    ADD CONSTRAINT users_email_key UNIQUE (email);
+
+ALTER TABLE public.items
+    ADD COLUMN IF NOT EXISTS user_id integer;
+
+ALTER TABLE public.items
+    ADD COLUMN IF NOT EXISTS approval_status text NOT NULL DEFAULT 'pending';
+
+ALTER TABLE public.items
+    ADD CONSTRAINT fk_items_user
+    FOREIGN KEY (user_id) REFERENCES public.users(user_id);
+
+ALTER TABLE public.items
+    ADD CONSTRAINT items_approval_status_check
+    CHECK (approval_status IN ('pending', 'approved', 'rejected'));
+-- Completed on 2026-04-26 20:01:26
 
 --
 -- PostgreSQL database dump complete
