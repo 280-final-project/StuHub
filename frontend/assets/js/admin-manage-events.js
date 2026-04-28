@@ -12,7 +12,6 @@ if (!isLoggedIn || !isAdmin) {
 let events = [];
 
 async function fetchEvents() {
-    
   const res = await fetch(`${BACKEND_URL}/items/admin/all`, {
     headers: {
       Authorization: `Bearer ${token}`
@@ -20,7 +19,6 @@ async function fetchEvents() {
   });
 
   const data = await res.json();
-  console.log(data);
 
   if (!res.ok) {
     throw new Error(data.error || 'Failed to load events');
@@ -71,6 +69,7 @@ function renderCards(filter) {
         <h3>${e.title}</h3>
         <p>${e.description || ''}</p>
         <span class="status ${e.approval_status}">${e.approval_status}</span>
+
         ${
           e.approval_status === 'pending'
             ? `
@@ -79,7 +78,14 @@ function renderCards(filter) {
                 <button class="reject" data-id="${e.id}">Reject</button>
               </div>
             `
-            : ''
+            : e.approval_status === 'rejected'
+              ? `
+                <div class="actions">
+                  <button class="restore" data-id="${e.id}">Restore</button>
+                  <button class="delete-forever" data-id="${e.id}">Delete Permanently</button>
+                </div>
+              `
+              : ''
         }
       </div>
     </div>
@@ -114,6 +120,26 @@ async function updateStatus(id, status) {
   renderCards(getActiveFilter());
 }
 
+async function deleteEvent(id) {
+  const res = await fetch(`${BACKEND_URL}/items/${id}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'x-admin': 'true'
+    }
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || 'Failed to delete event');
+  }
+
+  await fetchEvents();
+  renderStats();
+  renderCards(getActiveFilter());
+}
+
 async function init() {
   injectLayout('Manage Events');
 
@@ -122,7 +148,7 @@ async function init() {
       <div class="manage-header">
         <div class="manage-header-copy">
           <h1 class="page-title">Manage Events</h1>
-          <p class="page-subtitle">Review and approve submitted events.</p>
+          <p class="page-subtitle">Review, restore, and manage submitted events.</p>
         </div>
         <div class="manage-stats"></div>
       </div>
@@ -166,6 +192,27 @@ async function init() {
       } catch (err) {
         console.error(err);
         alert(err.message || 'Failed to reject event');
+      }
+    }
+
+    if (e.target.classList.contains('restore')) {
+      try {
+        await updateStatus(Number(e.target.dataset.id), 'approved');
+      } catch (err) {
+        console.error(err);
+        alert(err.message || 'Failed to restore event');
+      }
+    }
+
+    if (e.target.classList.contains('delete-forever')) {
+      try {
+        const confirmed = window.confirm('Delete this event permanently? This cannot be undone.');
+        if (!confirmed) return;
+
+        await deleteEvent(Number(e.target.dataset.id));
+      } catch (err) {
+        console.error(err);
+        alert(err.message || 'Failed to permanently delete event');
       }
     }
   });
