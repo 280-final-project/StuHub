@@ -54,24 +54,26 @@ const createItem = async (req, res) => {
   const user_id = req.user.user_id;
 
 
-  console.log('HEADERS:', req.headers);                       //<== temp
-  console.log('IS ADMIN HEADER:', req.headers['x-admin']);    //<== temp  
+  // console.log('HEADERS:', req.headers);                       //<== temp to check if it is reaching admin 
+  // console.log('IS ADMIN HEADER:', req.headers['x-admin']);    //<== temp to check if it is reaching admin  
 
-  const isAdmin = req.headers['x-admin'] === 'true';
-
+  
   if (!item_name || !loc_content) {
     return res.status(400).json({
       error: "item_name and loc_content are required"
     });
   }
-
+  
   if (typeof is_timed !== "boolean" && is_timed !== undefined) {
     return res.status(400).json({
       error: "is_timed must be true or false"
     });
   }
-
+  
   try {
+    const isAdmin = req.headers['x-admin'] === 'true';
+    console.log('FINAL APPROVAL STATUS:', isAdmin ? 'approved' : 'pending');  
+
     const result = await pool.query(
       `INSERT INTO items
       (item_name, item_desc, is_timed, timeframe, loc_content, img_url, user_id, approval_status)
@@ -85,7 +87,7 @@ const createItem = async (req, res) => {
         loc_content,
         img_url || null,
         user_id,
-        req.user.isAdmin ? 'approved' : 'pending'
+        isAdmin ? 'approved' : 'pending'
       ]
     );
 
