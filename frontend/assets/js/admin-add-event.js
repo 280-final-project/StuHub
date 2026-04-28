@@ -117,11 +117,12 @@ function init() {
     };
 
     try {
-      const res = await fetch(`${BACKEND_URL}/items/events`, {
+      const res = await fetch(`${BACKEND_URL}/items`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
+          'x-admin': 'true'
         },
         body: JSON.stringify(payload),
       });
@@ -144,5 +145,7 @@ window.location.href = 'events.html';
     }
   });
 }
+
+
 
 init();
