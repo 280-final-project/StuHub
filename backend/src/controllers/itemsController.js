@@ -160,11 +160,95 @@ const getAllItemsForAdmin = async (req, res) => {
   }
 };
 
+const updateItem = async (req, res) => {
+  const { id } = req.params;
+  const { item_name, item_desc, timeframe, loc_content, img_url } = req.body;
+  const user_id = req.user.user_id;
+  const isAdmin = req.headers['x-admin'] === 'true';
+
+  try {
+    const existing = await pool.query(
+      `SELECT * FROM items WHERE item_id = $1`,
+      [id]
+    );
+
+    if (existing.rows.length === 0) {
+      return res.status(404).json({ error: "Item not found" });
+    }
+
+    const item = existing.rows[0];
+
+    if (!isAdmin && item.user_id !== user_id) {
+      return res.status(403).json({ error: "Not authorized to edit this item" });
+    }
+
+    const result = await pool.query(
+      `UPDATE items
+       SET item_name = $1,
+           item_desc = $2,
+           timeframe = $3,
+           loc_content = $4,
+           img_url = $5,
+           updated_at = NOW()
+       WHERE item_id = $6
+       RETURNING *`,
+      [
+        item_name ?? item.item_name,
+        item_desc ?? item.item_desc,
+        timeframe ?? item.timeframe,
+        loc_content ?? item.loc_content,
+        img_url ?? item.img_url,
+        id
+      ]
+    );
+
+    res.json(formatItem(result.rows[0]));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+const deleteItem = async (req, res) => {
+  const { id } = req.params;
+  const user_id = req.user.user_id;
+  const isAdmin = req.headers['x-admin'] === 'true';
+
+  try {
+    const existing = await pool.query(
+      `SELECT * FROM items WHERE item_id = $1`,
+      [id]
+    );
+
+    if (existing.rows.length === 0) {
+      return res.status(404).json({ error: "Item not found" });
+    }
+
+    const item = existing.rows[0];
+
+    if (!isAdmin && item.user_id !== user_id) {
+      return res.status(403).json({ error: "Not authorized to delete this item" });
+    }
+
+    await pool.query(
+      `DELETE FROM items WHERE item_id = $1`,
+      [id]
+    );
+
+    res.json({ message: "Item deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
 module.exports = {
   getAllItems,
   getItemById,
   createItem,
   getPendingItems,
   updateItemApprovalStatus,
-  getAllItemsForAdmin
+  getAllItemsForAdmin,
+  updateItem,
+  deleteItem
 };
