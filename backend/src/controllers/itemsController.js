@@ -136,10 +136,28 @@ const updateItemApprovalStatus = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+
+const getAllItemsForAdmin = async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT i.*, u.user_name, u.pfp_url
+      FROM items i
+      LEFT JOIN users u ON i.user_id = u.user_id
+      ORDER BY i.created_at DESC
+    `);
+
+    res.json(result.rows.map(formatItem));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
 module.exports = {
   getAllItems,
   getItemById,
   createItem,
   getPendingItems,
-  updateItemApprovalStatus
+  updateItemApprovalStatus,
+  getAllItemsForAdmin
 };

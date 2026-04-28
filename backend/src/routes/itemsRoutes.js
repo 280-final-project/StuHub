@@ -3,15 +3,17 @@ const express = require("express");
 const router = express.Router();
 
 const {
-  getAllItems,
+   getAllItems,
   getItemById,
   createItem,
   getPendingItems,
-  updateItemApprovalStatus
+  updateItemApprovalStatus,
+  getAllItemsForAdmin
 } = require("../controllers/itemsController");
 
 router.get("/", getAllItems);
 router.get("/pending", requireAuth, getPendingItems);
+router.get("/admin/all", requireAuth, getAllItemsForAdmin);
 router.get("/:id", getItemById);
 router.post("/", requireAuth, createItem);
 router.patch("/:id/approval", requireAuth, updateItemApprovalStatus);

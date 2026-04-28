@@ -13,7 +13,7 @@ let events = [];
 
 async function fetchEvents() {
     
-  const res = await fetch(`${BACKEND_URL}/items/pending`, {
+  const res = await fetch(`${BACKEND_URL}/items/admin/all`, {
     headers: {
       Authorization: `Bearer ${token}`
     }
