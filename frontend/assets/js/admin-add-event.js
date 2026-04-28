@@ -106,8 +106,8 @@ function init() {
       }
 
       console.log('REDIRECTING NOW');
-      alert('Event published successfully.');
-      window.location.replace = 'confirmation.html';
+      //alert('Event published successfully.');
+      window.location.href = 'confirmation.html';
     } catch (err) {
       console.error(err);
       alert(err.message || 'Failed to create event');
