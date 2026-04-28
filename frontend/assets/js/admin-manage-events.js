@@ -71,22 +71,46 @@ function renderCards(filter) {
         <span class="status ${e.approval_status}">${e.approval_status}</span>
 
         ${
-          e.approval_status === 'pending'
-            ? `
-              <div class="actions">
-                <button class="approve" data-id="${e.id}">Approve</button>
-                <button class="reject" data-id="${e.id}">Reject</button>
-              </div>
-            `
-            : e.approval_status === 'rejected'
-              ? `
-                <div class="actions">
-                  <button class="restore" data-id="${e.id}">Restore</button>
-                  <button class="delete-forever" data-id="${e.id}">Delete Permanently</button>
-                </div>
-              `
-              : ''
-        }
+  e.approval_status === 'pending'
+    ? `
+      <div class="actions" style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+        <button
+          class="approve"
+          data-id="${e.id}"
+          style="padding:10px 16px; border:none; border-radius:10px; cursor:pointer; background:#2563eb; color:white; font-weight:600;"
+        >
+          Approve
+        </button>
+        <button
+          class="reject"
+          data-id="${e.id}"
+          style="padding:10px 16px; border:none; border-radius:10px; cursor:pointer; background:#dc2626; color:white; font-weight:600;"
+        >
+          Reject
+        </button>
+      </div>
+    `
+    : e.approval_status === 'rejected'
+      ? `
+        <div class="actions" style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+          <button
+            class="restore"
+            data-id="${e.id}"
+            style="padding:10px 16px; border:none; border-radius:10px; cursor:pointer; background:#2563eb; color:white; font-weight:600;"
+          >
+            Restore
+          </button>
+          <button
+            class="delete-forever"
+            data-id="${e.id}"
+            style="padding:10px 16px; border:none; border-radius:10px; cursor:pointer; background:#dc2626; color:white; font-weight:600;"
+          >
+            Delete Permanently
+          </button>
+        </div>
+      `
+      : ''
+}
       </div>
     </div>
   `).join('');
@@ -205,15 +229,99 @@ async function init() {
     }
 
     if (e.target.classList.contains('delete-forever')) {
-      try {
-        const confirmed = window.confirm('Delete this event permanently? This cannot be undone.');
-        if (!confirmed) return;
+    showDeleteModal(Number(e.target.dataset.id));
+}
+  });
+}
 
-        await deleteEvent(Number(e.target.dataset.id));
-      } catch (err) {
-        console.error(err);
-        alert(err.message || 'Failed to permanently delete event');
-      }
+function showDeleteModal(id) {
+  const existingModal = document.getElementById('adminDeleteModal');
+  if (existingModal) existingModal.remove();
+
+  document.body.insertAdjacentHTML('beforeend', `
+    <div
+      id="adminDeleteModal"
+      style="
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      "
+    >
+      <div
+        style="
+          background: white;
+          width: min(90%, 430px);
+          border-radius: 16px;
+          padding: 24px;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        "
+      >
+        <h2 style="margin:0 0 10px 0;">Delete Event Permanently</h2>
+        <p style="margin:0 0 18px 0; line-height:1.5;">
+          Are you sure you want to permanently delete this event? This cannot be undone.
+        </p>
+
+        <div style="display:flex; justify-content:flex-end; gap:12px;">
+          <button
+            id="cancelAdminDeleteBtn"
+            type="button"
+            style="
+              padding:10px 16px;
+              border:1px solid #d1d5db;
+              border-radius:10px;
+              background:white;
+              cursor:pointer;
+              font-weight:600;
+            "
+          >
+            Cancel
+          </button>
+
+          <button
+            id="confirmAdminDeleteBtn"
+            type="button"
+            style="
+              padding:10px 16px;
+              border:none;
+              border-radius:10px;
+              background:#dc2626;
+              color:white;
+              cursor:pointer;
+              font-weight:600;
+            "
+          >
+            Delete Permanently
+          </button>
+        </div>
+      </div>
+    </div>
+  `);
+
+  const modal = document.getElementById('adminDeleteModal');
+  const cancelBtn = document.getElementById('cancelAdminDeleteBtn');
+  const confirmBtn = document.getElementById('confirmAdminDeleteBtn');
+
+  const closeModal = () => {
+    modal?.remove();
+  };
+
+  modal?.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  cancelBtn?.addEventListener('click', closeModal);
+
+  confirmBtn?.addEventListener('click', async () => {
+    try {
+      await deleteEvent(id);
+      closeModal();
+    } catch (err) {
+      console.error(err);
+      alert(err.message || 'Failed to permanently delete event');
     }
   });
 }
