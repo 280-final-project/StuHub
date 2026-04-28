@@ -51,7 +51,7 @@ async function loadPage() {
 
   setContent(`
     <section class="container page-header">
-      <a class="back-link" href="event-detail.html?id=${id}">← Back to Event</a>
+      <a class="back-link" href="event.html?id=${id}">← Back to Event</a>
       <h1 class="page-title">Edit Event</h1>
       <p class="page-subtitle">Update your event details</p>
     </section>
@@ -104,7 +104,7 @@ async function loadPage() {
   `);
 
   document.getElementById('cancelEditBtn')?.addEventListener('click', () => {
-    window.location.href = `event-detail.html?id=${id}`;
+    window.location.href = `event.html?id=${id}`;
   });
 
   document.getElementById('editEventForm')?.addEventListener('submit', async (e) => {
@@ -148,7 +148,7 @@ async function loadPage() {
         throw new Error(data.error || 'Failed to update event');
       }
 
-      window.location.href = `event-detail.html?id=${id}`;
+      window.location.href = `event.html?id=${id}`;
     } catch (err) {
       console.error(err);
     }
