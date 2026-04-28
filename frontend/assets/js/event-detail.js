@@ -133,7 +133,87 @@ async function loadPage() {
   }
 
   if (deleteBtn) {
-    deleteBtn.addEventListener('click', async () => {
+  deleteBtn.addEventListener('click', () => {
+    const existingModal = document.getElementById('removeEventModal');
+    if (existingModal) existingModal.remove();
+
+    document.body.insertAdjacentHTML('beforeend', `
+      <div
+        id="removeEventModal"
+        style="
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.45);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 9999;
+        "
+      >
+        <div
+          style="
+            background: white;
+            width: min(90%, 420px);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+          "
+        >
+          <h2 style="margin: 0 0 10px 0;">Remove Event</h2>
+          <p style="margin: 0 0 18px 0; line-height: 1.5;">
+            Are you sure you want to remove this event? It will be marked as rejected and disappear from public events.
+          </p>
+
+          <div style="display: flex; justify-content: flex-end; gap: 12px;">
+            <button
+              id="cancelRemoveEventBtn"
+              type="button"
+              style="
+                padding: 10px 16px;
+                border: 1px solid #d1d5db;
+                border-radius: 10px;
+                background: white;
+                cursor: pointer;
+              "
+            >
+              Cancel
+            </button>
+
+            <button
+              id="confirmRemoveEventBtn"
+              type="button"
+              style="
+                padding: 10px 16px;
+                border: none;
+                border-radius: 10px;
+                background: #dc2626;
+                color: white;
+                cursor: pointer;
+                font-weight: 600;
+              "
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+      </div>
+    `);
+
+    const modal = document.getElementById('removeEventModal');
+    const cancelBtn = document.getElementById('cancelRemoveEventBtn');
+    const confirmBtn = document.getElementById('confirmRemoveEventBtn');
+
+    const closeModal = () => {
+      modal?.remove();
+    };
+
+    modal?.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    cancelBtn?.addEventListener('click', closeModal);
+
+    confirmBtn?.addEventListener('click', async () => {
       const token = localStorage.getItem('token');
 
       if (!token) {
@@ -165,7 +245,8 @@ async function loadPage() {
         console.error(err);
       }
     });
-  }
+  });
+}
 
   const form = document.getElementById('reviewForm');
 
