@@ -60,7 +60,7 @@ async function loadPage() {
               ? `
                 <div style="display:flex; gap:12px; margin-top:1.25rem;">
                   <button id="editBtn" class="btn btn-primary" type="button">Edit Event</button>
-                  <button id="deleteBtn" class="btn" type="button">Delete Event</button>
+                  <button id="deleteBtn" class="btn" type="button">Remove Event</button>
                 </div>
               `
               : ''
@@ -134,34 +134,6 @@ async function loadPage() {
 
   if (deleteBtn) {
     deleteBtn.addEventListener('click', async () => {
-      if (deleteBtn) {
-  deleteBtn.addEventListener('click', () => {
-    document.body.insertAdjacentHTML('beforeend', `
-      <div id="deleteModal" class="modal open" aria-hidden="false">
-        <div class="modal-panel">
-          <button class="modal-close" type="button" aria-label="Close">✕</button>
-          <h2 style="margin-top:0;">Delete Event</h2>
-          <p>Are you sure you want to delete this event? This action cannot be undone.</p>
-          <div style="display:flex; gap:12px; margin-top:1rem;">
-            <button id="cancelDeleteBtn" class="btn" type="button">Cancel</button>
-            <button id="confirmDeleteBtn" class="btn btn-primary" type="button">Delete</button>
-          </div>
-        </div>
-      </div>
-    `);
-
-    const modal = document.getElementById('deleteModal');
-    const closeModal = () => modal?.remove();
-
-    modal?.addEventListener('click', (e) => {
-      if (e.target === modal || e.target.classList.contains('modal-close')) {
-        closeModal();
-      }
-    });
-
-    document.getElementById('cancelDeleteBtn')?.addEventListener('click', closeModal);
-
-    document.getElementById('confirmDeleteBtn')?.addEventListener('click', async () => {
       const token = localStorage.getItem('token');
 
       if (!token) {
@@ -170,47 +142,22 @@ async function loadPage() {
       }
 
       try {
-        const res = await fetch(`${BACKEND_URL}/items/${id}`, {
-          method: 'DELETE',
+        const res = await fetch(`${BACKEND_URL}/items/${id}/approval`, {
+          method: 'PATCH',
           headers: {
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
             'x-admin': isAdmin ? 'true' : 'false'
-          }
+          },
+          body: JSON.stringify({
+            approval_status: 'rejected'
+          })
         });
 
         const data = await res.json();
 
         if (!res.ok) {
-          throw new Error(data.error || 'Failed to delete event');
-        }
-
-        window.location.href = 'events.html';
-      } catch (err) {
-        console.error(err);
-      }
-    });
-  });
-}
-
-      const token = localStorage.getItem('token');
-      if (!token) {
-        window.location.href = 'login.html';
-        return;
-      }
-
-      try {
-        const res = await fetch(`${BACKEND_URL}/items/${id}`, {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'x-admin': isAdmin ? 'true' : 'false'
-          }
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.error || 'Failed to delete event');
+          throw new Error(data.error || 'Failed to remove event');
         }
 
         window.location.href = 'events.html';
