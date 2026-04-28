@@ -52,6 +52,7 @@ const createItem = async (req, res) => {
   } = req.body;
 
   const user_id = req.user.user_id;
+  const isAdmin = req.headers['x-admin'] === 'true';
 
   if (!item_name || !loc_content) {
     return res.status(400).json({
@@ -79,7 +80,7 @@ const createItem = async (req, res) => {
         loc_content,
         img_url || null,
         user_id,
-        'pending'
+        req.user.isAdmin ? 'approved' : 'pending'
       ]
     );
 
