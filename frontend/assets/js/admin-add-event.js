@@ -105,6 +105,7 @@ function init() {
         throw new Error(data.error || 'Failed to create event');
       }
 
+      console.log('REDIRECTING NOW');
       alert('Event published successfully.');
       window.location.href = 'confirmation.html';
     } catch (err) {
