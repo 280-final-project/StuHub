@@ -135,10 +135,10 @@ if (!res.ok) {
 }
 
 alert('Event published successfully.');
-window.location.href = 'events.html';
+window.location.href = 'confirmation.html';
 
       alert('Event published successfully.');
-      window.location.href = 'events.html';
+      window.location.href = 'confirmation.html';
     } catch (err) {
       console.error(err);
       alert(err.message || 'Failed to create event');

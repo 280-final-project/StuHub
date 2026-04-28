@@ -52,6 +52,11 @@ const createItem = async (req, res) => {
   } = req.body;
 
   const user_id = req.user.user_id;
+
+
+  console.log('HEADERS:', req.headers);                       //<== temp
+  console.log('IS ADMIN HEADER:', req.headers['x-admin']);    //<== temp  
+
   const isAdmin = req.headers['x-admin'] === 'true';
 
   if (!item_name || !loc_content) {
