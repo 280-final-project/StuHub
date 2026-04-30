@@ -1396,6 +1396,42 @@ html[data-theme="dark"] .toggle-password {
   border-radius: 16px;
 }
 
+.review-form {
+  margin-top: 1rem;
+}
+
+.review-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.review-form input,
+.review-form textarea {
+  width: 100%;
+}
+
+.review-form textarea {
+  min-height: 180px;
+}
+
+.review-form .btn {
+  min-width: 180px;
+}
+
+.review-form textarea {
+  width: 100%;
+  min-height: 180px;
+  padding: 0.95rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  resize: vertical;
+}
+
+.review-form textarea::placeholder {
+  color: var(--muted);
+}
+
 /* Admin */
 
 .admin-grid {

@@ -40,6 +40,12 @@ export function injectLayout(activePage = '', layoutType = 'full') {
   if (!app) return;
 
   const isAuth = layoutType === 'auth';
+    if (isAuth) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  } else {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  }
   const brandHref = isAuth ? 'index.html' : 'home.html';
 
   
@@ -117,21 +123,7 @@ if (logoutLink) {
 
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    localStorage.removeItem('isAdmin');export function applyTheme(theme) {
-  document.documentElement.setAttribute('data-theme', theme);
-  localStorage.setItem('theme', theme);
-}
-
-export function initTheme() {
-  const savedTheme = localStorage.getItem('theme') || 'light';
-  document.documentElement.setAttribute('data-theme', savedTheme);
-}
-
-export function toggleTheme() {
-  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-  const nextTheme = currentTheme === 'light' ? 'dark' : 'light';
-  applyTheme(nextTheme);
-}
+    localStorage.removeItem('isAdmin');
     localStorage.setItem('isLoggedIn', 'false');
 
     window.location.href = 'index.html';
@@ -140,8 +132,16 @@ export function toggleTheme() {
 
 const themeToggleBtn = document.getElementById('theme-toggle');
 if (themeToggleBtn) {
+  const updateThemeIcon = () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    themeToggleBtn.textContent = currentTheme === 'light' ? '🌙' : '☀️';
+  };
+
+  updateThemeIcon();
+
   themeToggleBtn.addEventListener('click', () => {
     toggleTheme();
+    updateThemeIcon();
   });
 }
   
