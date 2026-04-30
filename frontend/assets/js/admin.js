@@ -1,5 +1,6 @@
 import { injectLayout, setContent } from './app.js';
 
+
 const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
 const isAdmin = localStorage.getItem('isAdmin') === 'true';
 

@@ -63,6 +63,10 @@ export function injectLayout(activePage = '', layoutType = 'full') {
             }">${item.label}</a>`
         ).join('')}
 
+         <button id="theme-toggle" class="theme-toggle-btn" type="button">
+          🌙
+        </button>
+
         <div class="search-wrap">
           <span class="icon">🔎</span>
           <input
@@ -113,10 +117,31 @@ if (logoutLink) {
 
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    localStorage.removeItem('isAdmin');
+    localStorage.removeItem('isAdmin');export function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+}
+
+export function initTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+}
+
+export function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  const nextTheme = currentTheme === 'light' ? 'dark' : 'light';
+  applyTheme(nextTheme);
+}
     localStorage.setItem('isLoggedIn', 'false');
 
     window.location.href = 'index.html';
+  });
+}
+
+const themeToggleBtn = document.getElementById('theme-toggle');
+if (themeToggleBtn) {
+  themeToggleBtn.addEventListener('click', () => {
+    toggleTheme();
   });
 }
   
@@ -366,3 +391,21 @@ export function requireLogin() {
 
   return true;
 }
+
+export function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+}
+
+export function initTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+}
+
+export function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  const nextTheme = currentTheme === 'light' ? 'dark' : 'light';
+  applyTheme(nextTheme);
+}
+
+initTheme();
