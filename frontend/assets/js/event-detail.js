@@ -109,28 +109,7 @@ async function loadPage() {
 
       <h3 class="review-form-title">Add a Review</h3>
 
-<<<<<<< HEAD
-      <form id="reviewForm" class="review-form">
-        <div class="form-group">
-          <input
-            type="text"
-            id="reviewHeader"
-            placeholder="Review title"
-            required
-          />
-        </div>
 
-        <div class="form-group">
-          <textarea
-            id="reviewDesc"
-            placeholder="Write your review..."
-            required
-          ></textarea>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Submit Review</button>
-      </form>
-=======
 <form id="reviewForm" class="review-form">
   <input
     type="text"
@@ -151,7 +130,6 @@ async function loadPage() {
     Submit Review
   </button>
 </form>
->>>>>>> b372c07 (Edit event and remove button updated and Review UI updated.)
     </section>
   `);
 
