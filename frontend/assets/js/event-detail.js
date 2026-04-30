@@ -102,23 +102,25 @@ async function loadPage() {
 
       <h3 style="margin-top:2rem;">Add a Review</h3>
 
-      <form id="reviewForm">
-        <input
-          type="text"
-          id="reviewHeader"
-          placeholder="Review title"
-          required
-          style="width:100%; margin-bottom:10px; padding:8px;"
-        />
+      <form id="reviewForm" class="review-form">
+        <div class="form-group">
+          <input
+            type="text"
+            id="reviewHeader"
+            placeholder="Review title"
+            required
+          />
+        </div>
 
-        <textarea
-          id="reviewDesc"
-          placeholder="Write your review..."
-          required
-          style="width:100%; margin-bottom:10px; padding:8px;"
-        ></textarea>
+        <div class="form-group">
+          <textarea
+            id="reviewDesc"
+            placeholder="Write your review..."
+            required
+          ></textarea>
+        </div>
 
-        <button type="submit">Submit Review</button>
+        <button type="submit" class="btn btn-primary">Submit Review</button>
       </form>
     </section>
   `);
