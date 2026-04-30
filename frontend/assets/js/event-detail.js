@@ -59,8 +59,15 @@ async function loadPage() {
             canManage
               ? `
                 <div style="display:flex; gap:12px; margin-top:1.25rem;">
-                  <button id="editBtn" class="btn btn-primary" type="button">Edit Event</button>
-                  <button id="deleteBtn" class="btn" type="button">Remove Event</button>
+                  <div class="event-actions">
+  <button class="btn btn-primary event-btn">
+    ✏️ Edit Event
+  </button>
+
+  <button class="btn btn-danger event-btn">
+    🗑 Remove Event
+  </button>
+</div>
                 </div>
               `
               : ''
@@ -100,8 +107,9 @@ async function loadPage() {
         }
       </div>
 
-      <h3 style="margin-top:2rem;">Add a Review</h3>
+      <h3 class="review-form-title">Add a Review</h3>
 
+<<<<<<< HEAD
       <form id="reviewForm" class="review-form">
         <div class="form-group">
           <input
@@ -122,6 +130,28 @@ async function loadPage() {
 
         <button type="submit" class="btn btn-primary">Submit Review</button>
       </form>
+=======
+<form id="reviewForm" class="review-form">
+  <input
+    type="text"
+    id="reviewHeader"
+    class="review-input"
+    placeholder="Review title"
+    required
+  />
+
+  <textarea
+    id="reviewDesc"
+    class="review-textarea"
+    placeholder="Write your review..."
+    required
+  ></textarea>
+
+  <button type="submit" class="btn btn-primary review-submit-btn">
+    Submit Review
+  </button>
+</form>
+>>>>>>> b372c07 (Edit event and remove button updated and Review UI updated.)
     </section>
   `);
 

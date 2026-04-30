@@ -1473,6 +1473,62 @@ html[data-theme="dark"] .toggle-password {
 }
 
 /* Reviews */
+.review-form-title {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-size: 1.9rem;
+  font-weight: 700;
+}
+
+.review-form {
+  width: 100%;
+  max-width: 100%;
+}
+
+.review-input,
+.review-textarea {
+  width: 100%;
+  border: 1px solid #d8dee8;
+  border-radius: 20px;
+  background: #fff;
+  color: #111827;
+  font: inherit;
+  outline: none;
+  box-shadow: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.review-input {
+  height: 72px;
+  padding: 0 1.25rem;
+  margin-bottom: 1rem;
+  font-size: 1.05rem;
+}
+
+.review-textarea {
+  min-height: 220px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  resize: vertical;
+  line-height: 1.6;
+  font-size: 1.02rem;
+}
+
+.review-input:focus,
+.review-textarea:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+}
+
+.review-submit-btn {
+  min-width: 220px;
+  height: 58px;
+  border-radius: 16px;
+  padding: 0 1.5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.2);
+}
 
 .reviews-list {
   display: flex;
@@ -1726,12 +1782,10 @@ html[data-theme="dark"] .status.rejected {
 }
 
 .actions button {
-  padding: 0.7rem 1.05rem;
   border-radius: 12px;
   border: none;
   cursor: pointer;
   font-weight: 700;
-  font-size: 0.95rem;
 }
 
 .actions .approve,
@@ -2126,3 +2180,53 @@ html[data-theme="dark"] .status.rejected {
       font-size: 1.35rem;
     }
   }
+<<<<<<< HEAD
+=======
+}
+
+.event-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.event-btn {
+  height: 56px;
+  min-width: 200px;
+  padding: 0 1.4rem;
+  border-radius: 16px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+/* Primary (Edit) */
+.event-btn.btn-primary {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.25);
+}
+
+/* Hover */
+.event-btn.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.35);
+}
+
+/* Danger (Delete) */
+.event-btn.btn-danger {
+  background: #fff;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+}
+
+/* Hover */
+.event-btn.btn-danger:hover {
+  background: #fee2e2;
+  transform: translateY(-2px);
+}
+>>>>>>> b372c07 (Edit event and remove button updated and Review UI updated.)
