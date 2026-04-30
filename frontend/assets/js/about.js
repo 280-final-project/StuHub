@@ -23,7 +23,7 @@ function init() {
     <section class="container section-tight about-copy" id="contact">
       <h2>Contact</h2>
       <p>Have questions or feedback? We'd love to hear from you.</p>
-      <p><a href="mailto:contact@sjsuplatform.edu" style="color:var(--primary);">contact@sjsuplatform.edu</a></p>
+      <p><a href="mailto:prabhjotsingh@sjsu.edu" style="color:var(--primary);">prabhjotsingh@sjsu.edu</a></p>
     </section>
   `);
 }
