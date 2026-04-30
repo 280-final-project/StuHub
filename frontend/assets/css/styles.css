@@ -2180,9 +2180,7 @@ html[data-theme="dark"] .status.rejected {
       font-size: 1.35rem;
     }
   }
-<<<<<<< HEAD
-=======
-}
+
 
 .event-actions {
   display: flex;
@@ -2229,4 +2227,3 @@ html[data-theme="dark"] .status.rejected {
   background: #fee2e2;
   transform: translateY(-2px);
 }
->>>>>>> b372c07 (Edit event and remove button updated and Review UI updated.)
