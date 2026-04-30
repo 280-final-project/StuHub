@@ -347,17 +347,39 @@ export function openModal(item) {
   if (!modal || !content) return;
 
   content.innerHTML = `
-    <h2 style="margin-top:0; padding-right:2rem;">${item.title || item.name}</h2>
-    ${item.badges?.length ? `<div class="badge-row">${item.badges.map((badge) => `<span class="badge">${badge}</span>`).join('')}</div>` : ''}
-    <p class="lead" style="line-height:1.7; color: var(--muted);">${item.fullDescription || item.description}</p>
-    <div class="detail-list">
-      ${(item.details || []).map((detail) => `
-        <div class="detail-item">
-          <div class="detail-label">${detail.label}</div>
-          <div class="muted">${detail.value}</div>
-        </div>`).join('')}
+    <div class="resource-modal-content">
+      <h2 class="resource-modal-title">${item.title || item.name}</h2>
+
+      ${
+        item.badges?.length
+          ? `<div class="badge-row resource-badge-row">
+              ${item.badges.map((badge) => `<span class="badge">${badge}</span>`).join('')}
+            </div>`
+          : ''
+      }
+
+      <p class="resource-modal-desc">
+        ${item.fullDescription || item.description || ''}
+      </p>
+
+      ${
+        item.details?.length
+          ? `
+            <div class="resource-modal-divider"></div>
+            <div class="resource-modal-details-grid">
+              ${item.details.map((detail) => `
+                <div class="resource-modal-detail-block">
+                  <div class="resource-modal-detail-label">${detail.label}</div>
+                  <div class="resource-modal-detail-value">${detail.value}</div>
+                </div>
+              `).join('')}
+            </div>
+          `
+          : ''
+      }
     </div>
   `;
+
   modal.classList.add('open');
   modal.setAttribute('aria-hidden', 'false');
   document.body.style.overflow = 'hidden';
