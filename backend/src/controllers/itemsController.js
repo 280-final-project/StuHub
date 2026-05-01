@@ -58,11 +58,7 @@ const createItem = async (req, res) => {
       parsedIsTimed = true;
     } else if (is_timed === "false" || is_timed === false) {
       parsedIsTimed = false;
-    } else if (
-      is_timed === undefined ||
-      is_timed === null ||
-      is_timed === ""
-    ) {
+    } else if (is_timed === undefined || is_timed === null || is_timed === "") {
       parsedIsTimed = null;
     } else {
       return res.status(400).json({
@@ -83,6 +79,10 @@ const createItem = async (req, res) => {
     }
 
     const isAdmin = req.headers["x-admin"] === "true";
+
+    console.log("REQ.BODY:", req.body);
+    console.log("REQ.FILE:", req.file);
+    console.log("REQ.USER:", req.user);
 
     const result = await pool.query(
       `INSERT INTO items
