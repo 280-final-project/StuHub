@@ -74,42 +74,37 @@ function renderCards(filter) {
   e.approval_status === 'pending'
     ? `
       <div class="actions" style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
-        <button
-          class="approve"
-          data-id="${e.id}"
-          style="padding:10px 16px; border:none; border-radius:10px; cursor:pointer; background:#2563eb; color:white; font-weight:600;"
-        >
+        <button class="approve" data-id="${e.id}" style="padding:10px 16px; border:none; border-radius:10px; cursor:pointer; background:#2563eb; color:white; font-weight:600;">
           Approve
         </button>
-        <button
-          class="reject"
-          data-id="${e.id}"
-          style="padding:10px 16px; border:none; border-radius:10px; cursor:pointer; background:#dc2626; color:white; font-weight:600;"
-        >
+        <button class="reject" data-id="${e.id}" style="padding:10px 16px; border:none; border-radius:10px; cursor:pointer; background:#dc2626; color:white; font-weight:600;">
           Reject
         </button>
       </div>
     `
-    : e.approval_status === 'rejected'
+    : e.approval_status === 'approved'
       ? `
         <div class="actions" style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
-          <button
-            class="restore"
-            data-id="${e.id}"
-            style="padding:10px 16px; border:none; border-radius:10px; cursor:pointer; background:#2563eb; color:white; font-weight:600;"
-          >
-            Restore
+          <button class="move-pending" data-id="${e.id}" style="padding:10px 16px; border:none; border-radius:10px; cursor:pointer; background:#2563eb; color:white; font-weight:600;">
+            Move to Pending
           </button>
-          <button
-            class="delete-forever"
-            data-id="${e.id}"
-            style="padding:10px 16px; border:none; border-radius:10px; cursor:pointer; background:#dc2626; color:white; font-weight:600;"
-          >
-            Delete Permanently
+          <button class="reject" data-id="${e.id}" style="padding:10px 16px; border:none; border-radius:10px; cursor:pointer; background:#dc2626; color:white; font-weight:600;">
+            Reject
           </button>
         </div>
       `
-      : ''
+      : e.approval_status === 'rejected'
+        ? `
+          <div class="actions" style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+            <button class="restore" data-id="${e.id}" style="padding:10px 16px; border:none; border-radius:10px; cursor:pointer; background:#2563eb; color:white; font-weight:600;">
+              Restore
+            </button>
+            <button class="delete-forever" data-id="${e.id}" style="padding:10px 16px; border:none; border-radius:10px; cursor:pointer; background:#dc2626; color:white; font-weight:600;">
+              Delete Permanently
+            </button>
+          </div>
+        `
+        : ''
 }
       </div>
     </div>
@@ -227,6 +222,15 @@ async function init() {
         alert(err.message || 'Failed to restore event');
       }
     }
+
+    if (e.target.classList.contains('move-pending')) {
+      try {
+        await updateStatus(Number(e.target.dataset.id), 'pending');
+      } catch (err) {
+        console.error(err);
+        alert(err.message || 'Failed to move event to pending');
+      }
+}
 
     if (e.target.classList.contains('delete-forever')) {
     showDeleteModal(Number(e.target.dataset.id));
