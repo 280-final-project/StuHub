@@ -28,24 +28,3 @@ app.use(errorHandler);
 module.exports = app;
 
 
-
-// app.get("/test-db", async (req, res) => {
-//   try {
-//     const result = await require("./config/db").query("SELECT NOW()");
-//     res.json({ ok: true, time: result.rows[0] });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ ok: false, error: err.message });
-//   }
-// });
-// app.get("/test-users", async (req, res) => {
-//   try {
-//     const result = await require("./config/db").query(
-//       "SELECT user_id, user_name, email FROM users LIMIT 5"
-//     );
-//     res.json({ ok: true, users: result.rows });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ ok: false, error: err.message });
-//   }
-// });
