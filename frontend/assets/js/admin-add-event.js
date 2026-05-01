@@ -48,8 +48,8 @@ function init() {
         </div>
 
         <div class="form-group">
-          <label for="eventImage">Event Image URL</label>
-          <input type="url" id="eventImage" placeholder="Paste image URL" />
+          <label for="eventImage">Upload Image</label>
+          <input type="file" id="eventImage" accept="image/png, image/jpeg" />
         </div>
 
         <div class="form-group">
@@ -78,24 +78,27 @@ function init() {
       .filter(Boolean)
       .join(' • ');
 
-    const payload = {
-      item_name: document.getElementById('eventTitle').value.trim(),
-      item_desc: document.getElementById('eventDetails').value.trim(),
-      is_timed: Boolean(startTime || endTime),
-      timeframe,
-      loc_content: document.getElementById('eventLocation').value.trim(),
-      img_url: document.getElementById('eventImage').value.trim() || null
-    };
+    const formData = new FormData();
+
+    formData.append("item_name", document.getElementById('eventTitle').value.trim());
+    formData.append("item_desc", document.getElementById('eventDetails').value.trim());
+    formData.append("is_timed", Boolean(startTime || endTime));
+    formData.append("timeframe", timeframe);
+    formData.append("loc_content", document.getElementById('eventLocation').value.trim());
+
+    const file = document.getElementById("eventImage").files[0];
+    if (file) {
+      formData.append("image", file);
+    }
 
     try {
       const res = await fetch(`${BACKEND_URL}/items`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+       headers: {
           Authorization: `Bearer ${token}`,
           'x-admin': 'true'
         },
-        body: JSON.stringify(payload)
+        body: formData
       });
 
       const data = await res.json();

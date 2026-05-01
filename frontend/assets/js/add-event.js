@@ -48,8 +48,8 @@ function init() {
         </div>
 
         <div class="form-group">
-          <label for="image">Event Image URL</label>
-          <input id="image-url" name="image-url" type="text" placeholder="Paste image URL">
+          <label for="eventImage">Upload Image</label>
+          <input type="file" id="eventImage" accept="image/png, image/jpeg">
         </div>
 
         <button class="btn btn-primary full-width" type="submit">Submit Event</button>
@@ -150,40 +150,45 @@ function init() {
     const title = document.getElementById('title').value.trim();
     const location = document.getElementById('location').value.trim();
     const description = document.getElementById('description').value.trim();
-    const imageUrl = document.getElementById('image-url').value.trim();
 
     const timeframe = `${startDate} ${startTime} - ${endDate} ${endTime}`;
 
     try {
-      const response = await fetch('https://studenthub-backend-rpn0.onrender.com/items', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          item_name: title,
-          item_desc: description,
-          is_timed: true,
-          timeframe,
-          loc_content: location,
-          img_url: imageUrl || null
-        })
-      });
+  const formData = new FormData();
 
-      const data = await response.json();
+  formData.append("item_name", title);
+  formData.append("item_desc", description);
+  formData.append("is_timed", true);
+  formData.append("timeframe", timeframe);
+  formData.append("loc_content", location);
 
-      if (!response.ok) {
-        console.error(data);
-        alert(data.error || 'Failed to submit event');
-        return;
-      }
+  const file = document.getElementById("eventImage").files[0];
+  if (file) {
+    formData.append("image", file);
+  }
 
-      window.location.href = 'confirmation.html';
-    } catch (err) {
-      console.error(err);
-      alert('Failed to submit event');
-    }
+  const response = await fetch('https://studenthub-backend-rpn0.onrender.com/items', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    body: formData
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    console.error(data);
+    alert(data.error || 'Failed to submit event');
+    return;
+  }
+
+  window.location.href = 'confirmation.html';
+
+} catch (err) {
+  console.error(err);
+  alert('Failed to submit event');
+}
   });
 }
 
