@@ -1,0 +1,21 @@
+export const SJSU_LOCATIONS = [
+  'Student Union Center',
+  'Provident Union Event Center',
+  'Charles W. Davidson Engineering Building',
+  'Duncan Hall',
+  'MacQuarrie Hall',
+  'Boccardo Business Center',
+  'Clark Hall',
+  'Washington Square Hall',
+  'Martin Luther King Jr. Library',
+  'Science Building',
+  'Sweeney Hall',
+  'South Parking Garage',
+  'North Parking Garage',
+  'Yoshihiro Uchida Hall',
+  'SPX Center',
+  'Dudley Moorhead Hall',
+  'Industrial Studies Building',
+  'Music Building',
+  'Art Building'
+];
