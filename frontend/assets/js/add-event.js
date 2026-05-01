@@ -90,51 +90,29 @@ function init() {
   });
 
   document.getElementById('event-form').addEventListener('submit', async (event) => {
-    event.preventDefault();
+  event.preventDefault();
 
-    const token = localStorage.getItem('token');
+  const token = localStorage.getItem('token');
+  if (!token) {
+    alert('Please log in first.');
+    window.location.href = 'login.html';
+    return;
+  }
 
-    if (!token) {
-      alert('Please log in with Google before submitting an event.');
-      window.location.href = 'login.html';
-      return;
-    }
+  const title = document.getElementById('title').value.trim();
+  const eventDate = document.getElementById('eventDate').value;
+  const building = document.getElementById('locationBuilding').value;
+  const room = document.getElementById('locationRoom').value.trim();
+  const description = document.getElementById('description').value.trim();
 
-    const title = document.getElementById('title').value.trim();
-    const eventDate = document.getElementById('eventDate').value;
-    const building = document.getElementById('locationBuilding').value;
-    const room = document.getElementById('locationRoom').value.trim();
-    const description = document.getElementById('description').value.trim();
-    const imageUrl = document.getElementById('imageUrl').value.trim();
+  const location = room ? `${building}, Room ${room}` : building;
 
-    if (eventDate < minDateStr) {
-      alert('Event date must be at least 3 days from today.');
-      return;
-    }
-
-    const location = room ? `${building}, Room ${room}` : building;
-
-    try {
-      const response = await fetch(`${BACKEND_URL}/items/events`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          item_name: title,
-          item_desc: description,
-          is_timed: false,
-          timeframe: eventDate,
-          loc_content: location,
-          img_url: imageUrl || null
-        })
-      });
+  const formData = new FormData();
 
   formData.append("item_name", title);
   formData.append("item_desc", description);
-  formData.append("is_timed", startTime || endTime ? "true" : "false");
-  formData.append("timeframe", timeframe);
+  formData.append("is_timed", "false"); // simple case
+  formData.append("timeframe", eventDate);
   formData.append("loc_content", location);
 
   const file = document.getElementById("eventImage").files[0];
@@ -142,29 +120,30 @@ function init() {
     formData.append("image", file);
   }
 
-  const response = await fetch('https://studenthub-backend-rpn0.onrender.com/items', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
-    body: formData
-  });
+  try {
+    const response = await fetch(`${BACKEND_URL}/items`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      body: formData
+    });
 
-  const data = await response.json();
+    const data = await response.json();
 
-  if (!response.ok) {
-    console.error(data);
-    alert(data.error || 'Failed to submit event');
-    return;
+    if (!response.ok) {
+      console.error(data);
+      alert(data.error || 'Failed to submit event');
+      return;
+    }
+
+    window.location.href = 'confirmation.html';
+
+  } catch (err) {
+    console.error(err);
+    alert('Failed to submit event');
   }
-
-  window.location.href = 'confirmation.html';
-
-} catch (err) {
-  console.error(err);
-  alert('Failed to submit event');
-}
-  });
+});
 }
 
 init();
