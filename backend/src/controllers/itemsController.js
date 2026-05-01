@@ -119,8 +119,10 @@ const updateItemApprovalStatus = async (req, res) => {
   const { id } = req.params;
   const { approval_status } = req.body;
 
-  if (!['approved', 'rejected'].includes(approval_status)) {
-    return res.status(400).json({ error: "approval_status must be approved or rejected" });
+  if (!['pending', 'approved', 'rejected'].includes(approval_status)) {
+    return res.status(400).json({
+      error: "approval_status must be pending, approved, or rejected"
+    });
   }
 
   try {
