@@ -50,6 +50,11 @@ const createItem = async (req, res) => {
     loc_content,
   } = req.body;
 
+  const parsedIsTimed =
+  is_timed === "true" ? true :
+  is_timed === "false" ? false :
+  is_timed;
+
   const img_url = req.file ? req.file.path : null;
 
 
@@ -63,11 +68,16 @@ const createItem = async (req, res) => {
     });
   }
   
-  if (typeof is_timed !== "boolean" && is_timed !== undefined) {
-    return res.status(400).json({
-      error: "is_timed must be true or false"
-    });
-  }
+const parsedIsTimed =
+  is_timed === "true" ? true :
+  is_timed === "false" ? false :
+  is_timed;
+
+if (typeof parsedIsTimed !== "boolean" && parsedIsTimed !== undefined){
+  return res.status(400).json({
+    error: "is_timed must be true or false"
+  });
+}
   
   try {
     const isAdmin = req.headers['x-admin'] === 'true';
@@ -81,7 +91,7 @@ const createItem = async (req, res) => {
       [
         item_name,
         item_desc || null,
-        is_timed ?? null,
+        parsedIsTimed ?? null,
         timeframe || null,
         loc_content,
         img_url || null,

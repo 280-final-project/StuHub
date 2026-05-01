@@ -82,7 +82,7 @@ function init() {
 
     formData.append("item_name", document.getElementById('eventTitle').value.trim());
     formData.append("item_desc", document.getElementById('eventDetails').value.trim());
-    formData.append("is_timed", Boolean(startTime || endTime));
+    formData.append("is_timed", startTime || endTime ? "true" : "false");
     formData.append("timeframe", timeframe);
     formData.append("loc_content", document.getElementById('eventLocation').value.trim());
 

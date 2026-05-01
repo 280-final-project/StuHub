@@ -133,7 +133,7 @@ function init() {
 
   formData.append("item_name", title);
   formData.append("item_desc", description);
-  formData.append("is_timed", true);
+  formData.append("is_timed", startTime || endTime ? "true" : "false");
   formData.append("timeframe", timeframe);
   formData.append("loc_content", location);
 
