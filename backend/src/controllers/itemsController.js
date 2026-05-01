@@ -48,10 +48,9 @@ const createItem = async (req, res) => {
     is_timed,
     timeframe,
     loc_content,
-    img_url
   } = req.body;
 
-  const user_id = req.user.user_id;
+  const img_url = req.file ? req.file.path : null;
 
 
   // console.log('HEADERS:', req.headers);                       //<== temp to check if it is reaching admin 
