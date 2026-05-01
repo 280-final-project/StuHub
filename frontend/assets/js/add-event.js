@@ -1,6 +1,15 @@
-import { injectLayout, setContent, requireLogin } from './app.js';
+import { injectLayout, setContent } from './app.js';
+import { SJSU_LOCATIONS } from './data/sjsu-locations.js';
 
 // if (!requireLogin()) return;
+
+const BACKEND_URL = 'https://studenthub-backend-rpn0.onrender.com';
+
+function getLocationOptions() {
+  return SJSU_LOCATIONS.map(
+    (location) => `<option value="${location}">${location}</option>`
+  ).join('');
+}
 
 function init() {
   injectLayout('Add Event');
@@ -18,28 +27,30 @@ function init() {
           <input id="title" name="title" type="text" placeholder="Enter event title" required>
         </div>
 
-        <div class="form-row">
-          <div class="form-group">
-            <label for="start-date">Start Date</label>
-            <input id="start-date" name="start-date" type="date" required>
-            <small class="error-text" id="start-date-error"></small>
-          </div>
-
-          <div class="form-group">
-            <label for="end-date">End Date</label>
-            <input id="end-date" name="end-date" type="date" required>
-            <small class="error-text" id="end-date-error"></small>
-          </div>
-        </div>
-
         <div class="form-group">
           <label for="eventDate">Event Date</label>
-          <input type="date" id="eventDate" />
+          <input id="eventDate" name="eventDate" type="date" required>
+          <small class="error-text" id="event-date-error"></small>
         </div>
 
-        <div class="form-group">
-          <label for="location">Location</label>
-          <input id="location" name="location" type="text" placeholder="Enter event location" required>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="locationBuilding">Building</label>
+            <select id="locationBuilding" name="locationBuilding" required>
+              <option value="">Select a building</option>
+              ${getLocationOptions()}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="locationRoom">Room No.</label>
+            <input
+              id="locationRoom"
+              name="locationRoom"
+              type="text"
+              placeholder="Enter room number"
+            >
+          </div>
         </div>
 
         <div class="form-group">
@@ -58,86 +69,28 @@ function init() {
     </section>
   `);
 
-  const startDateInput = document.getElementById('start-date');
-  const endDateInput = document.getElementById('end-date');
-  const startTimeInput = document.getElementById('start-time');
-  const endTimeInput = document.getElementById('end-time');
-
-  const startDateError = document.getElementById('start-date-error');
-  const endDateError = document.getElementById('end-date-error');
-  const endTimeError = document.getElementById('end-time-error');
+  const eventDateInput = document.getElementById('eventDate');
+  const eventDateError = document.getElementById('event-date-error');
 
   const today = new Date();
   const minDate = new Date();
   minDate.setDate(today.getDate() + 3);
   const minDateStr = minDate.toISOString().split('T')[0];
 
-  startDateInput.setAttribute('min', minDateStr);
-  endDateInput.setAttribute('min', minDateStr);
+  eventDateInput.setAttribute('min', minDateStr);
 
-  startDateInput.addEventListener('change', () => {
-    if (startDateInput.value && startDateInput.value < minDateStr) {
-      startDateError.textContent = 'Start date must be at least 3 days from today.';
-      startDateInput.classList.add('invalid');
+  eventDateInput.addEventListener('change', () => {
+    if (eventDateInput.value && eventDateInput.value < minDateStr) {
+      eventDateError.textContent = 'Event date must be at least 3 days from today.';
+      eventDateInput.classList.add('invalid');
     } else {
-      startDateError.textContent = '';
-      startDateInput.classList.remove('invalid');
-    }
-
-    if (endDateInput.value && endDateInput.value < startDateInput.value) {
-      endDateError.textContent = 'End date cannot be before start date.';
-      endDateInput.classList.add('invalid');
-    } else {
-      endDateError.textContent = '';
-      endDateInput.classList.remove('invalid');
-    }
-  });
-
-  endDateInput.addEventListener('change', () => {
-    if (endDateInput.value && endDateInput.value < startDateInput.value) {
-      endDateError.textContent = 'End date cannot be before start date.';
-      endDateInput.classList.add('invalid');
-    } else {
-      endDateError.textContent = '';
-      endDateInput.classList.remove('invalid');
-    }
-  });
-
-  endTimeInput.addEventListener('change', () => {
-    if (
-      startDateInput.value &&
-      endDateInput.value &&
-      startTimeInput.value &&
-      endTimeInput.value &&
-      startDateInput.value === endDateInput.value &&
-      endTimeInput.value <= startTimeInput.value
-    ) {
-      endTimeError.textContent = 'End time must be after start time.';
-      endTimeInput.classList.add('invalid');
-    } else {
-      endTimeError.textContent = '';
-      endTimeInput.classList.remove('invalid');
+      eventDateError.textContent = '';
+      eventDateInput.classList.remove('invalid');
     }
   });
 
   document.getElementById('event-form').addEventListener('submit', async (event) => {
     event.preventDefault();
-
-    const eventDate = document.getElementById('eventDate').value;
-    const startTime = startTimeInput.value;
-    const endTime = endTimeInput.value;
-
-    
-
-    if (endDate < startDate) {
-      alert('End date must be after start date.');
-      return;
-    }
-
-    if (endDate === startDate && endTime <= startTime) {
-      alert('End time must be after start time.');
-      return;
-    }
 
     const token = localStorage.getItem('token');
 
@@ -148,13 +101,35 @@ function init() {
     }
 
     const title = document.getElementById('title').value.trim();
-    const location = document.getElementById('location').value.trim();
+    const eventDate = document.getElementById('eventDate').value;
+    const building = document.getElementById('locationBuilding').value;
+    const room = document.getElementById('locationRoom').value.trim();
     const description = document.getElementById('description').value.trim();
+    const imageUrl = document.getElementById('imageUrl').value.trim();
 
-    const timeframe = `${startDate} ${startTime} - ${endDate} ${endTime}`;
+    if (eventDate < minDateStr) {
+      alert('Event date must be at least 3 days from today.');
+      return;
+    }
+
+    const location = room ? `${building}, Room ${room}` : building;
 
     try {
-  const formData = new FormData();
+      const response = await fetch(`${BACKEND_URL}/items/events`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          item_name: title,
+          item_desc: description,
+          is_timed: false,
+          timeframe: eventDate,
+          loc_content: location,
+          img_url: imageUrl || null
+        })
+      });
 
   formData.append("item_name", title);
   formData.append("item_desc", description);

@@ -60,11 +60,11 @@ async function loadPage() {
               ? `
                 <div style="display:flex; gap:12px; margin-top:1.25rem;">
                   <div class="event-actions">
-  <button class="btn btn-primary event-btn">
+  <button id="editBtn" class="btn btn-primary event-btn" type="button">
     ✏️ Edit Event
   </button>
 
-  <button class="btn btn-danger event-btn">
+  <button id="deleteBtn" class="btn btn-danger event-btn" type="button">
     🗑 Remove Event
   </button>
 </div>
