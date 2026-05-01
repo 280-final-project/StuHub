@@ -10,7 +10,6 @@ const getAllItems = async (req, res) => {
       WHERE i.approval_status = 'approved'
       ORDER BY i.created_at DESC
     `);
-
     res.json(result.rows.map(formatItem));
   } catch (err) {
     console.error(err);
@@ -20,13 +19,12 @@ const getAllItems = async (req, res) => {
 
 const getItemById = async (req, res) => {
   const { id } = req.params;
-
   try {
     const result = await pool.query(
       `SELECT i.*, u.user_name, u.pfp_url
-      FROM items i
-      LEFT JOIN users u ON i.user_id = u.user_id
-      WHERE i.item_id = $1 AND i.approval_status = 'approved'`,
+       FROM items i
+       LEFT JOIN users u ON i.user_id = u.user_id
+       WHERE i.item_id = $1 AND i.approval_status = 'approved'`,
       [id]
     );
 
@@ -42,46 +40,49 @@ const getItemById = async (req, res) => {
 };
 
 const createItem = async (req, res) => {
-  const {
-    item_name,
-    item_desc,
-    is_timed,
-    timeframe,
-    loc_content,
-  } = req.body;
-
-  const parsedIsTimed =
-  is_timed === "true" ? true :
-  is_timed === "false" ? false :
-  is_timed;
-
-  const img_url = req.file ? req.file.path : null;
-
-
-  // console.log('HEADERS:', req.headers);                       //<== temp to check if it is reaching admin 
-  // console.log('IS ADMIN HEADER:', req.headers['x-admin']);    //<== temp to check if it is reaching admin  
-
-  
-  if (!item_name || !loc_content) {
-    return res.status(400).json({
-      error: "item_name and loc_content are required"
-    });
-  }
-  
-const parsedIsTimed =
-  is_timed === "true" ? true :
-  is_timed === "false" ? false :
-  is_timed;
-
-if (typeof parsedIsTimed !== "boolean" && parsedIsTimed !== undefined){
-  return res.status(400).json({
-    error: "is_timed must be true or false"
-  });
-}
-  
   try {
-    const isAdmin = req.headers['x-admin'] === 'true';
-    console.log('FINAL APPROVAL STATUS:', isAdmin ? 'approved' : 'pending');  
+    const {
+      item_name,
+      item_desc,
+      is_timed,
+      timeframe,
+      loc_content,
+    } = req.body;
+
+    const user_id = req.user?.user_id;
+    const img_url = req.file ? req.file.path : null;
+
+    let parsedIsTimed = null;
+
+    if (is_timed === "true" || is_timed === true) {
+      parsedIsTimed = true;
+    } else if (is_timed === "false" || is_timed === false) {
+      parsedIsTimed = false;
+    } else if (
+      is_timed === undefined ||
+      is_timed === null ||
+      is_timed === ""
+    ) {
+      parsedIsTimed = null;
+    } else {
+      return res.status(400).json({
+        error: "is_timed must be true or false"
+      });
+    }
+
+    if (!item_name || !loc_content) {
+      return res.status(400).json({
+        error: "item_name and loc_content are required"
+      });
+    }
+
+    if (!user_id) {
+      return res.status(401).json({
+        error: "User not authenticated"
+      });
+    }
+
+    const isAdmin = req.headers["x-admin"] === "true";
 
     const result = await pool.query(
       `INSERT INTO items
@@ -91,18 +92,18 @@ if (typeof parsedIsTimed !== "boolean" && parsedIsTimed !== undefined){
       [
         item_name,
         item_desc || null,
-        parsedIsTimed ?? null,
+        parsedIsTimed,
         timeframe || null,
         loc_content,
-        img_url || null,
+        img_url,
         user_id,
-        isAdmin ? 'approved' : 'pending'
+        isAdmin ? "approved" : "pending"
       ]
     );
 
     res.status(201).json(formatItem(result.rows[0]));
   } catch (err) {
-    console.error(err);
+    console.error("CREATE ITEM ERROR:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
@@ -116,7 +117,6 @@ const getPendingItems = async (req, res) => {
       WHERE i.approval_status = 'pending'
       ORDER BY i.created_at DESC
     `);
-
     res.json(result.rows.map(formatItem));
   } catch (err) {
     console.error(err);
@@ -128,7 +128,7 @@ const updateItemApprovalStatus = async (req, res) => {
   const { id } = req.params;
   const { approval_status } = req.body;
 
-  if (!['pending', 'approved', 'rejected'].includes(approval_status)) {
+  if (!["pending", "approved", "rejected"].includes(approval_status)) {
     return res.status(400).json({
       error: "approval_status must be pending, approved, or rejected"
     });
@@ -163,7 +163,6 @@ const getAllItemsForAdmin = async (req, res) => {
       LEFT JOIN users u ON i.user_id = u.user_id
       ORDER BY i.created_at DESC
     `);
-
     res.json(result.rows.map(formatItem));
   } catch (err) {
     console.error(err);
@@ -175,7 +174,7 @@ const updateItem = async (req, res) => {
   const { id } = req.params;
   const { item_name, item_desc, timeframe, loc_content, img_url } = req.body;
   const user_id = req.user.user_id;
-  const isAdmin = req.headers['x-admin'] === 'true';
+  const isAdmin = req.headers["x-admin"] === "true";
 
   try {
     const existing = await pool.query(
@@ -223,7 +222,7 @@ const updateItem = async (req, res) => {
 const deleteItem = async (req, res) => {
   const { id } = req.params;
   const user_id = req.user.user_id;
-  const isAdmin = req.headers['x-admin'] === 'true';
+  const isAdmin = req.headers["x-admin"] === "true";
 
   try {
     const existing = await pool.query(
@@ -241,10 +240,7 @@ const deleteItem = async (req, res) => {
       return res.status(403).json({ error: "Not authorized to delete this item" });
     }
 
-    await pool.query(
-      `DELETE FROM items WHERE item_id = $1`,
-      [id]
-    );
+    await pool.query(`DELETE FROM items WHERE item_id = $1`, [id]);
 
     res.json({ message: "Item deleted successfully" });
   } catch (err) {
