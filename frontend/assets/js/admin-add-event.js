@@ -1,4 +1,5 @@
 import { injectLayout, setContent } from './app.js';
+import { SJSU_LOCATIONS } from './data/sjsu-location.js';
 
 const BACKEND_URL = 'https://studenthub-backend-rpn0.onrender.com';
 const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -7,6 +8,12 @@ const token = localStorage.getItem('token');
 
 if (!isLoggedIn || !isAdmin) {
   window.location.href = 'login.html';
+}
+
+function getLocationOptions() {
+  return SJSU_LOCATIONS.map(
+    (location) => `<option value="${location}">${location}</option>`
+  ).join('');
 }
 
 function init() {
@@ -42,9 +49,23 @@ function init() {
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="eventLocation">Location</label>
-          <input type="text" id="eventLocation" placeholder="Enter event location" required />
+        <div class="form-row">
+          <div class="form-group">
+            <label for="locationBuilding">Building</label>
+            <select id="locationBuilding" required>
+              <option value="">Select a building</option>
+              ${getLocationOptions()}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="locationRoom">Room No.</label>
+            <input
+              type="text"
+              id="locationRoom"
+              placeholder="Enter room number"
+            />
+          </div>
         </div>
 
         <div class="form-group">
@@ -70,6 +91,8 @@ function init() {
     const eventDate = document.getElementById('eventDate').value;
     const startTime = document.getElementById('startTime').value;
     const endTime = document.getElementById('endTime').value;
+    const building = document.getElementById('locationBuilding').value;
+    const room = document.getElementById('locationRoom').value.trim();
 
     const timeframe = [
       eventDate,
@@ -78,18 +101,16 @@ function init() {
       .filter(Boolean)
       .join(' • ');
 
-    const formData = new FormData();
+    const location = room ? `${building}, Room ${room}` : building;
 
-    formData.append("item_name", document.getElementById('eventTitle').value.trim());
-    formData.append("item_desc", document.getElementById('eventDetails').value.trim());
-    formData.append("is_timed", startTime || endTime ? "true" : "false");
-    formData.append("timeframe", timeframe);
-    formData.append("loc_content", document.getElementById('eventLocation').value.trim());
-
-    const file = document.getElementById("eventImage").files[0];
-    if (file) {
-      formData.append("image", file);
-    }
+    const payload = {
+      item_name: document.getElementById('eventTitle').value.trim(),
+      item_desc: document.getElementById('eventDetails').value.trim(),
+      is_timed: Boolean(startTime || endTime),
+      timeframe,
+      loc_content: location,
+      img_url: document.getElementById('eventImage').value.trim() || null
+    };
 
     try {
       const res = await fetch(`${BACKEND_URL}/items`, {
@@ -108,8 +129,6 @@ function init() {
         throw new Error(data.error || 'Failed to create event');
       }
 
-      console.log('REDIRECTING NOW');
-      //alert('Event published successfully.');
       window.location.href = 'confirmation.html';
     } catch (err) {
       console.error(err);

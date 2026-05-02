@@ -1,4 +1,4 @@
-# CampusHub 🎓
+# StudentHub 🎓
 A web-based platform for San Jose State University students to discover events, academic resources, and deals — all in one place.
 
 ## 👥 Team
@@ -39,13 +39,16 @@ User → Frontend (HTML/CSS/JS) → Backend (Node.js/Express) → Database (Post
 
 ## 🚀 Getting Started
 
-### Prerequisites
-Make sure you have the following installed on your machine:
+The live backend is accessible at:
+https://studenthub-backend-rpn0.onrender.com
+
+### For Local Development
+
+**Prerequisites**
 - [Node.js](https://nodejs.org/) (v18 or higher)
-- [PostgreSQL](https://www.postgresql.org/)
 - Git
 
-### Installation
+**Installation**
 
 1. **Clone the repository**
 ```bash
@@ -59,20 +62,13 @@ cd backend
 npm install
 ```
 
-3. **Set up the database**
-- Create a PostgreSQL database
-- Update the database config in `backend/src/config/db.js` with your credentials
-
-4. **Start the backend server**
+3. **Start the backend server**
 ```bash
-npm start
+npm run dev
 ```
 
-5. **Open the frontend**
-- Open `frontend/HTML/index.html` in your browser, or
-- Navigate to `http://localhost:3000` if the server is running
-
----
+4. **Open the frontend**
+- Open `frontend/HTML/index.html` using VS Code with Live Server extension
 
 ## 📁 Project Structure
 

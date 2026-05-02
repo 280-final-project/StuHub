@@ -17,5 +17,6 @@ export const SJSU_LOCATIONS = [
   'Dudley Moorhead Hall',
   'Industrial Studies Building',
   'Music Building',
-  'Art Building'
+  'Art Building',
+  'Tower Hall Lawn'
 ];

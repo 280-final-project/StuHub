@@ -1,4 +1,5 @@
 import { injectLayout, setContent } from './app.js';
+import { SJSU_LOCATIONS } from './data/sjsu-locations.js';
 
 const BACKEND_URL = 'https://studenthub-backend-rpn0.onrender.com';
 const token = localStorage.getItem('token');
@@ -28,6 +29,23 @@ function splitTimeframe(timeframe = '') {
   };
 }
 
+function splitLocation(location = '') {
+  const match = location.match(/^(.*?)(?:,\s*Room\s*(.*))?$/i);
+
+  return {
+    building: match?.[1]?.trim() || '',
+    room: match?.[2]?.trim() || ''
+  };
+}
+
+function getLocationOptions(selectedBuilding = '') {
+  return SJSU_LOCATIONS.map((location) => `
+    <option value="${location}" ${location === selectedBuilding ? 'selected' : ''}>
+      ${location}
+    </option>
+  `).join('');
+}
+
 async function loadPage() {
   injectLayout('Events');
 
@@ -48,6 +66,7 @@ async function loadPage() {
   }
 
   const { eventDate, startTime, endTime } = splitTimeframe(event.timeframe);
+  const { building, room } = splitLocation(event.location || '');
 
   setContent(`
     <section class="container page-header">
@@ -80,9 +99,24 @@ async function loadPage() {
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="eventLocation">Location</label>
-          <input type="text" id="eventLocation" value="${event.location || ''}" required />
+        <div class="form-row">
+          <div class="form-group">
+            <label for="locationBuilding">Building</label>
+            <select id="locationBuilding" required>
+              <option value="">Select a building</option>
+              ${getLocationOptions(building)}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="locationRoom">Room No.</label>
+            <input
+              type="text"
+              id="locationRoom"
+              placeholder="Enter room number"
+              value="${room || ''}"
+            />
+          </div>
         </div>
 
         <div class="form-group">
@@ -110,12 +144,14 @@ async function loadPage() {
   document.getElementById('editEventForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const eventDate = document.getElementById('eventDate').value;
+    const eventDateValue = document.getElementById('eventDate').value;
     const startTimeValue = document.getElementById('startTime').value;
     const endTimeValue = document.getElementById('endTime').value;
+    const buildingValue = document.getElementById('locationBuilding').value;
+    const roomValue = document.getElementById('locationRoom').value.trim();
 
     const timeframe = [
-      eventDate,
+      eventDateValue,
       startTimeValue && endTimeValue
         ? `${startTimeValue} - ${endTimeValue}`
         : startTimeValue
@@ -123,11 +159,15 @@ async function loadPage() {
       .filter(Boolean)
       .join(' • ');
 
+    const location = roomValue
+      ? `${buildingValue}, Room ${roomValue}`
+      : buildingValue;
+
     const payload = {
       item_name: document.getElementById('eventTitle').value.trim(),
       item_desc: document.getElementById('eventDetails').value.trim(),
       timeframe,
-      loc_content: document.getElementById('eventLocation').value.trim(),
+      loc_content: location,
       img_url: document.getElementById('eventImage').value.trim() || null
     };
 
