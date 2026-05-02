@@ -69,7 +69,6 @@ npm run dev
 
 4. **Open the frontend**
 - Open `frontend/HTML/index.html` using VS Code with Live Server extension
-- Or navigate to `http://127.0.0.1:5500/frontend/HTML/index.html`
 
 ## 📁 Project Structure
 
