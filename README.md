@@ -39,36 +39,10 @@ User → Frontend (HTML/CSS/JS) → Backend (Node.js/Express) → Database (Post
 
 ## 🚀 Getting Started
 
-The live backend is accessible at:
-https://studenthub-backend-rpn0.onrender.com
+CampusHub is live and accessible at:
+**https://hub4campus.netlify.app/**
 
-### For Local Development
-
-**Prerequisites**
-- [Node.js](https://nodejs.org/) (v18 or higher)
-- Git
-
-**Installation**
-
-1. **Clone the repository**
-```bash
-git clone https://github.com/Wayfleh/SJSU-Software-Engineering-Project.git
-cd SJSU-Software-Engineering-Project
-```
-
-2. **Install backend dependencies**
-```bash
-cd backend
-npm install
-```
-
-3. **Start the backend server**
-```bash
-npm run dev
-```
-
-4. **Open the frontend**
-- Open `frontend/HTML/index.html` using VS Code with Live Server extension
+No installation required — just visit the link and sign in with your SJSU Google account!
 
 ## 📁 Project Structure
 
