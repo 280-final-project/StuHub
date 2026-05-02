@@ -10,6 +10,7 @@ const getAllItems = async (req, res) => {
       WHERE i.approval_status = 'approved'
       ORDER BY i.created_at DESC
     `);
+
     res.json(result.rows.map(formatItem));
   } catch (err) {
     console.error(err);
@@ -19,6 +20,7 @@ const getAllItems = async (req, res) => {
 
 const getItemById = async (req, res) => {
   const { id } = req.params;
+
   try {
     const result = await pool.query(
       `SELECT i.*, u.user_name, u.pfp_url
@@ -47,10 +49,11 @@ const createItem = async (req, res) => {
       is_timed,
       timeframe,
       loc_content,
+      img_url: bodyImgUrl
     } = req.body;
 
     const user_id = req.user?.user_id;
-    const img_url = req.file ? req.file.path : null;
+    const img_url = req.file ? req.file.path : (bodyImgUrl || null);
 
     let parsedIsTimed = null;
 
@@ -80,15 +83,11 @@ const createItem = async (req, res) => {
 
     const isAdmin = req.headers["x-admin"] === "true";
 
-    console.log("REQ.BODY:", req.body);
-    console.log("REQ.FILE:", req.file);
-    console.log("REQ.USER:", req.user);
-
     const result = await pool.query(
       `INSERT INTO items
-      (item_name, item_desc, is_timed, timeframe, loc_content, img_url, user_id, approval_status)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-      RETURNING *`,
+       (item_name, item_desc, is_timed, timeframe, loc_content, img_url, user_id, approval_status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+       RETURNING *`,
       [
         item_name,
         item_desc || null,
@@ -117,6 +116,7 @@ const getPendingItems = async (req, res) => {
       WHERE i.approval_status = 'pending'
       ORDER BY i.created_at DESC
     `);
+
     res.json(result.rows.map(formatItem));
   } catch (err) {
     console.error(err);
@@ -163,6 +163,7 @@ const getAllItemsForAdmin = async (req, res) => {
       LEFT JOIN users u ON i.user_id = u.user_id
       ORDER BY i.created_at DESC
     `);
+
     res.json(result.rows.map(formatItem));
   } catch (err) {
     console.error(err);

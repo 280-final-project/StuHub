@@ -86,55 +86,57 @@ function init() {
   const form = document.getElementById('adminEventForm');
 
   form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const eventDate = document.getElementById('eventDate').value;
-    const startTime = document.getElementById('startTime').value;
-    const endTime = document.getElementById('endTime').value;
-    const building = document.getElementById('locationBuilding').value;
-    const room = document.getElementById('locationRoom').value.trim();
+  const eventDate = document.getElementById('eventDate').value;
+  const startTime = document.getElementById('startTime').value;
+  const endTime = document.getElementById('endTime').value;
+  const building = document.getElementById('locationBuilding').value;
+  const room = document.getElementById('locationRoom').value.trim();
+  const imageFile = document.getElementById('eventImageFile')?.files?.[0];
 
-    const timeframe = [
-      eventDate,
-      startTime && endTime ? `${startTime} - ${endTime}` : startTime
-    ]
-      .filter(Boolean)
-      .join(' • ');
+  const timeframe = [
+    eventDate,
+    startTime && endTime ? `${startTime} - ${endTime}` : startTime
+  ]
+    .filter(Boolean)
+    .join(' • ');
 
-    const location = room ? `${building}, Room ${room}` : building;
+  const location = room ? `${building}, Room ${room}` : building;
 
-    const payload = {
-      item_name: document.getElementById('eventTitle').value.trim(),
-      item_desc: document.getElementById('eventDetails').value.trim(),
-      is_timed: Boolean(startTime || endTime),
-      timeframe,
-      loc_content: location,
-      img_url: document.getElementById('eventImage').value.trim() || null
-    };
+  const formData = new FormData();
+  formData.append('item_name', document.getElementById('eventTitle').value.trim());
+  formData.append('item_desc', document.getElementById('eventDetails').value.trim());
+  formData.append('is_timed', Boolean(startTime || endTime));
+  formData.append('timeframe', timeframe);
+  formData.append('loc_content', location);
 
-    try {
-      const res = await fetch(`${BACKEND_URL}/items`, {
-        method: 'POST',
-       headers: {
-          Authorization: `Bearer ${token}`,
-          'x-admin': 'true'
-        },
-        body: formData
-      });
+  if (imageFile) {
+    formData.append('image', imageFile);
+  }
 
-      const data = await res.json();
-      console.log('ADD EVENT RESPONSE:', data);
+  try {
+    const res = await fetch(`${BACKEND_URL}/items`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'x-admin': 'true'
+      },
+      body: formData
+    });
 
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to create event');
-      }
+    const data = await res.json();
 
-      window.location.href = 'confirmation.html';
-    } catch (err) {
-      console.error(err);
-      alert(err.message || 'Failed to create event');
+    if (!res.ok) {
+      throw new Error(data.error || 'Failed to create event');
     }
-  });
+
+    window.location.href = 'confirmation.html';
+  } catch (err) {
+    console.error(err);
+    alert(err.message || 'Failed to create event');
+  }
+});
 }
 
 init();
