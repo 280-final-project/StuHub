@@ -1,5 +1,5 @@
 import { injectLayout, setContent } from './app.js';
-import { SJSU_LOCATIONS } from './data/sjsu-locations.js';
+import { SJSU_LOCATIONS } from './data/sjsu-location.js';
 
 const BACKEND_URL = 'https://studenthub-backend-rpn0.onrender.com';
 const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
