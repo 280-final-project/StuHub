@@ -7,9 +7,62 @@ function buildMapEmbedUrl(location) {
   return `https://www.google.com/maps?q=${encodeURIComponent(location)}&output=embed`;
 }
 
-async function loadPage() {
-  injectLayout('Events');
+function renderSjsuEventFromQuery() {
+  const params = new URLSearchParams(window.location.search);
 
+  const title = params.get('title') || 'SJSU Event';
+  const time = params.get('time') || 'TBA';
+  const location = params.get('location') || 'SJSU Campus';
+  const image = params.get('image') || 'https://via.placeholder.com/800x400';
+  const url = params.get('url') || 'https://events.sjsu.edu/';
+
+  setContent(`
+    <section class="container page-header">
+      <a class="back-link" href="events.html">← Back to Events</a>
+      <div class="detail-hero">
+        <img
+          class="detail-image"
+          src="${image}"
+          alt="${escapeHTML(title)}"
+          onerror="this.src='https://via.placeholder.com/800x400'"
+        >
+
+        <div class="detail-panel">
+          <h1>${escapeHTML(title)}</h1>
+
+          <div class="meta" style="display:flex; align-items:center; gap:10px; margin-top:8px;">
+            <img
+              src="../assets/images/spartans-logo.png"
+              alt="SJSU"
+              style="width:32px; height:32px; border-radius:50%; object-fit:cover;"
+            />
+            <span>Posted by SJSU</span>
+          </div>
+
+          <div class="meta">📅 <span>${escapeHTML(time)}</span></div>
+          <div class="meta">📍 <span>${escapeHTML(location)}</span></div>
+
+          <p style="margin-top:1.25rem;">
+            This event comes from the official SJSU events feed.
+          </p>
+
+          <div style="margin-top:1.25rem;">
+            <a
+              class="btn btn-primary"
+              href="${url}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Official Event
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  `);
+}
+
+async function renderLocalEvent() {
   const params = new URLSearchParams(window.location.search);
   const id = Number(params.get('id') || 1);
 
@@ -60,14 +113,14 @@ async function loadPage() {
               ? `
                 <div style="display:flex; gap:12px; margin-top:1.25rem;">
                   <div class="event-actions">
-  <button id="editBtn" class="btn btn-primary event-btn" type="button">
-    ✏️ Edit Event
-  </button>
+                    <button id="editBtn" class="btn btn-primary event-btn" type="button">
+                      ✏️ Edit Event
+                    </button>
 
-  <button id="deleteBtn" class="btn btn-danger event-btn" type="button">
-    🗑 Remove Event
-  </button>
-</div>
+                    <button id="deleteBtn" class="btn btn-danger event-btn" type="button">
+                      🗑 Remove Event
+                    </button>
+                  </div>
                 </div>
               `
               : ''
@@ -109,27 +162,26 @@ async function loadPage() {
 
       <h3 class="review-form-title">Add a Review</h3>
 
+      <form id="reviewForm" class="review-form">
+        <input
+          type="text"
+          id="reviewHeader"
+          class="review-input"
+          placeholder="Review title"
+          required
+        />
 
-<form id="reviewForm" class="review-form">
-  <input
-    type="text"
-    id="reviewHeader"
-    class="review-input"
-    placeholder="Review title"
-    required
-  />
+        <textarea
+          id="reviewDesc"
+          class="review-textarea"
+          placeholder="Write your review..."
+          required
+        ></textarea>
 
-  <textarea
-    id="reviewDesc"
-    class="review-textarea"
-    placeholder="Write your review..."
-    required
-  ></textarea>
-
-  <button type="submit" class="btn btn-primary review-submit-btn">
-    Submit Review
-  </button>
-</form>
+        <button type="submit" class="btn btn-primary review-submit-btn">
+          Submit Review
+        </button>
+      </form>
     </section>
   `);
 
@@ -143,120 +195,120 @@ async function loadPage() {
   }
 
   if (deleteBtn) {
-  deleteBtn.addEventListener('click', () => {
-    const existingModal = document.getElementById('removeEventModal');
-    if (existingModal) existingModal.remove();
+    deleteBtn.addEventListener('click', () => {
+      const existingModal = document.getElementById('removeEventModal');
+      if (existingModal) existingModal.remove();
 
-    document.body.insertAdjacentHTML('beforeend', `
-      <div
-        id="removeEventModal"
-        style="
-          position: fixed;
-          inset: 0;
-          background: rgba(0, 0, 0, 0.45);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 9999;
-        "
-      >
+      document.body.insertAdjacentHTML('beforeend', `
         <div
+          id="removeEventModal"
           style="
-            background: white;
-            width: min(90%, 420px);
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
           "
         >
-          <h2 style="margin: 0 0 10px 0;">Remove Event</h2>
-          <p style="margin: 0 0 18px 0; line-height: 1.5;">
-            Are you sure you want to remove this event? It will be marked as rejected and disappear from public events.
-          </p>
+          <div
+            style="
+              background: white;
+              width: min(90%, 420px);
+              border-radius: 16px;
+              padding: 24px;
+              box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            "
+          >
+            <h2 style="margin: 0 0 10px 0;">Remove Event</h2>
+            <p style="margin: 0 0 18px 0; line-height: 1.5;">
+              Are you sure you want to remove this event? It will be marked as rejected and disappear from public events.
+            </p>
 
-          <div style="display: flex; justify-content: flex-end; gap: 12px;">
-            <button
-              id="cancelRemoveEventBtn"
-              type="button"
-              style="
-                padding: 10px 16px;
-                border: 1px solid #d1d5db;
-                border-radius: 10px;
-                background: white;
-                cursor: pointer;
-              "
-            >
-              Cancel
-            </button>
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+              <button
+                id="cancelRemoveEventBtn"
+                type="button"
+                style="
+                  padding: 10px 16px;
+                  border: 1px solid #d1d5db;
+                  border-radius: 10px;
+                  background: white;
+                  cursor: pointer;
+                "
+              >
+                Cancel
+              </button>
 
-            <button
-              id="confirmRemoveEventBtn"
-              type="button"
-              style="
-                padding: 10px 16px;
-                border: none;
-                border-radius: 10px;
-                background: #dc2626;
-                color: white;
-                cursor: pointer;
-                font-weight: 600;
-              "
-            >
-              Remove
-            </button>
+              <button
+                id="confirmRemoveEventBtn"
+                type="button"
+                style="
+                  padding: 10px 16px;
+                  border: none;
+                  border-radius: 10px;
+                  background: #dc2626;
+                  color: white;
+                  cursor: pointer;
+                  font-weight: 600;
+                "
+              >
+                Remove
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    `);
+      `);
 
-    const modal = document.getElementById('removeEventModal');
-    const cancelBtn = document.getElementById('cancelRemoveEventBtn');
-    const confirmBtn = document.getElementById('confirmRemoveEventBtn');
+      const modal = document.getElementById('removeEventModal');
+      const cancelBtn = document.getElementById('cancelRemoveEventBtn');
+      const confirmBtn = document.getElementById('confirmRemoveEventBtn');
 
-    const closeModal = () => {
-      modal?.remove();
-    };
+      const closeModal = () => {
+        modal?.remove();
+      };
 
-    modal?.addEventListener('click', (e) => {
-      if (e.target === modal) closeModal();
-    });
+      modal?.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
 
-    cancelBtn?.addEventListener('click', closeModal);
+      cancelBtn?.addEventListener('click', closeModal);
 
-    confirmBtn?.addEventListener('click', async () => {
-      const token = localStorage.getItem('token');
+      confirmBtn?.addEventListener('click', async () => {
+        const token = localStorage.getItem('token');
 
-      if (!token) {
-        window.location.href = 'login.html';
-        return;
-      }
-
-      try {
-        const res = await fetch(`${BACKEND_URL}/items/${id}/approval`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-            'x-admin': isAdmin ? 'true' : 'false'
-          },
-          body: JSON.stringify({
-            approval_status: 'rejected'
-          })
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.error || 'Failed to remove event');
+        if (!token) {
+          window.location.href = 'login.html';
+          return;
         }
 
-        window.location.href = 'events.html';
-      } catch (err) {
-        console.error(err);
-      }
+        try {
+          const res = await fetch(`${BACKEND_URL}/items/${id}/approval`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+              'x-admin': isAdmin ? 'true' : 'false'
+            },
+            body: JSON.stringify({
+              approval_status: 'rejected'
+            })
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            throw new Error(data.error || 'Failed to remove event');
+          }
+
+          window.location.href = 'events.html';
+        } catch (err) {
+          console.error(err);
+        }
+      });
     });
-  });
-}
+  }
 
   const form = document.getElementById('reviewForm');
 
@@ -296,6 +348,20 @@ async function loadPage() {
       console.error(err);
     }
   });
+}
+
+async function loadPage() {
+  injectLayout('Events');
+
+  const params = new URLSearchParams(window.location.search);
+  const source = params.get('source');
+
+  if (source === 'sjsu') {
+    renderSjsuEventFromQuery();
+    return;
+  }
+
+  await renderLocalEvent();
 }
 
 loadPage().catch(console.error);
