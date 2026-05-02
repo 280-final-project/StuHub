@@ -151,93 +151,96 @@ if (themeToggleBtn) {
   const searchInput = document.getElementById('site-search');
   const suggestionsBox = document.getElementById('search-suggestions');
 
+  function getSearchScore(item, query) {
+  const label = item.label.toLowerCase();
+  const type = item.type.toLowerCase();
+  const keywords = (item.keywords || []).join(' ').toLowerCase();
+
+  let score = 0;
+
+  if (label === query) score += 100;
+  if (label.startsWith(query)) score += 60;
+  if (label.includes(query)) score += 40;
+
+  if (keywords.includes(query)) score += 20;
+  if (type.includes(query)) score += 10;
+
+  const queryParts = query.split(' ').filter(Boolean);
+  queryParts.forEach((part) => {
+    if (label.startsWith(part)) score += 20;
+    else if (label.includes(part)) score += 10;
+
+    if (keywords.includes(part)) score += 6;
+  });
+
+  if (item.type === 'Page') score += 3;
+
+  return score;
+}
+
   const searchItems = [
-    { label: 'Home', url: 'home.html', type: 'Page' },
-    { label: 'Events', url: 'events.html', type: 'Page' },
-    { label: 'Resources', url: 'resources.html', type: 'Page' },
-    { label: 'Deals', url: 'deals.html', type: 'Page' },
-    { label: 'Add Event', url: 'add-event.html', type: 'Page' },
-    { label: 'About', url: 'about.html', type: 'Page' },
+  { label: 'Home', url: 'home.html', type: 'Page', keywords: ['landing', 'main', 'dashboard', 'campushub'] },
+  { label: 'Events', url: 'events.html', type: 'Page', keywords: ['activities', 'campus events', 'upcoming'] },
+  { label: 'Resources', url: 'resources.html', type: 'Page', keywords: ['student support', 'services', 'help'] },
+  { label: 'Deals', url: 'deals.html', type: 'Page', keywords: ['discounts', 'offers', 'student deals'] },
+  { label: 'Add Event', url: 'add-event.html', type: 'Page', keywords: ['submit event', 'create event', 'post event'] },
+  { label: 'About', url: 'about.html', type: 'Page', keywords: ['team', 'contact', 'about us'] },
 
-    { label: 'Tech Career Fair 2026', url: 'event.html?id=1', type: 'Event' },
-    { label: 'Annual Spring Festival', url: 'event.html?id=2', type: 'Event' },
-    { label: 'Guest Lecture: AI & Future', url: 'event.html?id=3', type: 'Event' },
+  { label: 'Tech Career Fair 2026', url: 'event.html?id=1', type: 'Event', keywords: ['career', 'fair', 'jobs', 'internship', 'recruiters'] },
+  { label: 'Annual Spring Festival', url: 'event.html?id=2', type: 'Event', keywords: ['festival', 'spring', 'community', 'celebration'] },
+  { label: 'Guest Lecture: AI & Future', url: 'event.html?id=3', type: 'Event', keywords: ['ai', 'lecture', 'future', 'technology', 'academic'] },
 
-    { label: 'Study Materials', url: 'resources.html', type: 'Resource' },
-    { label: 'Tutoring Services', url: 'resources.html', type: 'Resource' },
-    { label: 'Academic Calendar', url: 'resources.html', type: 'Resource' },
+  { label: 'Career Center', url: 'resources.html', type: 'Resource', keywords: ['resume', 'interview', 'jobs', 'career support'] },
+  { label: 'Student Wellness Center', url: 'resources.html', type: 'Resource', keywords: ['health', 'mental health', 'medical', 'wellness'] },
+  { label: 'Spartan Food Pantry', url: 'resources.html', type: 'Resource', keywords: ['food', 'groceries', 'basic needs', 'pantry'] },
+  { label: 'Peer Connections', url: 'resources.html', type: 'Resource', keywords: ['tutoring', 'mentoring', 'academic support'] },
+  { label: 'MLK Library', url: 'resources.html', type: 'Resource', keywords: ['library', 'study', 'books', 'research'] },
 
-    { label: 'Spotify Premium Student', url: 'deals.html', type: 'Deal' },
-    { label: 'Amazon Prime Student', url: 'deals.html', type: 'Deal' },
-    { label: 'Campus Bookstore', url: 'deals.html', type: 'Deal' }
-  ];
+  { label: 'Spotify Premium Student', url: 'deals.html', type: 'Deal', keywords: ['music', 'spotify', 'premium', 'discount'] },
+  { label: 'Amazon Prime Student', url: 'deals.html', type: 'Deal', keywords: ['amazon', 'prime', 'shopping', 'delivery'] },
+  { label: 'Campus Bookstore Offers', url: 'deals.html', type: 'Deal', keywords: ['bookstore', 'textbooks', 'supplies', 'discount'] }
+];
 
   if (searchInput && suggestionsBox) {
     searchInput.addEventListener('input', () => {
-      const query = searchInput.value.trim().toLowerCase();
+  const query = searchInput.value.trim().toLowerCase();
 
-      if (query === '') {
-        suggestionsBox.innerHTML = '';
-        suggestionsBox.classList.remove('show');
-        return;
-      }
+  if (query === '') {
+    suggestionsBox.innerHTML = '';
+    suggestionsBox.classList.remove('show');
+    return;
+  }
 
-      let matches = searchItems.filter(item =>
-        item.label.toLowerCase().includes(query)
-      );
+  let matches = searchItems
+    .map((item) => ({
+      ...item,
+      score: getSearchScore(item, query)
+    }))
+    .filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 7);
 
-      matches.sort((a, b) => {
-        if (a.label.toLowerCase() === query) return -1;
-        if (b.label.toLowerCase() === query) return 1;
+  if (matches.length === 0) {
+    suggestionsBox.innerHTML = `
+      <div class="suggestion-item">
+        <div class="suggestion-title">No results found</div>
+      </div>
+    `;
+    suggestionsBox.classList.add('show');
+    return;
+  }
 
-        if (a.label.toLowerCase().startsWith(query)) return -1;
-        if (b.label.toLowerCase().startsWith(query)) return 1;
+  suggestionsBox.innerHTML = matches
+    .map((item) => `
+      <a href="${item.url}" class="suggestion-item">
+        <div class="suggestion-title">${item.label}</div>
+        <div class="suggestion-type">${item.type}</div>
+      </a>
+    `)
+    .join('');
 
-        if (a.type === 'Page' && b.type !== 'Page') return -1;
-        if (b.type === 'Page' && a.type !== 'Page') return 1;
-
-        if (a.label === 'Add Event') return 1;
-        if (b.label === 'Add Event') return -1;
-
-        return 0;
-      });
-
-      matches = matches.slice(0, 6);
-
-      if (matches.length === 0) {
-        suggestionsBox.innerHTML = `
-          <div class="suggestion-item">
-            <div class="suggestion-title">No results found</div>
-          </div>
-        `;
-        suggestionsBox.classList.add('show');
-        return;
-      }
-
-      suggestionsBox.innerHTML = matches
-        .map((item) => `
-          <a href="${item.url}" class="suggestion-item">
-            <div class="suggestion-title">${item.label}</div>
-            <div class="suggestion-type">${item.type}</div>
-          </a>
-        `)
-        .join('');
-
-      suggestionsBox.classList.add('show');
-    });
-
-    searchInput.addEventListener('focus', () => {
-      if (searchInput.value.trim() !== '') {
-        suggestionsBox.classList.add('show');
-      }
-    });
-
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('.search-wrap')) {
-        suggestionsBox.innerHTML = '';
-        suggestionsBox.classList.remove('show');
-      }
-    });
+  suggestionsBox.classList.add('show');
+});
   }
 }
 
