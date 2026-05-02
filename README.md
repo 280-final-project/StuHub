@@ -42,7 +42,7 @@ User → Frontend (HTML/CSS/JS) → Backend (Node.js/Express) → Database (Post
 CampusHub is live and accessible at:
 **https://hub4campus.netlify.app/**
 
-No installation required — just visit the link and sign in with your SJSU Google account!
+No installation required, just visit the link and sign in with your SJSU Google account!
 
 ## 📁 Project Structure
 
