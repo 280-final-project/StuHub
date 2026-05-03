@@ -2,10 +2,11 @@
 A web-based platform for San Jose State University students to discover events, academic resources, and deals — all in one place.
 
 ## 👥 Team
-- Arvin Andiappan
-- Prabhjot Singh
-- Rafael Caculba
-- Ved Dabhi
+- Nishan Paudel
+- Ashish Bhusal
+- Janhvi Kedia
+- Harshita Gupta
+- Indraneel Sarode
 
 **Course:** CMPE 131 - Software Engineering I  
 **Professor:** Ishie Eswar  
