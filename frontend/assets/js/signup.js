@@ -37,6 +37,54 @@ function handleGoogleResponse(response) {
     });
 }
 
+async function handleEmailSignup(e) {
+  e.preventDefault();
+
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  const errorEl = document.getElementById('signup-error');
+
+  errorEl.style.display = 'none';
+  errorEl.textContent = '';
+
+  if (!name || !email || !password) {
+    errorEl.textContent = 'All fields are required.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  if (password.length < 6) {
+    errorEl.textContent = 'Password must be at least 6 characters.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/auth/signup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_name: name, email, password }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || 'Sign up failed');
+    }
+
+    localStorage.setItem('isLoggedIn', 'true');
+    if (data.token) localStorage.setItem('token', data.token);
+    if (data.user) localStorage.setItem('user', JSON.stringify(data.user));
+
+    window.location.href = 'home.html';
+  } catch (err) {
+    console.error(err);
+    errorEl.textContent = err.message || 'Sign up failed';
+    errorEl.style.display = 'block';
+  }
+}
+
 function initGoogleButton() {
   const googleBtnWrap = document.getElementById('google-signup-button');
   if (!window.google || !googleBtnWrap) return;
@@ -72,13 +120,37 @@ function init() {
 
         <div class="auth-mock-card">
           <div class="auth-avatar-circle auth-avatar-combo">
-  <span class="avatar-user">👤</span>
-  <span class="avatar-plus">＋</span>
-</div>
-
+            <span class="avatar-user">👤</span>
+            <span class="avatar-plus">＋</span>
+          </div>
 
           <h1 class="auth-big-title">Create Your Account</h1>
-          <p class="auth-big-subtitle">Join CampusHub with your SJSU Google account</p>
+          <p class="auth-big-subtitle">Join CampusHub to explore campus events and resources</p>
+
+          <form id="signup-form" style="width: 100%;">
+            <div class="form-group">
+              <label for="signup-name">Full Name</label>
+              <input type="text" id="signup-name" placeholder="Enter your full name" required />
+            </div>
+            <div class="form-group">
+              <label for="signup-email">Email</label>
+              <input type="email" id="signup-email" placeholder="Enter your email" required />
+            </div>
+            <div class="form-group">
+              <label for="signup-password">Password</label>
+              <div class="password-wrapper">
+                <input type="password" id="signup-password" placeholder="At least 6 characters" required />
+              </div>
+            </div>
+            <p id="signup-error" class="error-text"></p>
+            <button type="submit" class="btn btn-primary full-width" style="margin-bottom: 1.5rem;">Sign Up</button>
+          </form>
+
+          <div class="auth-divider">
+            <span></span>
+            <p>OR</p>
+            <span></span>
+          </div>
 
           <div id="google-signup-button" class="google-auth-wrap auth-google-big"></div>
 
@@ -103,6 +175,7 @@ function init() {
     </div>
   `);
 
+  document.getElementById('signup-form')?.addEventListener('submit', handleEmailSignup);
   setTimeout(initGoogleButton, 200);
 }
 
