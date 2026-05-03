@@ -8,9 +8,6 @@ A web-based platform for San Jose State University students to discover events, 
 - Harshita Gupta
 - Indraneel Sarode
 
-**Course:** CMPE 131 - Software Engineering I  
-**Professor:** Ishie Eswar  
-**University:** San Jose State University
 
 ---
 
