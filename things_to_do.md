@@ -1,6 +1,9 @@
 # Things To Do - StudentHub Project
 
+> **Last updated:** 2026-05-04 (after Sprint 5 — AI features and polish push). Items shipped during that sprint are checked off below; see [Recently Shipped](#-recently-shipped-sprint-5) for a roll-up.
+
 ## 📋 Table of Contents
+- [Recently Shipped (Sprint 5)](#-recently-shipped-sprint-5)
 - [Backend - Missing/Incomplete](#backend---missingincomplete)
 - [Frontend - Missing/Incomplete](#frontend---missingincomplete)
 - [Quick Summary Table](#quick-summary-table)
@@ -8,20 +11,42 @@
 
 ---
 
+## 🚀 Recently Shipped (Sprint 5)
+
+### AI features (new in Sprint 5)
+- ✅ **AI Summary on events** — Gemini `gemini-2.5-flash` generates a one-sentence summary on item create/update; rendered as a `✨ AI summary` badge on event cards and detail pages. See [`backend/src/utils/summarizeText.js`](backend/src/utils/summarizeText.js).
+- ✅ **AI Chat Assistant** — floating "✨ Ask AI" widget mounted globally; cross-type Q&A across events, deals, and resources; returns typed `Event #N` / `Deal #N` / `Resource #N` chip links. See [`backend/src/controllers/aiController.js`](backend/src/controllers/aiController.js) and [`frontend-next/components/ai/ChatWidget.jsx`](frontend-next/components/ai/ChatWidget.jsx).
+
+### Schema (new in Sprint 5)
+- ✅ Added `items.ai_summary VARCHAR(280)` column.
+- ✅ Added `items.item_type` (enum) + `items.metadata JSONB` so events / deals / resources live in one table.
+- ✅ Added `reviews.rating SMALLINT` (1-5, CHECK-constrained).
+- ✅ Added `items.approval_status` to live DB (was missing — caused `GET /items` to 500).
+- ✅ Migrations tracked in [`database/migrations/`](database/migrations).
+
+### From the original list
+- ✅ **Delete Reviews** — `DELETE /reviews/:id`, owner or admin only.
+- ✅ **Search/Filter Events** — `GET /items?type=&q=&from=&to=&location=` (all stack).
+- ✅ **Rate Limiting** — applied to `POST /ai/chat` (10 req/hr/IP). Still pending on signup/login/item-create.
+- ✅ **User Profile Endpoints** — `GET /users/me`, `PATCH /users/me`, `GET /users/:id`.
+- ✅ **Review Components** — `StarRating`, `ReviewCard`, `ReviewList`, `ReviewForm` with star ratings, aggregate average, owner/admin delete.
+- ✅ **Connect Search/Filter to Backend** — debounced search input, date range, location dropdown on `/events`.
+- ✅ **Deals Page Improvements** — `/deals` now fetches `GET /items?type=deal`, renders rich modal from `metadata`.
+- ✅ **Resources Page Improvements** — `/resources` same pattern with `?type=resource`.
+- ✅ **Toast Notification System** — `sonner` mounted globally; replaced 10 `alert()` calls.
+- ✅ **Skeleton Loaders** — `Skeleton`, `CardSkeleton`, `ResourceCardSkeleton` used on `/events`, `/deals`, `/resources`, `/profile`.
+- ✅ **User Profile Page** — `/profile` with avatar, inline edit-in-place name and bio, "My Events" with status pills, "My Reviews" with stars.
+- ✅ **Demo seed data** — 8 events + 10 deals + 10 resources via [`backend/scripts/seed_demo_data.js`](backend/scripts/seed_demo_data.js).
+
+---
+
 ## 🔧 Backend - Missing/Incomplete
 
 ### High Priority
 
-- [ ] **Delete Reviews** - Create endpoint for users to delete their own reviews
-  - Route: `DELETE /reviews/:id`
-  - Should only allow owner or admin to delete
-  - Controller: Add `deleteReview` function to `reviewsController.js`
+- [x] **Delete Reviews** — `DELETE /reviews/:id` with owner-or-admin check.
 
-- [ ] **Search/Filter Events** - Create endpoint to filter events by criteria
-  - Route: `GET /items?category=&date=&location=`
-  - Controller: Add filters to `getAllItems` function
-  - Support filtering by: date, location, category, approval status
-  - Should paginate results
+- [x] **Search/Filter Events** — `GET /items` accepts `type`, `q`, `from`, `to`, `location` query params (all optional, stack with each other).
 
 - [ ] **Pagination** - Add pagination to events list
   - Add `limit` and `offset` query parameters
@@ -32,6 +57,7 @@
   - Create specific error types (ValidationError, NotFoundError, UnauthorizedError)
   - Return meaningful error messages
   - Include error codes for frontend to handle
+  - *Note:* The AI chat handler now distinguishes 429 (rate limit) from 502 (other Gemini failures), but this pattern hasn't been generalized.
 
 ### Medium Priority
 
@@ -39,22 +65,18 @@
   - Use library like `joi` or `zod`
   - Validate: `item_name`, `item_desc`, `email`, `password`, etc.
   - Return 400 with validation errors
+  - *Note:* Per-controller hand-written validation exists for `item_type`, `rating`, `message length`, and JSON `metadata` parsing — but no centralized library yet.
 
-- [ ] **Rate Limiting** - Prevent spam/abuse
-  - Limit signup/login attempts
-  - Limit event creation per user
-  - Add `express-rate-limit` middleware
+- [x] **Rate Limiting** *(partial)* — `express-rate-limit` is installed and applied to `POST /ai/chat` (10 req/hr/IP). **Still pending:**
+  - Signup/login attempts
+  - Event creation per user
 
-- [ ] **Admin Routes Namespace** - Organize admin endpoints under `/api/admin/*`
+- [ ] **Admin Routes Namespace** - Organize admin endpoints under `/admin/*`
   - Move `/items/admin/all` to `/admin/items`
   - Move `/items/:id/approval` to `/admin/items/:id/approval`
   - Update routes file
 
-- [ ] **User Profile Endpoints** - Allow users to view/update their profile
-  - `GET /users/me` - Get current user profile
-  - `PATCH /users/me` - Update profile (name, bio, avatar)
-  - `GET /users/:id` - Get public user profile
-  - Create user profile controller
+- [x] **User Profile Endpoints** — `GET /users/me` (with their items + reviews), `PATCH /users/me`, `GET /users/:id`.
 
 ### Low Priority
 
@@ -62,20 +84,20 @@
   - Send verification email on signup
   - Create verification token table
   - Verify token on account activation
+  - *Note:* Probably skippable since Google OAuth is the primary sign-in path and that handles identity verification.
 
 - [ ] **Tests** - Add unit and integration tests
   - Test auth endpoints
   - Test item CRUD operations
   - Test reviews functionality
+  - Test AI controllers (mock Gemini)
   - Use Jest or Mocha
 
 - [ ] **Logging** - Add proper logging system
   - Log API requests, errors, important events
   - Use Winston or Bunyan
 
-- [ ] **API Documentation** - Document all endpoints
-  - Create Swagger/OpenAPI spec
-  - Or maintain detailed README
+- [ ] **API Documentation** *(partial)* — README now has a complete endpoint table with auth/admin gating notes. Still missing: a proper Swagger/OpenAPI spec.
 
 ---
 
@@ -83,50 +105,26 @@
 
 ### High Priority
 
-- [ ] **Review Components** - Create reusable review UI components
-  - `components/reviews/ReviewCard.jsx` - Display single review
-  - `components/reviews/ReviewList.jsx` - Display list of reviews
-  - `components/reviews/ReviewForm.jsx` - Form to add new review
-  - Show rating/stars (add star rating component)
-  - Show user avatar, name, date
+- [x] **Review Components** — `StarRating`, `ReviewCard`, `ReviewList`, `ReviewForm` in [`components/reviews/`](frontend-next/components/reviews/). Show user avatar, name, formatted date, star rating, aggregate average above the list, and owner/admin delete.
 
-- [ ] **Event Card Component** - Reusable event display card
-  - `components/events/EventCard.jsx` - Used in event list/grid
-  - Include: image, title, location, time, user info
-  - Add hover effects
-  - Include AI summary badge (if implemented)
+- [ ] **Event Card Component** *(deferred)* — events still render inline in `app/events/page.js` and `app/events/[id]/page.js`. Refactoring into a reusable `<EventCard />` would be nice for consistency but isn't blocking. The `SummaryBadge` and review components were extracted as the more impactful pieces.
 
-- [ ] **Event List/Grid Component** - Container for displaying events
-  - `components/events/EventsList.jsx`
-  - Display as grid or list
-  - Handle empty state
-  - Loading skeleton
+- [ ] **Event List/Grid Component** *(deferred)* — same reasoning as above.
 
-- [ ] **Connect Search/Filter to Backend** - Make search functional
-  - Build query params from filter selections
-  - Call backend `/items?category=&date=&location=`
-  - Update navbar search to filter results
+- [x] **Connect Search/Filter to Backend** — `/events` builds a query string from filter state with `useMemo` and re-fetches on change.
 
 ### Medium Priority
 
-- [ ] **Event Filter Sidebar** - Add filters for events page
-  - Filter by date range
-  - Filter by location (building)
-  - Filter by category (if added to backend)
-  - Show filter counts
-  - Component: `components/events/EventFilters.jsx`
+- [x] **Event Filter Bar** *(adapted)* — implemented as a horizontal filter bar at the top of `/events` instead of a sidebar. Includes:
+  - Debounced free-text search
+  - From/to date range
+  - Location dropdown
+  - Clear button when any filter is active
+  - *Note:* Sidebar layout was rejected because the page is content-narrow and a top bar is cleaner.
 
-- [ ] **Deals Page Improvements** - Move from hardcoded to dynamic
-  - Create Deals controller/routes in backend
-  - Create `components/deals/DealCard.jsx`
-  - Create `components/deals/DealsList.jsx`
-  - Fetch from API instead of hardcoded
+- [x] **Deals Page Improvements** — `/deals` fetches `GET /items?type=deal`, reads icon/badges/full-description/details from `metadata` JSONB. The static array of ~45 deals was retired.
 
-- [ ] **Resources Page Improvements** - Move from hardcoded to dynamic
-  - Create Resources controller/routes in backend
-  - Create `components/resources/ResourceCard.jsx`
-  - Create `components/resources/ResourcesList.jsx`
-  - Fetch from API instead of hardcoded
+- [x] **Resources Page Improvements** — `/resources` same pattern with `?type=resource`.
 
 - [ ] **Error Boundaries** - Handle errors gracefully
   - Create `components/ui/ErrorBoundary.jsx`
@@ -134,26 +132,17 @@
   - Display user-friendly error messages
   - Add fallback UI
 
-- [ ] **Toast/Notification System** - Display notifications
-  - Install library: `sonner` or `react-hot-toast`
-  - Create notification context or use library
-  - Show success/error/info messages
-  - Auto-dismiss after 3-5 seconds
+- [x] **Toast/Notification System** — `sonner` mounted in `ClientProviders`; replaced all `alert()` calls; added success toasts at create/edit/delete/review/admin-moderate.
 
-- [ ] **Skeleton Loaders** - Better loading states
-  - Create `components/ui/SkeletonLoader.jsx`
-  - Create skeleton versions:
-    - `EventCardSkeleton`
-    - `ReviewCardSkeleton`
-    - `ReviewListSkeleton`
+- [x] **Skeleton Loaders** — `Skeleton`, `CardSkeleton`, `ResourceCardSkeleton`, `CardGridSkeleton` in [`components/ui/Skeleton.jsx`](frontend-next/components/ui/Skeleton.jsx). Used on `/events`, `/deals`, `/resources`, and `/profile`.
 
 ### Low Priority
 
-- [ ] **Event Detail Page Enhancements**
-  - Add related events section
-  - Add share event functionality (social media)
-  - Add to calendar feature
-  - Show reviews count/average rating
+- [ ] **Event Detail Page Enhancements** *(partial)*
+  - [x] Reviews now show count and average rating
+  - [ ] Related events section
+  - [ ] Share event functionality (social media)
+  - [ ] Add to calendar feature
 
 - [ ] **Responsive Design** - Ensure mobile-friendly
   - Test on mobile devices
@@ -161,25 +150,19 @@
   - Mobile navigation menu
   - Touch-friendly buttons
 
-- [ ] **Dark Mode** - Implement ThemeContext fully
-  - ThemeContext exists but may be incomplete
-  - Create theme toggle button
-  - Persist theme preference in localStorage
-  - Style all components for dark mode
+- [ ] **Dark Mode** *(partial)* - Implement ThemeContext fully
+  - Theme toggle button exists in the navbar (`🌙` / `☀️`)
+  - CSS variables defined for `html[data-theme="dark"]` in `globals.css`
+  - **Still pending:** verify every component reads from theme variables (some have hardcoded colors); confirm persistence; test all surfaces in dark mode
 
-- [ ] **User Profile Page** - Display and edit user profile
-  - `/profile` or `/users/me` page
-  - Show user info, created events, reviews
-  - Edit profile form
-  - Change password option
+- [x] **User Profile Page** — `/profile` page with avatar/initials, inline edit name and bio, "My Events" grid (any approval status, with status pills), "My Reviews" list with stars. Navbar link added for logged-in users.
 
-- [ ] **Admin Dashboard Enhancements**
-  - Add statistics/dashboard cards
-    - Total events created
-    - Pending approvals count
-    - Total users
-  - Event analytics
-  - User management
+- [ ] **Admin Dashboard Enhancements** *(partial)*
+  - [x] Type chip (event/deal/resource) on the manage page
+  - [x] Fixed broken approve/reject/delete buttons that were reading `event._id` (now `event.id`)
+  - [ ] Statistics/dashboard cards (total events, pending count, total users)
+  - [ ] Event analytics
+  - [ ] User management
 
 ---
 
@@ -189,91 +172,83 @@
 |---------|---------|----------|--------|
 | **Authentication** | ✓ | ✓ | Complete |
 | **Events (CRUD)** | ✓ | ✓ | Complete |
-| **Reviews (CR)** | ✓ | Partial | Partial |
-| **Delete Reviews** | ✗ | - | Missing |
+| **Reviews (CR)** | ✓ | ✓ | Complete |
+| **Delete Reviews** | ✓ | ✓ | Complete |
+| **Star Ratings** | ✓ | ✓ | Complete |
 | **Event Approval** | ✓ | ✓ | Complete |
 | **Image Upload** | ✓ | ✓ | Complete |
-| **Admin Dashboard** | ✓ | ✓ | Complete |
-| **Search/Filter Events** | ✗ | ✗ | Missing |
-| **Pagination** | ✗ | - | Missing |
+| **Admin Dashboard** | ✓ | ✓ (basic) | Partial — missing analytics |
+| **Search/Filter Events** | ✓ | ✓ | Complete |
+| **Typed Items (event/deal/resource)** | ✓ | ✓ | Complete |
+| **AI Summary** | ✓ | ✓ | Complete |
+| **AI Chat Assistant** | ✓ | ✓ | Complete |
+| **Deals (from DB)** | ✓ | ✓ | Complete |
+| **Resources (from DB)** | ✓ | ✓ | Complete |
+| **User Profiles** | ✓ | ✓ | Complete |
+| **Toast Notifications** | – | ✓ | Complete |
+| **Skeleton Loaders** | – | ✓ | Complete |
+| **Rate Limiting** | Partial (chat only) | – | Partial |
+| **Pagination** | ✗ | ✗ | Missing |
 | **Error Handling** | Partial | Partial | Incomplete |
-| **Input Validation** | ✗ | - | Missing |
-| **Rate Limiting** | ✗ | - | Missing |
-| **Deals (from DB)** | ✗ | Hardcoded | Needs DB |
-| **Resources (from DB)** | ✗ | Hardcoded | Needs DB |
-| **User Profiles** | ✗ | - | Missing |
-| **Review Components** | - | ✗ | Missing |
-| **Event Card Component** | - | ✗ | Missing |
-| **Notifications/Toasts** | - | ✗ | Missing |
-| **Error Boundaries** | - | ✗ | Missing |
-| **Dark Mode** | Partial | Partial | Incomplete |
+| **Input Validation** | Partial (hand-written) | – | Incomplete |
+| **Error Boundaries** | – | ✗ | Missing |
+| **Dark Mode** | – | Partial | Incomplete |
+| **Responsive Design** | – | Not verified | Unknown |
 | **Tests** | ✗ | ✗ | Missing |
+| **API Docs** | Partial (README) | – | Partial |
+| **Logging** | ✗ | – | Missing |
 
 ---
 
 ## 🎯 Recommended Priority Order
 
-### Phase 1: Improve Core Features (Week 1-2)
+> Phases 1-3 of the original roadmap have largely shipped. What follows is the post-Sprint-5 view.
+
+### Phase A — Production-readiness hygiene
 
 **Backend:**
-1. [ ] Delete review endpoint
-2. [ ] Better error handling
-3. [ ] Input validation
+1. [ ] Pagination on `/items` (matters once the dataset grows past a few dozen)
+2. [ ] Better error handling — typed errors, structured responses
+3. [ ] Rate limiting on signup/login/item-create (chat is already covered)
+4. [ ] Centralized input validation (joi or zod)
 
 **Frontend:**
-1. [ ] Review components (card, form, list)
-2. [ ] Event card component
-3. [ ] Error boundaries
+1. [ ] Error boundaries around major page sections
+2. [ ] Dark mode coverage check across all components
 
-### Phase 2: Add Search & Filtering (Week 3)
+### Phase B — Polish
+
+**Frontend:**
+1. [ ] Event detail extras (related events, share, add-to-calendar)
+2. [ ] Responsive design pass (mobile-friendly verification)
+3. [ ] Refactor inline event JSX into `<EventCard />` if it gets reused elsewhere
 
 **Backend:**
-1. [ ] Search/filter events API
-2. [ ] Pagination
+1. [ ] Admin routes namespace under `/admin/*`
 
-**Frontend:**
-1. [ ] Connect search/filter to backend
-2. [ ] Event filter sidebar
-3. [ ] Skeleton loaders
-
-### Phase 3: Dynamic Content (Week 4)
+### Phase C — Confidence
 
 **Backend:**
-1. [ ] Deals endpoints
-2. [ ] Resources endpoints
+1. [ ] Tests (auth + items + reviews + AI controllers with mocked Gemini)
+2. [ ] Structured logging (Winston / Bunyan)
+3. [ ] OpenAPI/Swagger spec from the README endpoint table
 
 **Frontend:**
-1. [ ] Deals page improvements
-2. [ ] Resources page improvements
-3. [ ] Toast notification system
+1. [ ] Component tests (React Testing Library) for review components, ChatWidget, filter bar
+2. [ ] Admin dashboard analytics cards
 
-### Phase 4: Polish & Admin Features (Week 5)
+### Phase D — Deferred
 
-**Backend:**
-1. [ ] Rate limiting
-2. [ ] User profile endpoints
-3. [ ] Admin routes namespace
-
-**Frontend:**
-1. [ ] Admin dashboard enhancements
-2. [ ] User profile page
-3. [ ] Responsive design refinement
-
-### Phase 5: Nice-to-Have (Future)
-
-- Email verification
-- Dark mode completion
-- Advanced admin analytics
-- Unit tests
-- API documentation
+- Email verification (Google OAuth handles identity for the primary sign-in path)
+- Streaming responses on AI chat
+- Caching popular AI chat queries
 
 ---
 
 ## 📝 Notes
 
-- Start with Phase 1 items as they improve existing features
-- Each phase builds on the previous one
-- Frontend features can be built in parallel while backend is being developed
-- Consider using component libraries (shadcn/ui, Material-UI) for consistency
-- Add TypeScript for better type safety (optional but recommended)
-
+- The AI features doc that drove Sprint 5 is at [`AI_FEATURES_PLAN.md`](AI_FEATURES_PLAN.md) (historical — the implementation diverged in places, see commit history on `main`).
+- Each phase builds on the previous; pick from one phase at a time rather than cherry-picking across.
+- Frontend features can be built in parallel with backend work.
+- Migrations should land as `.sql` files under [`database/migrations/`](database/migrations) so the team has a clear apply order.
+- Add TypeScript on the frontend when there's a quiet sprint — moving incrementally is fine, Next.js supports mixed `.js` / `.tsx` files.
