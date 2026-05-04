@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { fetchJSON } from "@/lib/api";
+import SummaryBadge from "@/components/ai/SummaryBadge";
 
 export default function EventsPage() {
   const [events, setEvents] = useState([]);
@@ -27,6 +28,7 @@ export default function EventsPage() {
             pfp_url: e.pfp_url,
             timeframe: e.timeframe,
             location: e.location,
+            ai_summary: e.ai_summary,
             href: `/events/${e.id}`,
           }));
 
@@ -98,6 +100,7 @@ export default function EventsPage() {
                 </div>
                 {ev.timeframe && <div className="meta">📅 {ev.timeframe}</div>}
                 {ev.location && <div className="meta">📍 {ev.location}</div>}
+                {ev.source === "local" && <SummaryBadge summary={ev.ai_summary} compact />}
                 <div className="meta">
                   <span
                     className="badge"

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { fetchJSON, apiPost, apiPatch } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { buildMapEmbedUrl } from "@/lib/utils";
+import SummaryBadge from "@/components/ai/SummaryBadge";
 
 export default function EventDetailPage() {
   const { id } = useParams();
@@ -106,6 +107,8 @@ export default function EventDetailPage() {
 
           {event.timeframe && <div className="meta" style={{ marginTop: "0.75rem" }}>📅 {event.timeframe}</div>}
           {event.location && <div className="meta" style={{ marginTop: "0.5rem" }}>📍 {event.location}</div>}
+
+          <SummaryBadge summary={event.ai_summary} />
 
           {event.description && (
             <p style={{ marginTop: "1.25rem", lineHeight: 1.7 }}>{event.description}</p>
