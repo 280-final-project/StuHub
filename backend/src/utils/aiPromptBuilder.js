@@ -30,11 +30,19 @@ function buildChatPrompt(userMessage, items) {
     "You can answer questions about three kinds of things, all listed below: " +
     "EVENTS (campus events with dates), DEALS (student discounts), and RESOURCES (campus services). " +
     "Answer ONLY using the items provided. If a question can't be answered from the list, say so politely. " +
-    "Keep responses concise (2-3 sentences). " +
-    "End your response with a single line in this exact format: " +
-    "[items: <id>:<type>, <id>:<type>] " +
-    "listing the items you referenced (or [items:] if you didn't reference any). " +
-    "Type values must be one of event, deal, resource.\n\n" +
+    "Keep responses concise (2-3 sentences).\n\n" +
+    "OUTPUT FORMAT (REQUIRED — every response must end with this line):\n" +
+    "  <your 2-3 sentence answer>\n" +
+    "  [items: <id>:<type>, <id>:<type>]\n\n" +
+    "Type values must be exactly one of: event, deal, resource. " +
+    "Use [items:] (empty) when no items were referenced. " +
+    "Examples:\n" +
+    "  Question: 'free pizza events?'\n" +
+    "  Answer:   'There are two free pizza events: Code Night on May 9 and the Cyber Panel on May 15.\n" +
+    "             [items: 5:event, 2:event]'\n\n" +
+    "  Question: 'what is 2+2?'\n" +
+    "  Answer:   'I can only answer questions about campus events, deals, and resources.\n" +
+    "             [items:]'\n\n" +
     "AVAILABLE ITEMS:\n" +
     itemsText;
 

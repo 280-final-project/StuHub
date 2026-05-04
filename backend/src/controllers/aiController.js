@@ -2,7 +2,7 @@ const pool = require("../config/db");
 const genAI = require("../utils/llmClient");
 const { buildChatPrompt, parseChatResponse } = require("../utils/aiPromptBuilder");
 
-const MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+const MODEL = process.env.GEMINI_CHAT_MODEL || "gemini-2.5-flash-lite";
 
 const chatHandler = async (req, res) => {
   if (process.env.AI_CHAT_ENABLED !== "true") {
@@ -47,6 +47,12 @@ const chatHandler = async (req, res) => {
     res.json({ response, relatedItems });
   } catch (err) {
     console.error("AI_CHAT_ERROR:", err.message);
+    const isRateLimit = /\b429\b|quota|rate[- ]?limit|exceeded/i.test(err.message || "");
+    if (isRateLimit) {
+      return res.status(429).json({
+        error: "Free-tier rate limit hit — try again in about a minute.",
+      });
+    }
     res.status(502).json({ error: "AI chat is temporarily unavailable" });
   }
 };
