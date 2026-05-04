@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { fetchJSON, apiPatch, apiDelete } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { toast } from "sonner";
 
 export default function ManageEvents() {
   const { token } = useAuth();
@@ -42,9 +43,10 @@ export default function ManageEvents() {
   async function handleApproval(id, status) {
     try {
       await apiPatch(`/items/${id}/approval`, { approval_status: status });
+      toast.success(`Event marked as ${status}.`);
       await loadEvents();
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message);
     }
   }
 
@@ -52,9 +54,10 @@ export default function ManageEvents() {
     try {
       await apiDelete(`/items/${id}`, { "x-admin": "true" });
       setDeleteTarget(null);
+      toast.success("Event deleted.");
       await loadEvents();
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message);
     }
   }
 

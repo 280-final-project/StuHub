@@ -3,6 +3,7 @@
 import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "@/context/AuthContext";
 import { fetchJSON } from "@/lib/api";
+import { toast } from "sonner";
 
 export default function GoogleAuthButton({ mode = "login" }) {
   const { login, signup } = useAuth();
@@ -21,7 +22,7 @@ export default function GoogleAuthButton({ mode = "login" }) {
         login(data.token, data.user);
       }
     } catch (err) {
-      alert(err.message || `${mode === "signup" ? "Sign up" : "Login"} failed`);
+      toast.error(err.message || `${mode === "signup" ? "Sign up" : "Login"} failed`);
     }
   };
 
@@ -29,7 +30,7 @@ export default function GoogleAuthButton({ mode = "login" }) {
     <div className="google-auth-wrap auth-google-big">
       <GoogleLogin
         onSuccess={handleSuccess}
-        onError={() => alert("Google sign-in failed")}
+        onError={() => toast.error("Google sign-in failed")}
         theme="outline"
         size="large"
         shape="rectangular"

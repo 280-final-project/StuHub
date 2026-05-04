@@ -7,6 +7,7 @@ import { fetchJSON, apiPost, apiPatch } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { buildMapEmbedUrl } from "@/lib/utils";
 import SummaryBadge from "@/components/ai/SummaryBadge";
+import { toast } from "sonner";
 
 export default function EventDetailPage() {
   const { id } = useParams();
@@ -51,9 +52,10 @@ export default function EventDetailPage() {
   async function handleRemove() {
     try {
       await apiPatch(`/items/${id}/approval`, { approval_status: "rejected" });
+      toast.success("Event removed.");
       router.push("/events");
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message);
     }
   }
 
@@ -71,9 +73,10 @@ export default function EventDetailPage() {
       });
       setReviewTitle("");
       setReviewDesc("");
+      toast.success("Review posted.");
       await loadReviews();
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message);
     }
   }
 
