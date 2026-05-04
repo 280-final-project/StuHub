@@ -1,4 +1,5 @@
 const formatItem = require("../utils/formatItem");
+const summarizeText = require("../utils/summarizeText");
 const pool = require("../config/db");
 
 const getAllItems = async (req, res) => {
@@ -83,10 +84,12 @@ const createItem = async (req, res) => {
 
     const isAdmin = req.headers["x-admin"] === "true";
 
+    const ai_summary = await summarizeText(item_name, item_desc);
+
     const result = await pool.query(
       `INSERT INTO items
-       (item_name, item_desc, is_timed, timeframe, loc_content, img_url, user_id, approval_status)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+       (item_name, item_desc, is_timed, timeframe, loc_content, img_url, user_id, approval_status, ai_summary)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
        RETURNING *`,
       [
         item_name,
@@ -96,7 +99,8 @@ const createItem = async (req, res) => {
         loc_content,
         img_url,
         user_id,
-        isAdmin ? "approved" : "pending"
+        isAdmin ? "approved" : "pending",
+        ai_summary
       ]
     );
 
@@ -193,6 +197,15 @@ const updateItem = async (req, res) => {
       return res.status(403).json({ error: "Not authorized to edit this item" });
     }
 
+    const nextName = item_name ?? item.item_name;
+    const nextDesc = item_desc ?? item.item_desc;
+    const nameOrDescChanged =
+      (item_name !== undefined && item_name !== item.item_name) ||
+      (item_desc !== undefined && item_desc !== item.item_desc);
+    const nextSummary = nameOrDescChanged
+      ? await summarizeText(nextName, nextDesc)
+      : item.ai_summary;
+
     const result = await pool.query(
       `UPDATE items
        SET item_name = $1,
@@ -200,15 +213,17 @@ const updateItem = async (req, res) => {
            timeframe = $3,
            loc_content = $4,
            img_url = $5,
+           ai_summary = $6,
            updated_at = NOW()
-       WHERE item_id = $6
+       WHERE item_id = $7
        RETURNING *`,
       [
-        item_name ?? item.item_name,
-        item_desc ?? item.item_desc,
+        nextName,
+        nextDesc,
         timeframe ?? item.timeframe,
         loc_content ?? item.loc_content,
         img_url ?? item.img_url,
+        nextSummary,
         id
       ]
     );
