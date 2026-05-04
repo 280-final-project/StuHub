@@ -21,12 +21,12 @@ export default function EventsPage() {
           .map((e) => ({
             source: "local",
             id: e.id,
-            title: e.item_name,
-            image: e.img_url,
+            title: e.title,
+            image: e.image,
             user_name: e.user_name,
             pfp_url: e.pfp_url,
             timeframe: e.timeframe,
-            location: e.loc_content,
+            location: e.location,
             href: `/events/${e.id}`,
           }));
 
