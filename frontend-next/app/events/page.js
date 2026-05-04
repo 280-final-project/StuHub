@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { fetchJSON } from "@/lib/api";
 import SummaryBadge from "@/components/ai/SummaryBadge";
+import { CardGridSkeleton } from "@/components/ui/Skeleton";
 
 export default function EventsPage() {
   const [events, setEvents] = useState([]);
@@ -63,7 +64,17 @@ export default function EventsPage() {
     load();
   }, []);
 
-  if (loading) return <div className="container section"><p>Loading events…</p></div>;
+  if (loading) return (
+    <div className="container section">
+      <div className="section-heading-row">
+        <div className="section-heading">
+          <h2>Events</h2>
+          <p>Discover what&apos;s happening on campus</p>
+        </div>
+      </div>
+      <CardGridSkeleton count={6} />
+    </div>
+  );
 
   return (
     <div className="container section">

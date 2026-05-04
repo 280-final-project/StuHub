@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { fetchJSON } from "@/lib/api";
+import { CardGridSkeleton } from "@/components/ui/Skeleton";
 
 export default function ResourcesPage() {
   const [resources, setResources] = useState([]);
@@ -43,7 +44,7 @@ export default function ResourcesPage() {
       </div>
 
       {loading ? (
-        <p className="empty">Loading resources…</p>
+        <CardGridSkeleton count={6} variant="resource" />
       ) : resources.length === 0 ? (
         <p className="empty">No resources available yet.</p>
       ) : (
