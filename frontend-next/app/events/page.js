@@ -13,7 +13,7 @@ export default function EventsPage() {
     async function load() {
       try {
         const [localRes, sjsuRes] = await Promise.all([
-          fetchJSON("/items").catch(() => []),
+          fetchJSON("/items?type=event").catch(() => []),
           fetchJSON("https://events.sjsu.edu/api/2/events").catch(() => ({ events: [] })),
         ]);
 
