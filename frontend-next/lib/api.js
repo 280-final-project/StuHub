@@ -48,3 +48,7 @@ export function apiDelete(path, extraHeaders = {}) {
     headers: extraHeaders,
   });
 }
+
+export function sendChatMessage(message) {
+  return apiPost("/ai/chat", { message });
+}
