@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { SJSU_LOCATIONS } from "@/lib/locations";
 import { getMinDateStr } from "@/lib/utils";
+import { toast } from "sonner";
 
 export default function NewEventPage() {
   const router = useRouter();
@@ -47,9 +48,10 @@ export default function NewEventPage() {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || data.message || "Failed to create event");
       }
+      toast.success("Event submitted! It'll be visible after admin approval.");
       router.push("/confirmation");
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message);
     } finally {
       setSubmitting(false);
     }

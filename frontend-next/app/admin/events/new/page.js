@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { SJSU_LOCATIONS } from "@/lib/locations";
+import { toast } from "sonner";
 
 export default function AdminAddEvent() {
   const { token } = useAuth();
@@ -51,9 +52,10 @@ export default function AdminAddEvent() {
         throw new Error(data.error || "Failed to create event");
       }
 
+      toast.success("Event created and approved.");
       router.push("/confirmation");
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message);
     } finally {
       setSubmitting(false);
     }
