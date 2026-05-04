@@ -13,6 +13,8 @@ function formatItem(item) {
 
     approval_status: item.approval_status,
     ai_summary: item.ai_summary,
+    item_type: item.item_type,
+    metadata: item.metadata,
   };
 }
 
