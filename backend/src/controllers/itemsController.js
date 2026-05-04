@@ -2,15 +2,30 @@ const formatItem = require("../utils/formatItem");
 const summarizeText = require("../utils/summarizeText");
 const pool = require("../config/db");
 
+const ITEM_TYPES = ["event", "deal", "resource", "place"];
+
 const getAllItems = async (req, res) => {
   try {
-    const result = await pool.query(`
-      SELECT i.*, u.user_name, u.pfp_url
-      FROM items i
-      LEFT JOIN users u ON i.user_id = u.user_id
-      WHERE i.approval_status = 'approved'
-      ORDER BY i.created_at DESC
-    `);
+    const { type } = req.query;
+    if (type && !ITEM_TYPES.includes(type)) {
+      return res.status(400).json({ error: `type must be one of: ${ITEM_TYPES.join(", ")}` });
+    }
+
+    const params = [];
+    let typeClause = "";
+    if (type) {
+      params.push(type);
+      typeClause = `AND i.item_type = $${params.length}`;
+    }
+
+    const result = await pool.query(
+      `SELECT i.*, u.user_name, u.pfp_url
+       FROM items i
+       LEFT JOIN users u ON i.user_id = u.user_id
+       WHERE i.approval_status = 'approved' ${typeClause}
+       ORDER BY i.created_at DESC`,
+      params
+    );
 
     res.json(result.rows.map(formatItem));
   } catch (err) {
