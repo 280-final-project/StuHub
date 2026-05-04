@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { Toaster } from "sonner";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ChatWidget from "@/components/ai/ChatWidget";
@@ -31,6 +32,7 @@ export default function ClientProviders({ children }) {
         </div>
       )}
       {!isAuth && <ChatWidget />}
+      <Toaster richColors position="top-right" />
     </GoogleOAuthProvider>
   );
 }
