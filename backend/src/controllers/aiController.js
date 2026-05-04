@@ -19,11 +19,13 @@ const chatHandler = async (req, res) => {
 
   try {
     const result = await pool.query(
-      `SELECT item_id, item_name, item_desc, timeframe, loc_content
+      `SELECT item_id, item_name, item_desc, timeframe, loc_content, item_type
        FROM items
        WHERE approval_status = 'approved'
-       ORDER BY created_at DESC
-       LIMIT 50`
+       ORDER BY
+         CASE item_type WHEN 'event' THEN 1 WHEN 'deal' THEN 2 WHEN 'resource' THEN 3 ELSE 4 END,
+         created_at DESC
+       LIMIT 80`
     );
 
     const { systemInstruction, userPrompt } = buildChatPrompt(message, result.rows);
@@ -40,9 +42,9 @@ const chatHandler = async (req, res) => {
 
     const completion = await model.generateContent(userPrompt);
     const text = completion.response.text()?.trim() || "";
-    const { response, relatedItemIds } = parseChatResponse(text);
+    const { response, relatedItems } = parseChatResponse(text);
 
-    res.json({ response, relatedItemIds });
+    res.json({ response, relatedItems });
   } catch (err) {
     console.error("AI_CHAT_ERROR:", err.message);
     res.status(502).json({ error: "AI chat is temporarily unavailable" });
