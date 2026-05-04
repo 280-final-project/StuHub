@@ -79,19 +79,19 @@ export default function EventDetailPage() {
   if (loading) return <div className="container section"><p>Loading…</p></div>;
   if (!event) return <div className="container section"><p>Event not found.</p></div>;
 
-  const mapUrl = buildMapEmbedUrl(event.loc_content);
+  const mapUrl = buildMapEmbedUrl(event.location);
 
   return (
     <div className="container section">
       <Link href="/events" className="back-link">← Back to Events</Link>
 
       <div className="detail-hero">
-        {event.img_url && (
-          <img src={event.img_url} alt={event.item_name} className="detail-image" />
+        {event.image && (
+          <img src={event.image} alt={event.title} className="detail-image" />
         )}
 
         <div className="detail-panel">
-          <h1>{event.item_name}</h1>
+          <h1>{event.title}</h1>
 
           <div className="meta">
             {event.pfp_url && (
@@ -105,10 +105,10 @@ export default function EventDetailPage() {
           </div>
 
           {event.timeframe && <div className="meta" style={{ marginTop: "0.75rem" }}>📅 {event.timeframe}</div>}
-          {event.loc_content && <div className="meta" style={{ marginTop: "0.5rem" }}>📍 {event.loc_content}</div>}
+          {event.location && <div className="meta" style={{ marginTop: "0.5rem" }}>📍 {event.location}</div>}
 
-          {event.item_desc && (
-            <p style={{ marginTop: "1.25rem", lineHeight: 1.7 }}>{event.item_desc}</p>
+          {event.description && (
+            <p style={{ marginTop: "1.25rem", lineHeight: 1.7 }}>{event.description}</p>
           )}
 
           {canManage && (
