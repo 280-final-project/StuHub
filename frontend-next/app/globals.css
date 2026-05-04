@@ -283,6 +283,7 @@ textarea { min-height: 150px; resize: vertical; }
 .hero-line { color: var(--text); font-size: 1.05rem; margin: 0.5rem 0; line-height: 1.5; min-height: 1.6em; }
 .hero-line .letter { display: inline-block; opacity: 0; transform: translateY(8px); animation: revealLetter 0.35s ease forwards; }
 @keyframes revealLetter { to { opacity: 1; transform: translateY(0); } }
+@keyframes stuhub-skeleton { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
 
 .explore-btn {
   display: inline-flex; align-items: center; gap: 0.7rem; margin-top: 1.8rem;

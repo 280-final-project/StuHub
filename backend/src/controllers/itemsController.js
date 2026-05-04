@@ -1,15 +1,53 @@
 const formatItem = require("../utils/formatItem");
+const summarizeText = require("../utils/summarizeText");
 const pool = require("../config/db");
+
+const ITEM_TYPES = ["event", "deal", "resource", "place"];
 
 const getAllItems = async (req, res) => {
   try {
-    const result = await pool.query(`
-      SELECT i.*, u.user_name, u.pfp_url
-      FROM items i
-      LEFT JOIN users u ON i.user_id = u.user_id
-      WHERE i.approval_status = 'approved'
-      ORDER BY i.created_at DESC
-    `);
+    const { type, q, from, to, location } = req.query;
+
+    if (type && !ITEM_TYPES.includes(type)) {
+      return res.status(400).json({ error: `type must be one of: ${ITEM_TYPES.join(", ")}` });
+    }
+
+    const params = [];
+    const clauses = ["i.approval_status = 'approved'"];
+
+    if (type) {
+      params.push(type);
+      clauses.push(`i.item_type = $${params.length}`);
+    }
+
+    if (q && q.trim()) {
+      params.push(`%${q.trim()}%`);
+      const idx = params.length;
+      clauses.push(`(i.item_name ILIKE $${idx} OR i.item_desc ILIKE $${idx})`);
+    }
+
+    if (location && location.trim()) {
+      params.push(`%${location.trim()}%`);
+      clauses.push(`i.loc_content ILIKE $${params.length}`);
+    }
+
+    if (from) {
+      params.push(from);
+      clauses.push(`i.timeframe >= $${params.length}`);
+    }
+    if (to) {
+      params.push(to);
+      clauses.push(`i.timeframe <= $${params.length}`);
+    }
+
+    const result = await pool.query(
+      `SELECT i.*, u.user_name, u.pfp_url
+       FROM items i
+       LEFT JOIN users u ON i.user_id = u.user_id
+       WHERE ${clauses.join(" AND ")}
+       ORDER BY i.created_at DESC`,
+      params
+    );
 
     res.json(result.rows.map(formatItem));
   } catch (err) {
@@ -49,8 +87,23 @@ const createItem = async (req, res) => {
       is_timed,
       timeframe,
       loc_content,
-      img_url: bodyImgUrl
+      img_url: bodyImgUrl,
+      item_type: rawItemType,
+      metadata: rawMetadata,
     } = req.body;
+
+    const item_type = rawItemType || "event";
+    if (!ITEM_TYPES.includes(item_type)) {
+      return res.status(400).json({ error: `item_type must be one of: ${ITEM_TYPES.join(", ")}` });
+    }
+    let metadata = null;
+    if (rawMetadata !== undefined && rawMetadata !== null && rawMetadata !== "") {
+      try {
+        metadata = typeof rawMetadata === "string" ? JSON.parse(rawMetadata) : rawMetadata;
+      } catch {
+        return res.status(400).json({ error: "metadata must be valid JSON" });
+      }
+    }
 
     const user_id = req.user?.user_id;
     const img_url = req.file ? req.file.path : (bodyImgUrl || null);
@@ -83,10 +136,12 @@ const createItem = async (req, res) => {
 
     const isAdmin = req.headers["x-admin"] === "true";
 
+    const ai_summary = item_type === "event" ? await summarizeText(item_name, item_desc) : null;
+
     const result = await pool.query(
       `INSERT INTO items
-       (item_name, item_desc, is_timed, timeframe, loc_content, img_url, user_id, approval_status)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+       (item_name, item_desc, is_timed, timeframe, loc_content, img_url, user_id, approval_status, ai_summary, item_type, metadata)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
        RETURNING *`,
       [
         item_name,
@@ -96,7 +151,10 @@ const createItem = async (req, res) => {
         loc_content,
         img_url,
         user_id,
-        isAdmin ? "approved" : "pending"
+        isAdmin ? "approved" : "pending",
+        ai_summary,
+        item_type,
+        metadata
       ]
     );
 
@@ -173,9 +231,29 @@ const getAllItemsForAdmin = async (req, res) => {
 
 const updateItem = async (req, res) => {
   const { id } = req.params;
-  const { item_name, item_desc, timeframe, loc_content, img_url } = req.body;
+  const {
+    item_name,
+    item_desc,
+    timeframe,
+    loc_content,
+    img_url,
+    metadata: rawMetadata,
+  } = req.body;
   const user_id = req.user.user_id;
   const isAdmin = req.headers["x-admin"] === "true";
+
+  let metadata;
+  if (rawMetadata !== undefined) {
+    if (rawMetadata === null || rawMetadata === "") {
+      metadata = null;
+    } else {
+      try {
+        metadata = typeof rawMetadata === "string" ? JSON.parse(rawMetadata) : rawMetadata;
+      } catch {
+        return res.status(400).json({ error: "metadata must be valid JSON" });
+      }
+    }
+  }
 
   try {
     const existing = await pool.query(
@@ -193,6 +271,16 @@ const updateItem = async (req, res) => {
       return res.status(403).json({ error: "Not authorized to edit this item" });
     }
 
+    const nextName = item_name ?? item.item_name;
+    const nextDesc = item_desc ?? item.item_desc;
+    const nameOrDescChanged =
+      (item_name !== undefined && item_name !== item.item_name) ||
+      (item_desc !== undefined && item_desc !== item.item_desc);
+    const nextSummary = item.item_type === "event" && nameOrDescChanged
+      ? await summarizeText(nextName, nextDesc)
+      : item.ai_summary;
+    const nextMetadata = metadata !== undefined ? metadata : item.metadata;
+
     const result = await pool.query(
       `UPDATE items
        SET item_name = $1,
@@ -200,15 +288,19 @@ const updateItem = async (req, res) => {
            timeframe = $3,
            loc_content = $4,
            img_url = $5,
+           ai_summary = $6,
+           metadata = $7,
            updated_at = NOW()
-       WHERE item_id = $6
+       WHERE item_id = $8
        RETURNING *`,
       [
-        item_name ?? item.item_name,
-        item_desc ?? item.item_desc,
+        nextName,
+        nextDesc,
         timeframe ?? item.timeframe,
         loc_content ?? item.loc_content,
         img_url ?? item.img_url,
+        nextSummary,
+        nextMetadata,
         id
       ]
     );

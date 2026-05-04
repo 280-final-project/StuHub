@@ -12,6 +12,9 @@ function formatItem(item) {
     pfp_url: item.pfp_url,
 
     approval_status: item.approval_status,
+    ai_summary: item.ai_summary,
+    item_type: item.item_type,
+    metadata: item.metadata,
   };
 }
 

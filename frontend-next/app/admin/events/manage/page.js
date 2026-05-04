@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { fetchJSON, apiPatch, apiDelete } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { toast } from "sonner";
 
 export default function ManageEvents() {
   const { token } = useAuth();
@@ -42,9 +43,10 @@ export default function ManageEvents() {
   async function handleApproval(id, status) {
     try {
       await apiPatch(`/items/${id}/approval`, { approval_status: status });
+      toast.success(`Event marked as ${status}.`);
       await loadEvents();
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message);
     }
   }
 
@@ -52,9 +54,10 @@ export default function ManageEvents() {
     try {
       await apiDelete(`/items/${id}`, { "x-admin": "true" });
       setDeleteTarget(null);
+      toast.success("Event deleted.");
       await loadEvents();
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message);
     }
   }
 
@@ -110,18 +113,40 @@ export default function ManageEvents() {
       ) : (
         <div className="events-container">
           {filtered.map((event) => (
-            <div key={event._id} className="admin-event-card">
-              {event.image_url && (
+            <div key={event.id} className="admin-event-card">
+              {event.image && (
                 <div className="admin-event-thumb">
-                  <img src={event.image_url} alt={event.title} />
+                  <img src={event.image} alt={event.title} />
                 </div>
               )}
               <div className="admin-event-content">
                 <h3>{event.title}</h3>
-                <p>{event.details || event.description}</p>
-                <span className={`status ${event.approval_status}`}>
-                  {event.approval_status}
-                </span>
+                <p>{event.description}</p>
+                <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginTop: "0.5rem" }}>
+                  <span className={`status ${event.approval_status}`}>
+                    {event.approval_status}
+                  </span>
+                  {event.item_type && (
+                    <span
+                      className="badge"
+                      style={{
+                        fontSize: "0.7rem",
+                        padding: "0.2rem 0.55rem",
+                        background:
+                          event.item_type === "event" ? "var(--accent-soft)" :
+                          event.item_type === "deal" ? "var(--primary-soft)" :
+                          "var(--surface-soft)",
+                        color:
+                          event.item_type === "event" ? "#7a5b00" :
+                          event.item_type === "deal" ? "var(--primary)" :
+                          "var(--text)",
+                        border: "1px solid var(--border)",
+                      }}
+                    >
+                      {event.item_type}
+                    </span>
+                  )}
+                </div>
               </div>
               <div className="actions" style={{ marginTop: "1rem" }}>
                 {event.approval_status === "pending" && (
@@ -129,14 +154,14 @@ export default function ManageEvents() {
                     <button
                       className="btn btn-primary"
                       style={{ height: 40, padding: "0 1rem", fontSize: "0.9rem" }}
-                      onClick={() => handleApproval(event._id, "approved")}
+                      onClick={() => handleApproval(event.id, "approved")}
                     >
                       Approve
                     </button>
                     <button
                       className="btn btn-danger"
                       style={{ height: 40, padding: "0 1rem", fontSize: "0.9rem" }}
-                      onClick={() => handleApproval(event._id, "rejected")}
+                      onClick={() => handleApproval(event.id, "rejected")}
                     >
                       Reject
                     </button>
@@ -147,14 +172,14 @@ export default function ManageEvents() {
                     <button
                       className="btn btn-secondary"
                       style={{ height: 40, padding: "0 1rem", fontSize: "0.9rem" }}
-                      onClick={() => handleApproval(event._id, "pending")}
+                      onClick={() => handleApproval(event.id, "pending")}
                     >
                       Move to Pending
                     </button>
                     <button
                       className="btn btn-danger"
                       style={{ height: 40, padding: "0 1rem", fontSize: "0.9rem" }}
-                      onClick={() => handleApproval(event._id, "rejected")}
+                      onClick={() => handleApproval(event.id, "rejected")}
                     >
                       Reject
                     </button>
@@ -165,7 +190,7 @@ export default function ManageEvents() {
                     <button
                       className="btn btn-secondary"
                       style={{ height: 40, padding: "0 1rem", fontSize: "0.9rem" }}
-                      onClick={() => handleApproval(event._id, "pending")}
+                      onClick={() => handleApproval(event.id, "pending")}
                     >
                       Restore
                     </button>

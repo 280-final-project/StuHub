@@ -49,6 +49,7 @@ export default function Navbar() {
         { href: "/resources", label: "Resources" },
         { href: "/deals", label: "Deals" },
         { href: "/admin", label: "Admin" },
+        { href: "/profile", label: "Profile" },
       ]
     : isLoggedIn
     ? [
@@ -57,6 +58,7 @@ export default function Navbar() {
         { href: "/resources", label: "Resources" },
         { href: "/deals", label: "Deals" },
         { href: "/events/new", label: "Add Event" },
+        { href: "/profile", label: "Profile" },
       ]
     : [
         { href: "/home", label: "Home" },

@@ -3,9 +3,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
-import { fetchJSON, apiPost, apiPatch } from "@/lib/api";
+import { fetchJSON, apiPost, apiPatch, apiDelete } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { buildMapEmbedUrl } from "@/lib/utils";
+import SummaryBadge from "@/components/ai/SummaryBadge";
+import ReviewList from "@/components/reviews/ReviewList";
+import ReviewForm from "@/components/reviews/ReviewForm";
+import { toast } from "sonner";
 
 export default function EventDetailPage() {
   const { id } = useParams();
@@ -16,8 +20,6 @@ export default function EventDetailPage() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [reviewTitle, setReviewTitle] = useState("");
-  const [reviewDesc, setReviewDesc] = useState("");
 
   const loadReviews = useCallback(async () => {
     try {
@@ -50,48 +52,60 @@ export default function EventDetailPage() {
   async function handleRemove() {
     try {
       await apiPatch(`/items/${id}/approval`, { approval_status: "rejected" });
+      toast.success("Event removed.");
       router.push("/events");
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message);
     }
   }
 
-  async function handleReviewSubmit(e) {
-    e.preventDefault();
+  async function handleReviewSubmit({ rating, review_header, review_desc }) {
     if (!token) {
       router.push("/login");
       return;
     }
     try {
       await apiPost("/reviews", {
-        review_header: reviewTitle,
-        review_desc: reviewDesc,
+        rating,
+        review_header,
+        review_desc,
         item_id: Number(id),
       });
-      setReviewTitle("");
-      setReviewDesc("");
+      toast.success("Review posted.");
       await loadReviews();
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message);
+      throw err;
+    }
+  }
+
+  async function handleReviewDelete(reviewId) {
+    try {
+      const headers = isAdmin ? { "x-admin": "true" } : {};
+      await apiDelete(`/reviews/${reviewId}`, headers);
+      toast.success("Review deleted.");
+      await loadReviews();
+    } catch (err) {
+      toast.error(err.message);
     }
   }
 
   if (loading) return <div className="container section"><p>Loading…</p></div>;
   if (!event) return <div className="container section"><p>Event not found.</p></div>;
 
-  const mapUrl = buildMapEmbedUrl(event.loc_content);
+  const mapUrl = buildMapEmbedUrl(event.location);
 
   return (
     <div className="container section">
       <Link href="/events" className="back-link">← Back to Events</Link>
 
       <div className="detail-hero">
-        {event.img_url && (
-          <img src={event.img_url} alt={event.item_name} className="detail-image" />
+        {event.image && (
+          <img src={event.image} alt={event.title} className="detail-image" />
         )}
 
         <div className="detail-panel">
-          <h1>{event.item_name}</h1>
+          <h1>{event.title}</h1>
 
           <div className="meta">
             {event.pfp_url && (
@@ -105,10 +119,12 @@ export default function EventDetailPage() {
           </div>
 
           {event.timeframe && <div className="meta" style={{ marginTop: "0.75rem" }}>📅 {event.timeframe}</div>}
-          {event.loc_content && <div className="meta" style={{ marginTop: "0.5rem" }}>📍 {event.loc_content}</div>}
+          {event.location && <div className="meta" style={{ marginTop: "0.5rem" }}>📍 {event.location}</div>}
 
-          {event.item_desc && (
-            <p style={{ marginTop: "1.25rem", lineHeight: 1.7 }}>{event.item_desc}</p>
+          <SummaryBadge summary={event.ai_summary} />
+
+          {event.description && (
+            <p style={{ marginTop: "1.25rem", lineHeight: 1.7 }}>{event.description}</p>
           )}
 
           {canManage && (
@@ -145,53 +161,15 @@ export default function EventDetailPage() {
 
       <div className="section">
         <h2>Reviews</h2>
-
-        {reviews.length > 0 ? (
-          <div className="reviews-list">
-            {reviews.map((r, i) => (
-              <div key={r.id || i} className="card" style={{ overflow: "visible" }}>
-                <div className="card-body">
-                  <div className="meta" style={{ marginBottom: "0.5rem" }}>
-                    {r.pfp_url && (
-                      <img
-                        src={r.pfp_url}
-                        alt=""
-                        style={{ width: 24, height: 24, borderRadius: "50%" }}
-                      />
-                    )}
-                    <strong>{r.user_name}</strong>
-                  </div>
-                  <h3 style={{ marginBottom: "0.5rem" }}>{r.review_header}</h3>
-                  <p>{r.review_desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="empty">No reviews yet.</p>
-        )}
+        <ReviewList
+          reviews={reviews}
+          currentUserId={user?.user_id}
+          isAdmin={isAdmin}
+          onDelete={handleReviewDelete}
+        />
 
         <h2 className="review-form-title">Leave a Review</h2>
-        <form className="review-form" onSubmit={handleReviewSubmit}>
-          <input
-            className="review-input"
-            type="text"
-            placeholder="Review title"
-            value={reviewTitle}
-            onChange={(e) => setReviewTitle(e.target.value)}
-            required
-          />
-          <textarea
-            className="review-textarea"
-            placeholder="Write your review…"
-            value={reviewDesc}
-            onChange={(e) => setReviewDesc(e.target.value)}
-            required
-          />
-          <button type="submit" className="btn btn-primary review-submit-btn">
-            Submit Review
-          </button>
-        </form>
+        <ReviewForm onSubmit={handleReviewSubmit} requireLogin={!token} />
       </div>
 
       {showConfirm && (

@@ -6,6 +6,7 @@ import { fetchJSON, apiPatch } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { SJSU_LOCATIONS } from "@/lib/locations";
 import { splitTimeframe, splitLocation } from "@/lib/utils";
+import { toast } from "sonner";
 
 export default function EditEventPage() {
   const { id } = useParams();
@@ -45,7 +46,7 @@ export default function EditEventPage() {
         setBuilding(b);
         setRoom(r);
       } catch {
-        alert("Could not load event");
+        toast.error("Could not load event");
       } finally {
         setLoading(false);
       }
@@ -74,9 +75,10 @@ export default function EditEventPage() {
         loc_content: loc,
         img_url: imageUrl,
       });
+      toast.success("Event updated.");
       router.push(`/events/${id}`);
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message);
     } finally {
       setSubmitting(false);
     }
