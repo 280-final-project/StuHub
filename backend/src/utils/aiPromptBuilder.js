@@ -1,44 +1,65 @@
-const MAX_DESC_CHARS = 300;
-const MAX_EVENTS = 50;
+const MAX_DESC_CHARS = 240;
+const MAX_ITEMS = 80;
 
-function formatEvent(e) {
-  const head = `[${e.item_id}] ${e.item_name}` +
-    (e.timeframe ? ` — ${e.timeframe}` : "") +
-    (e.loc_content ? ` @ ${e.loc_content}` : "");
-  const desc = e.item_desc
-    ? `\n   ${e.item_desc.slice(0, MAX_DESC_CHARS)}${e.item_desc.length > MAX_DESC_CHARS ? "…" : ""}`
+const TYPE_LABEL = {
+  event: "EVENT",
+  deal: "DEAL",
+  resource: "RESOURCE",
+  place: "PLACE",
+};
+
+function formatItem(item) {
+  const type = TYPE_LABEL[item.item_type] || "ITEM";
+  const head = `[#${item.item_id}] (${type}) ${item.item_name}` +
+    (item.timeframe ? ` — ${item.timeframe}` : "") +
+    (item.loc_content ? ` @ ${item.loc_content}` : "");
+  const desc = item.item_desc
+    ? `\n   ${item.item_desc.slice(0, MAX_DESC_CHARS)}${item.item_desc.length > MAX_DESC_CHARS ? "…" : ""}`
     : "";
   return head + desc;
 }
 
-function buildChatPrompt(userMessage, events) {
-  const trimmed = events.slice(0, MAX_EVENTS);
-  const eventsText = trimmed.length
-    ? trimmed.map(formatEvent).join("\n\n")
-    : "(no approved events available)";
+function buildChatPrompt(userMessage, items) {
+  const trimmed = items.slice(0, MAX_ITEMS);
+  const itemsText = trimmed.length
+    ? trimmed.map(formatItem).join("\n\n")
+    : "(no approved items available)";
 
   const systemInstruction =
-    "You are a helpful campus events assistant for SJSU StudentHub. " +
-    "Answer questions about campus events using ONLY the events listed below. " +
-    "If a question cannot be answered from the list, say so politely instead of guessing. " +
+    "You are a helpful campus assistant for SJSU StudentHub. " +
+    "You can answer questions about three kinds of things, all listed below: " +
+    "EVENTS (campus events with dates), DEALS (student discounts), and RESOURCES (campus services). " +
+    "Answer ONLY using the items provided. If a question can't be answered from the list, say so politely. " +
     "Keep responses concise (2-3 sentences). " +
-    "End your response with a single line in the format: [ids: <comma-separated-ids>] " +
-    "listing the IDs of events you referenced (or [ids:] if you didn't reference any).\n\n" +
-    "EVENTS:\n" +
-    eventsText;
+    "End your response with a single line in this exact format: " +
+    "[items: <id>:<type>, <id>:<type>] " +
+    "listing the items you referenced (or [items:] if you didn't reference any). " +
+    "Type values must be one of event, deal, resource.\n\n" +
+    "AVAILABLE ITEMS:\n" +
+    itemsText;
 
   return { systemInstruction, userPrompt: userMessage };
 }
 
+const TYPE_SET = new Set(["event", "deal", "resource", "place"]);
+
 function parseChatResponse(text) {
-  const match = text.match(/\[ids:\s*([0-9,\s]*)\]\s*$/);
-  if (!match) return { response: text.trim(), relatedItemIds: [] };
-  const ids = match[1]
+  const match = text.match(/\[items:\s*([^\]]*)\]\s*$/);
+  if (!match) return { response: text.trim(), relatedItems: [] };
+
+  const relatedItems = match[1]
     .split(",")
-    .map((s) => parseInt(s.trim(), 10))
-    .filter((n) => Number.isFinite(n));
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .map((pair) => {
+      const [idStr, type] = pair.split(":").map((p) => p.trim());
+      const id = parseInt(idStr, 10);
+      return Number.isFinite(id) && TYPE_SET.has(type) ? { id, type } : null;
+    })
+    .filter(Boolean);
+
   const response = text.replace(match[0], "").trim();
-  return { response, relatedItemIds: ids };
+  return { response, relatedItems };
 }
 
 module.exports = { buildChatPrompt, parseChatResponse };
