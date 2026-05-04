@@ -5,7 +5,7 @@ A web-based platform for San Jose State University students to discover events, 
 - Nishan Paudel
 - Ashish Bhusal
 - Janhvi Kedia
-- Harshita Gupta
+- Harishita Gupta
 - Indraneel Sarode
 
 
