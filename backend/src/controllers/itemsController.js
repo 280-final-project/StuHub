@@ -6,23 +6,45 @@ const ITEM_TYPES = ["event", "deal", "resource", "place"];
 
 const getAllItems = async (req, res) => {
   try {
-    const { type } = req.query;
+    const { type, q, from, to, location } = req.query;
+
     if (type && !ITEM_TYPES.includes(type)) {
       return res.status(400).json({ error: `type must be one of: ${ITEM_TYPES.join(", ")}` });
     }
 
     const params = [];
-    let typeClause = "";
+    const clauses = ["i.approval_status = 'approved'"];
+
     if (type) {
       params.push(type);
-      typeClause = `AND i.item_type = $${params.length}`;
+      clauses.push(`i.item_type = $${params.length}`);
+    }
+
+    if (q && q.trim()) {
+      params.push(`%${q.trim()}%`);
+      const idx = params.length;
+      clauses.push(`(i.item_name ILIKE $${idx} OR i.item_desc ILIKE $${idx})`);
+    }
+
+    if (location && location.trim()) {
+      params.push(`%${location.trim()}%`);
+      clauses.push(`i.loc_content ILIKE $${params.length}`);
+    }
+
+    if (from) {
+      params.push(from);
+      clauses.push(`i.timeframe >= $${params.length}`);
+    }
+    if (to) {
+      params.push(to);
+      clauses.push(`i.timeframe <= $${params.length}`);
     }
 
     const result = await pool.query(
       `SELECT i.*, u.user_name, u.pfp_url
        FROM items i
        LEFT JOIN users u ON i.user_id = u.user_id
-       WHERE i.approval_status = 'approved' ${typeClause}
+       WHERE ${clauses.join(" AND ")}
        ORDER BY i.created_at DESC`,
       params
     );
