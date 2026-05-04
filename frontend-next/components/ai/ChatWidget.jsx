@@ -33,7 +33,7 @@ export default function ChatWidget() {
       const data = await sendChatMessage(trimmed);
       setMessages((m) => [
         ...m,
-        { role: "assistant", text: data.response, relatedItemIds: data.relatedItemIds || [] },
+        { role: "assistant", text: data.response, relatedItems: data.relatedItems || [] },
       ]);
     } catch (err) {
       setMessages((m) => [...m, { role: "assistant", text: `⚠️ ${err.message}`, error: true }]);
@@ -184,25 +184,37 @@ export default function ChatWidget() {
             }}
           >
             <div>{m.text}</div>
-            {m.relatedItemIds && m.relatedItemIds.length > 0 && (
+            {m.relatedItems && m.relatedItems.length > 0 && (
               <div style={{ marginTop: "0.5rem", display: "flex", flexWrap: "wrap", gap: "0.3rem" }}>
-                {m.relatedItemIds.map((id) => (
-                  <Link
-                    key={id}
-                    href={`/events/${id}`}
-                    onClick={() => setOpen(false)}
-                    style={{
-                      fontSize: "0.75rem",
-                      padding: "0.2rem 0.55rem",
-                      borderRadius: 12,
-                      background: "var(--primary-soft)",
-                      color: "var(--primary)",
-                      border: "1px solid var(--border)",
-                    }}
-                  >
-                    Event #{id}
-                  </Link>
-                ))}
+                {m.relatedItems.map(({ id, type }) => {
+                  const href =
+                    type === "event" ? `/events/${id}` :
+                    type === "deal" ? `/deals` :
+                    type === "resource" ? `/resources` :
+                    "/";
+                  const label =
+                    type === "event" ? "Event" :
+                    type === "deal" ? "Deal" :
+                    type === "resource" ? "Resource" :
+                    "Item";
+                  return (
+                    <Link
+                      key={`${type}-${id}`}
+                      href={href}
+                      onClick={() => setOpen(false)}
+                      style={{
+                        fontSize: "0.75rem",
+                        padding: "0.2rem 0.55rem",
+                        borderRadius: 12,
+                        background: "var(--primary-soft)",
+                        color: "var(--primary)",
+                        border: "1px solid var(--border)",
+                      }}
+                    >
+                      {label} #{id}
+                    </Link>
+                  );
+                })}
               </div>
             )}
           </div>
