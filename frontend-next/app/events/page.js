@@ -77,12 +77,17 @@ export default function EventsPage() {
         const locFilter = location && location !== "All locations" ? location.toLowerCase() : null;
 
         const sjsuItems = (sjsuRes?.events || [])
-          .map((e) => {
+          .map((wrapper) => {
+            // Localist wraps each event: { event: {...} }
+            const e = wrapper?.event || wrapper;
+            if (!e?.title) return null;
+            const timeframe = e.first_date || e.last_date || e.date_utc || "";
+            const location = e.location_name || e.location || "";
             const params = new URLSearchParams({
               url: e.localist_url || e.url || "",
               title: e.title || "",
-              time: e.date_utc || "",
-              location: e.location_name || e.location || "",
+              time: timeframe,
+              location,
               image: e.photo_url || "",
             });
             return {
@@ -92,11 +97,12 @@ export default function EventsPage() {
               image: e.photo_url || "",
               user_name: "SJSU",
               pfp_url: "",
-              timeframe: e.date_utc || "",
-              location: e.location_name || e.location || "",
+              timeframe,
+              location,
               href: `/events/sjsu?${params.toString()}`,
             };
           })
+          .filter(Boolean)
           .filter((e) => {
             if (q && !(e.title?.toLowerCase().includes(q))) return false;
             if (locFilter && !(e.location?.toLowerCase().includes(locFilter))) return false;
