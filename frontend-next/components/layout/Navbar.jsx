@@ -38,7 +38,7 @@ function getSearchScore(item, query) {
 }
 
 export default function Navbar() {
-  const { isLoggedIn, isAdmin, logout } = useAuth();
+  const { user, isLoggedIn, isAdmin, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [query, setQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -50,7 +50,6 @@ export default function Navbar() {
         { href: "/resources", label: "Resources" },
         { href: "/deals", label: "Deals" },
         { href: "/admin", label: "Admin" },
-        { href: "/profile", label: "Profile" },
       ]
     : isLoggedIn
     ? [
@@ -59,7 +58,6 @@ export default function Navbar() {
         { href: "/resources", label: "Resources" },
         { href: "/deals", label: "Deals" },
         { href: "/events/new", label: "Add Event" },
-        { href: "/profile", label: "Profile" },
       ]
     : [
         { href: "/home", label: "Home" },
@@ -91,12 +89,6 @@ export default function Navbar() {
               {item.label}
             </Link>
           ))}
-
-          {isLoggedIn && (
-            <button onClick={logout} className="nav-logout-btn">
-              Logout
-            </button>
-          )}
 
           <button
             onClick={toggleTheme}
@@ -145,6 +137,44 @@ export default function Navbar() {
               </div>
             )}
           </div>
+
+          {isLoggedIn && (
+            <>
+              <Link
+                href="/profile"
+                aria-label="Profile"
+                title={user?.user_name || user?.name || "Profile"}
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: "50%",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: user?.pfp_url ? "transparent" : "var(--primary-soft)",
+                  color: "var(--primary)",
+                  fontWeight: 700,
+                  fontSize: "1rem",
+                  overflow: "hidden",
+                  border: "1px solid var(--border)",
+                  flexShrink: 0,
+                }}
+              >
+                {user?.pfp_url ? (
+                  <img
+                    src={user.pfp_url}
+                    alt=""
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  />
+                ) : (
+                  (user?.user_name || user?.name || "?").charAt(0).toUpperCase()
+                )}
+              </Link>
+              <button onClick={logout} className="nav-logout-btn">
+                Logout
+              </button>
+            </>
+          )}
         </div>
       </div>
     </header>
