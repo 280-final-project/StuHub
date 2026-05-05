@@ -61,7 +61,8 @@ const getItemById = async (req, res) => {
 
   try {
     const result = await pool.query(
-      `SELECT i.*, u.user_name, u.pfp_url
+      `SELECT i.*, u.user_name, u.pfp_url,
+              (SELECT COUNT(*)::int FROM event_registrations er WHERE er.item_id = i.item_id) AS registration_count
        FROM items i
        LEFT JOIN users u ON i.user_id = u.user_id
        WHERE i.item_id = $1 AND i.approval_status = 'approved'`,
@@ -72,7 +73,21 @@ const getItemById = async (req, res) => {
       return res.status(404).json({ error: "Item not found" });
     }
 
-    res.json(formatItem(result.rows[0]));
+    const row = result.rows[0];
+    const formatted = formatItem(row);
+    formatted.registration_count = row.registration_count || 0;
+
+    if (req.user?.user_id) {
+      const r = await pool.query(
+        "SELECT 1 FROM event_registrations WHERE item_id = $1 AND user_id = $2",
+        [id, req.user.user_id]
+      );
+      formatted.is_registered = r.rows.length > 0;
+    } else {
+      formatted.is_registered = false;
+    }
+
+    res.json(formatted);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
