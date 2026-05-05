@@ -1,6 +1,6 @@
 # Things To Do - StudentHub Project
 
-> **Last updated:** 2026-05-04 (after Sprint 5 — AI features and polish push). Items shipped during that sprint are checked off below; see [Recently Shipped](#-recently-shipped-sprint-5) for a roll-up.
+> **Last updated:** 2026-05-04 (post-launch deploy + registration feature). Items shipped during Sprint 5 and the post-merge polish push are checked off below; see [Recently Shipped](#-recently-shipped-sprint-5) for a roll-up.
 
 ## 📋 Table of Contents
 - [Recently Shipped (Sprint 5)](#-recently-shipped-sprint-5)
@@ -37,6 +37,17 @@
 - ✅ **Skeleton Loaders** — `Skeleton`, `CardSkeleton`, `ResourceCardSkeleton` used on `/events`, `/deals`, `/resources`, `/profile`.
 - ✅ **User Profile Page** — `/profile` with avatar, inline edit-in-place name and bio, "My Events" with status pills, "My Reviews" with stars.
 - ✅ **Demo seed data** — 8 events + 10 deals + 10 resources via [`backend/scripts/seed_demo_data.js`](backend/scripts/seed_demo_data.js).
+
+### Post-Sprint-5 polish (also done)
+- ✅ **Public deployment** — Render (backend at https://stuhub-sm73.onrender.com) + Vercel (frontend at https://stu-hub-phi.vercel.app).
+- ✅ **Demo accounts seeded** — admin + 2 students documented in [`DEMO_USERS.md`](DEMO_USERS.md).
+- ✅ **Event registration / RSVP** — `event_registrations` table, `POST/DELETE /items/:id/register`, attendee count + Register button on event detail, Registered Events section on /profile with cancel.
+- ✅ **Rebrand CampusHub → Student Hub** across all UI surfaces.
+- ✅ **Empty SJSU events cards fix** — Localist API wraps `{event: ...}`; mapper updated.
+- ✅ **Profile icon** — moved from text nav link to a circular avatar in the top-right.
+- ✅ **Navbar restructure** — three flex groups (brand+links left, search center, theme+auth right). Login/Sign Up upgraded to proper button CTAs.
+- ✅ **About page rewrite** — product-focused, no team list, mentions CMPE-280 context.
+- ✅ **Contact page** — dedicated `/contact` with dummy support email + send-message form (frontend stub).
 
 ---
 
