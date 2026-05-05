@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { fetchJSON, apiPatch } from "@/lib/api";
+import { fetchJSON, apiPatch, apiDelete } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { Skeleton } from "@/components/ui/Skeleton";
 import StarRating from "@/components/reviews/StarRating";
@@ -69,6 +69,19 @@ export default function ProfilePage() {
     }
   }
 
+  async function handleCancelRegistration(eventId) {
+    try {
+      await apiDelete(`/items/${eventId}/register`);
+      setData((d) => ({
+        ...d,
+        registrations: (d.registrations || []).filter((r) => r.id !== eventId),
+      }));
+      toast.success("Registration cancelled.");
+    } catch (err) {
+      toast.error(err.message);
+    }
+  }
+
   if (!loaded || loading) {
     return (
       <div className="container section">
@@ -82,7 +95,7 @@ export default function ProfilePage() {
 
   if (!data) return null;
 
-  const { user, items, reviews } = data;
+  const { user, items, reviews, registrations = [] } = data;
   const initials = (user.user_name || "?").charAt(0).toUpperCase();
 
   return (
@@ -245,6 +258,62 @@ export default function ProfilePage() {
                 </Link>
               );
             })}
+          </div>
+        )}
+      </div>
+
+      <div className="section">
+        <h2>Registered Events ({registrations.length})</h2>
+        {registrations.length === 0 ? (
+          <p className="empty">You haven&apos;t registered for any events yet.</p>
+        ) : (
+          <div className="grid" style={{ marginTop: "1rem" }}>
+            {registrations.map((r) => (
+              <div
+                key={r.id}
+                className="card"
+                style={{ display: "flex", flexDirection: "column" }}
+              >
+                <Link
+                  href={`/events/${r.id}`}
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  {r.image && <img src={r.image} alt={r.title} className="card-image" />}
+                  <div className="card-body" style={{ paddingBottom: "0.5rem" }}>
+                    <h3>{r.title}</h3>
+                    {r.timeframe && <div className="meta">📅 {r.timeframe}</div>}
+                    {r.location && <div className="meta">📍 {r.location}</div>}
+                    <div
+                      style={{
+                        fontSize: "0.75rem",
+                        color: "var(--success)",
+                        marginTop: "0.5rem",
+                      }}
+                    >
+                      ✓ Registered
+                    </div>
+                  </div>
+                </Link>
+                <div style={{ padding: "0 1rem 1rem 1rem" }}>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleCancelRegistration(r.id);
+                    }}
+                    className="btn btn-secondary"
+                    style={{
+                      height: 36,
+                      padding: "0 0.85rem",
+                      fontSize: "0.85rem",
+                      width: "100%",
+                    }}
+                  >
+                    Cancel registration
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
