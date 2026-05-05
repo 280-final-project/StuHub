@@ -61,8 +61,6 @@ export default function Navbar() {
       ]
     : [
         { href: "/home", label: "Home" },
-        { href: "/login", label: "Login" },
-        { href: "/signup", label: "Sign Up" },
         { href: "/events", label: "Events" },
         { href: "/resources", label: "Resources" },
         { href: "/deals", label: "Deals" },
@@ -79,25 +77,22 @@ export default function Navbar() {
   return (
     <header className="site-header">
       <div className="inner">
-        <Link className="brand" href={isLoggedIn ? "/home" : "/"}>
-          Student Hub
-        </Link>
+        {/* LEFT: brand + primary nav links */}
+        <div className="nav-left">
+          <Link className="brand" href={isLoggedIn ? "/home" : "/"}>
+            Student Hub
+          </Link>
+          <nav className="nav-links">
+            {navItems.map((item) => (
+              <Link key={item.href} href={item.href}>
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
 
-        <div className="nav-links">
-          {navItems.map((item) => (
-            <Link key={item.href} href={item.href}>
-              {item.label}
-            </Link>
-          ))}
-
-          <button
-            onClick={toggleTheme}
-            className="theme-toggle-btn"
-            type="button"
-          >
-            {theme === "light" ? "🌙" : "☀️"}
-          </button>
-
+        {/* CENTER: search */}
+        <div className="nav-center">
           <div className="search-wrap">
             <span className="icon">🔎</span>
             <input
@@ -137,8 +132,11 @@ export default function Navbar() {
               </div>
             )}
           </div>
+        </div>
 
-          {isLoggedIn && (
+        {/* RIGHT: auth + theme toggle */}
+        <div className="nav-right">
+          {isLoggedIn ? (
             <>
               <Link
                 href="/profile"
@@ -174,7 +172,33 @@ export default function Navbar() {
                 Logout
               </button>
             </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="btn btn-secondary"
+                style={{ height: 40, padding: "0 1rem", fontSize: "0.9rem" }}
+              >
+                Login
+              </Link>
+              <Link
+                href="/signup"
+                className="btn btn-primary"
+                style={{ height: 40, padding: "0 1rem", fontSize: "0.9rem" }}
+              >
+                Sign Up
+              </Link>
+            </>
           )}
+
+          <button
+            onClick={toggleTheme}
+            className="theme-toggle-btn"
+            type="button"
+            aria-label="Toggle theme"
+          >
+            {theme === "light" ? "🌙" : "☀️"}
+          </button>
         </div>
       </div>
     </header>
