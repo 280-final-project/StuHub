@@ -10,6 +10,7 @@ const ADMIN_EMAILS = [
   "prabhjotsingh@sjsu.edu",
   "email3@sjsu.edu",
   "email4@sjsu.edu",
+  "demo.admin@stuhub.app",
 ];
 
 export function AuthProvider({ children }) {
