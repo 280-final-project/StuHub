@@ -15,9 +15,11 @@ A web-based platform for San Jose State University students to discover **events
 
 ## 🌐 Live Demo
 
-- **Frontend** (Vercel): _deploying — URL will be added once live_
+- **Frontend** (Vercel): **https://stu-hub-phi.vercel.app**
 - **Backend API** (Render free tier): https://stuhub-sm73.onrender.com — cold start ~30s after idle, then snappy
 - **Database**: Neon Postgres (cloud-hosted from day one)
+
+**Demo credentials** (admin + two students) are documented in [DEMO_USERS.md](DEMO_USERS.md) — use the email/password form on the login page, not "Continue with Google".
 
 > The earlier `hub4campus.netlify.app` site is the pre-Next.js static frontend (Sprint 1-4). It doesn't have the Sprint 5 AI features, search/filter, profile page, or any of the typed-items work. Use the URLs above.
 
@@ -379,7 +381,9 @@ After seeding, the chat (✨ Ask AI bottom-right) handles cross-type questions l
 Sign-in fails with `redirect_uri_mismatch` until the deployed frontend URL is whitelisted. Go to **Google Cloud Console → APIs & Services → Credentials → your OAuth Client ID** and add to **Authorized JavaScript origins**:
 
 - `http://localhost:3000` (already there for local dev)
-- `https://<your-vercel-domain>.vercel.app` (add this once Vercel gives you the URL)
+- `https://stu-hub-phi.vercel.app` (the live Vercel deploy)
+
+If Vercel ever issues a new preview URL on a different subdomain, add that too — Google enforces an exact match.
 
 ### Verifying a fresh deploy
 
