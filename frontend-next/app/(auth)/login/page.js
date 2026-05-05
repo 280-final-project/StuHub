@@ -33,7 +33,7 @@ function LoginForm() {
       <div className="auth-shell">
         <div className="auth-brand-row">
           <Link href="/" className="auth-brand-link">
-            <span className="auth-brand-icon">🎓</span> CampusHub
+            <span className="auth-brand-icon">🎓</span> Student Hub
           </Link>
         </div>
 
@@ -96,7 +96,7 @@ function LoginForm() {
         </div>
 
         <p className="auth-legal">
-          By continuing you agree to CampusHub&apos;s{" "}
+          By continuing you agree to Student Hub&apos;s{" "}
           <a href="#">Terms of Service</a> and{" "}
           <a href="#">Privacy Policy</a>.
         </p>

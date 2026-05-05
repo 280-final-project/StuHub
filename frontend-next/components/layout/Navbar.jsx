@@ -6,7 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 
 const searchItems = [
-  { label: "Home", url: "/home", type: "Page", keywords: ["landing", "main", "dashboard", "campushub"] },
+  { label: "Home", url: "/home", type: "Page", keywords: ["landing", "main", "dashboard", "studenthub", "student hub"] },
   { label: "Events", url: "/events", type: "Page", keywords: ["activities", "campus events", "upcoming"] },
   { label: "Resources", url: "/resources", type: "Page", keywords: ["student support", "services", "help"] },
   { label: "Deals", url: "/deals", type: "Page", keywords: ["discounts", "offers", "student deals"] },
@@ -81,7 +81,7 @@ export default function Navbar() {
     <header className="site-header">
       <div className="inner">
         <Link className="brand" href={isLoggedIn ? "/home" : "/"}>
-          CampusHub
+          Student Hub
         </Link>
 
         <div className="nav-links">

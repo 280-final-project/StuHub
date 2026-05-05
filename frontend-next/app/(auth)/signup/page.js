@@ -40,7 +40,7 @@ function SignupForm() {
       <div className="auth-shell">
         <div className="auth-brand-row">
           <Link href="/" className="auth-brand-link">
-            <span className="auth-brand-icon">🎓</span> CampusHub
+            <span className="auth-brand-icon">🎓</span> Student Hub
           </Link>
         </div>
 
@@ -51,7 +51,7 @@ function SignupForm() {
           </div>
           <h1 className="auth-big-title">Create your account</h1>
           <p className="auth-big-subtitle">
-            Join CampusHub to discover events, resources &amp; deals
+            Join Student Hub to discover events, resources &amp; deals
           </p>
 
           <form onSubmit={handleSubmit} style={{ width: "100%" }}>
@@ -119,7 +119,7 @@ function SignupForm() {
         </div>
 
         <p className="auth-legal">
-          By continuing you agree to CampusHub&apos;s{" "}
+          By continuing you agree to Student Hub&apos;s{" "}
           <a href="#">Terms of Service</a> and{" "}
           <a href="#">Privacy Policy</a>.
         </p>

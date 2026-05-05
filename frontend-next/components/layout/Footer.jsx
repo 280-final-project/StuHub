@@ -5,7 +5,7 @@ export default function Footer() {
     <footer className="site-footer">
       <div className="inner">
         <div className="brand" style={{ fontSize: "1.15rem" }}>
-          CampusHub
+          Student Hub
         </div>
         <div className="nav-links">
           <Link href="/about">About</Link>
@@ -13,7 +13,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="container footer-bottom">
-        Built with ❤️ by the CampusHub Team
+        Built with ❤️ by the Student Hub Team
       </div>
     </footer>
   );

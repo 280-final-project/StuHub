@@ -7,7 +7,7 @@ import ClientProviders from "@/components/layout/ClientProviders";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "CampusHub",
+  title: "Student Hub",
   description: "Discover campus events, academic resources, and student deals for SJSU students.",
 };
 

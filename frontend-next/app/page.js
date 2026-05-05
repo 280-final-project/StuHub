@@ -53,7 +53,7 @@ export default function LandingPage() {
 
       <section className="landing-hero">
         <div className="hero-content" ref={heroRef}>
-          <h1>CampusHub</h1>
+          <h1>Student Hub</h1>
           {LINES.map((line, i) => (
             <p className="hero-line" key={i}>
               {line}

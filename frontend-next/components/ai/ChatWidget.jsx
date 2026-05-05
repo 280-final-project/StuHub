@@ -107,7 +107,7 @@ export default function ChatWidget() {
       >
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <span style={{ fontSize: "1.1rem" }}>✨</span>
-          <strong style={{ color: "var(--primary)" }}>StuHub Assistant</strong>
+          <strong style={{ color: "var(--primary)" }}>Student Hub Assistant</strong>
         </div>
         <button
           onClick={() => setOpen(false)}
@@ -139,7 +139,7 @@ export default function ChatWidget() {
         {messages.length === 0 && (
           <div style={{ color: "var(--muted)", fontSize: "0.9rem" }}>
             <p style={{ margin: "0 0 0.75rem 0" }}>
-              Ask about campus events. I only know what&apos;s posted on StuHub.
+              Ask about campus events. I only know what&apos;s posted on Student Hub.
             </p>
             <p style={{ margin: "0 0 0.5rem 0", fontSize: "0.8rem" }}>Try:</p>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>

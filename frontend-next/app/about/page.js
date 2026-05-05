@@ -11,13 +11,13 @@ export default function AboutPage() {
       <div className="page-header">
         <h1 className="page-title">About</h1>
         <p className="page-subtitle">
-          Learn more about CampusHub and the team behind it.
+          Learn more about Student Hub and the team behind it.
         </p>
       </div>
 
       <div className="about-copy">
         <p style={{ lineHeight: 1.7, color: "var(--muted)" }}>
-          CampusHub is a student-built platform designed to help San José State
+          Student Hub is a student-built platform designed to help San José State
           University students discover campus events, access academic resources,
           and find the best local deals — all in one place. Our mission is to
           make campus life easier, more connected, and more fun.
@@ -42,8 +42,8 @@ export default function AboutPage() {
         <h2>Contact</h2>
         <p style={{ color: "var(--muted)", lineHeight: 1.7 }}>
           Have questions or feedback? Reach out to us at{" "}
-          <a href="mailto:team@campushub.dev" className="text-link">
-            team@campushub.dev
+          <a href="mailto:team@studenthub.dev" className="text-link">
+            team@studenthub.dev
           </a>
         </p>
       </div>
