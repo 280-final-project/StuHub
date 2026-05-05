@@ -36,6 +36,17 @@ const getMe = async (req, res) => {
       [req.user.user_id]
     );
 
+    const registrations = await pool.query(
+      `SELECT i.item_id, i.item_name, i.item_desc, i.timeframe, i.loc_content,
+              i.img_url, i.item_type, i.approval_status, i.ai_summary,
+              er.registered_at
+       FROM event_registrations er
+       JOIN items i ON er.item_id = i.item_id
+       WHERE er.user_id = $1
+       ORDER BY er.registered_at DESC`,
+      [req.user.user_id]
+    );
+
     res.json({
       user: {
         ...publicUser(u.rows[0]),
@@ -61,6 +72,18 @@ const getMe = async (req, res) => {
         item_id: row.item_id,
         item_name: row.item_name,
         created_at: row.created_at,
+      })),
+      registrations: registrations.rows.map((row) => ({
+        id: row.item_id,
+        title: row.item_name,
+        description: row.item_desc,
+        timeframe: row.timeframe,
+        location: row.loc_content,
+        image: row.img_url,
+        item_type: row.item_type,
+        approval_status: row.approval_status,
+        ai_summary: row.ai_summary,
+        registered_at: row.registered_at,
       })),
     });
   } catch (err) {
