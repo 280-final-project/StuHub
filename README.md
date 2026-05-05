@@ -13,6 +13,16 @@ A web-based platform for San Jose State University students to discover **events
 
 ---
 
+## 🌐 Live Demo
+
+- **Frontend** (Vercel): _deploying — URL will be added once live_
+- **Backend API** (Render free tier): https://stuhub-sm73.onrender.com — cold start ~30s after idle, then snappy
+- **Database**: Neon Postgres (cloud-hosted from day one)
+
+> The earlier `hub4campus.netlify.app` site is the pre-Next.js static frontend (Sprint 1-4). It doesn't have the Sprint 5 AI features, search/filter, profile page, or any of the typed-items work. Use the URLs above.
+
+---
+
 ## ✨ Features
 
 ### Discover
@@ -338,6 +348,51 @@ After seeding, the chat (✨ Ask AI bottom-right) handles cross-type questions l
 | 3 | Authentication | Google OAuth + JWT, route protection, image uploads |
 | 4 | Reviews & launch | Review system, approval flow, admin dashboard |
 | 5 | AI & polish | Gemini summary, chat assistant, typed items, search/filter, profile page, toast notifications, skeleton loaders, star-rated reviews |
+
+---
+
+## ☁️ Deployment
+
+| Tier | Host | Notes |
+|---|---|---|
+| Frontend | **Vercel** (free) | Auto-deploys on push to `main`. Root directory: `frontend-next/`, framework auto-detected as Next.js. |
+| Backend | **Render** (free web service) | Auto-deploys on push to `main`. Root directory: `backend/`. Build: `npm install`. Start: `npm start`. Health check path: `/health`. Free tier sleeps after 15 min idle (~30s cold start). |
+| Database | **Neon Postgres** (free) | Connection string includes `?sslmode=require`; the `pg` pool config sets `rejectUnauthorized: false` for Neon's certificate. |
+| Images | **Cloudinary** (free tier) | Event uploads land here via `multer-storage-cloudinary`. |
+| AI | **Google Gemini** (free tier) | `gemini-2.5-flash` for summaries, `gemini-2.5-flash-lite` for chat. |
+
+### Required environment variables on the hosts
+
+**Render (backend)** — set in the dashboard, never committed:
+- `DATABASE_URL`, `JWT_SECRET`, `GOOGLE_CLIENT_ID`
+- `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
+- `GEMINI_API_KEY`, `GEMINI_MODEL`, `GEMINI_CHAT_MODEL`
+- `AI_SUMMARY_ENABLED=true`, `AI_CHAT_ENABLED=true`
+- ⚠️ **Don't set `PORT`** — Render injects it dynamically; the server reads `process.env.PORT`.
+
+**Vercel (frontend)** — set in Project Settings → Environment Variables:
+- `NEXT_PUBLIC_API_URL` = `https://stuhub-sm73.onrender.com`
+- `NEXT_PUBLIC_GOOGLE_CLIENT_ID` = same value used in the backend
+
+### Google OAuth — authorized origins
+
+Sign-in fails with `redirect_uri_mismatch` until the deployed frontend URL is whitelisted. Go to **Google Cloud Console → APIs & Services → Credentials → your OAuth Client ID** and add to **Authorized JavaScript origins**:
+
+- `http://localhost:3000` (already there for local dev)
+- `https://<your-vercel-domain>.vercel.app` (add this once Vercel gives you the URL)
+
+### Verifying a fresh deploy
+
+After a deploy lands, hit:
+```bash
+curl https://stuhub-sm73.onrender.com/health                          # → {"status":"ok"}
+curl https://stuhub-sm73.onrender.com/items?type=event                # → [8 events]
+curl -X POST https://stuhub-sm73.onrender.com/ai/chat \
+  -H 'Content-Type: application/json' \
+  -d '{"message":"What free food events are there?"}'                 # → {response, relatedItems}
+```
+
+Then open the Vercel frontend URL, sign in with a `@sjsu.edu` Google account, and confirm the chat widget responds and the events page renders 8 seeded events with AI summary badges.
 
 ---
 
