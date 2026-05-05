@@ -38,8 +38,9 @@ A web-based platform for San Jose State University students to discover **events
 - **AI chat assistant** — floating bottom-right widget that answers natural-language questions across events, deals, and resources from the live DB. Returns typed `Event #N` / `Deal #N` / `Resource #N` chips that link straight to the source
 
 ### Community
-- Sign in with your SJSU Google account
+- Sign in with your SJSU Google account or email/password
 - Post events with image upload (stored on Cloudinary)
+- **Register / RSVP** for events with a one-click toggle and live attendee count
 - **Star-rated reviews** on every event with aggregate average rating
 - Owners and admins can edit or delete their own content
 
@@ -49,11 +50,12 @@ A web-based platform for San Jose State University students to discover **events
 - Rate limiting on the AI chat endpoint (10 req/hr/IP)
 
 ### User experience
-- Personal **profile page** — avatar, inline edit-in-place name and bio
-- **My Events** with approval-status pills, **My Reviews** with stars
+- Personal **profile page** — avatar, inline edit-in-place name and bio, profile icon in the top-right of the navbar
+- **My Events** (posted), **Registered Events** (with cancel-registration), **My Reviews** (with stars) — all on one page
+- **Contact page** with a working send-message form (frontend stub for the demo)
 - Toast notifications throughout (no more browser `alert()` popups)
 - Skeleton loaders on listing pages
-- Light/dark theme variables in place (toggle present in navbar)
+- Light/dark theme variables in place (toggle on the far-right of the navbar)
 
 ---
 
@@ -214,6 +216,7 @@ psql $DATABASE_URL -f database/studenthub.sql                                # b
 psql $DATABASE_URL -f database/migrations/2026-05-03_ai_features.sql
 psql $DATABASE_URL -f database/migrations/2026-05-03_typed_items_and_metadata.sql
 psql $DATABASE_URL -f database/migrations/2026-05-04_review_rating.sql
+psql $DATABASE_URL -f database/migrations/2026-05-04_event_registrations.sql
 ```
 
 ### 4. (Optional) Seed demo data
@@ -269,6 +272,12 @@ All paths are relative to `http://localhost:5001`. Routes marked **🔒** requir
 | POST | `/reviews` | 🔒 Create review with optional 1-5 rating |
 | DELETE | `/reviews/:id` | 🔒 Delete review (owner or admin) |
 
+### Event Registrations
+| Method | Path | Description |
+|---|---|---|
+| POST | `/items/:id/register` | 🔒 Register caller for an event. Idempotent. Returns `{count, registered}` |
+| DELETE | `/items/:id/register` | 🔒 Cancel caller's registration. Returns `{count, registered}` |
+
 ### AI
 | Method | Path | Description |
 |---|---|---|
@@ -310,6 +319,9 @@ All paths are relative to `http://localhost:5001`. Routes marked **🔒** requir
 
 ### `reviews`
 `review_id` (PK), `review_header`, `review_desc`, `rating SMALLINT CHECK (1..5)`, `user_id` (FK), `item_id` (FK, `ON DELETE CASCADE`), `created_at`, `updated_at`.
+
+### `event_registrations`
+`registration_id` (PK), `user_id` (FK → users, `ON DELETE CASCADE`), `item_id` (FK → items, `ON DELETE CASCADE`), `registered_at`. `UNIQUE(user_id, item_id)` so duplicate registrations are a DB-level no-op.
 
 ---
 
