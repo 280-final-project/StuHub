@@ -9,7 +9,7 @@ export default function Footer() {
         </div>
         <div className="nav-links">
           <Link href="/about">About</Link>
-          <Link href="/about#contact">Contact</Link>
+          <Link href="/contact">Contact</Link>
         </div>
       </div>
       <div className="container footer-bottom">
