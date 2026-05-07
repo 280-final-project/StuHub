@@ -1,7 +1,7 @@
 const pool = require("../config/db");
-const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { OAuth2Client } = require("google-auth-library");
+const { issueAuthToken, publicAuthUser, normalizeEmail } = require("../utils/authHelpers");
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -20,7 +20,7 @@ const googleLogin = async (req, res) => {
 
     const payload = ticket.getPayload();
 
-    const email = payload.email?.toLowerCase();
+    const email = normalizeEmail(payload.email);
     const userName = payload.name || "";
     const pfpUrl = payload.picture || "";
 
@@ -60,24 +60,10 @@ const googleLogin = async (req, res) => {
       user = updateResult.rows[0];
     }
 
-    const token = jwt.sign(
-      {
-        user_id: user.user_id,
-        email: user.email,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-
     return res.json({
       message: "Google auth successful",
-      token,
-      user: {
-        user_id: user.user_id,
-        user_name: user.user_name,
-        email: user.email,
-        pfp_url: user.pfp_url,
-      },
+      token: issueAuthToken(user),
+      user: publicAuthUser(user),
     });
   } catch (err) {
     console.error("Google auth error:", err);
@@ -99,9 +85,8 @@ const signup = async (req, res) => {
   }
 
   try {
-    const existing = await pool.query("SELECT user_id FROM users WHERE email = $1", [
-      email.toLowerCase(),
-    ]);
+    const normalized = normalizeEmail(email);
+    const existing = await pool.query("SELECT user_id FROM users WHERE email = $1", [normalized]);
 
     if (existing.rows.length > 0) {
       return res.status(409).json({ error: "An account with this email already exists" });
@@ -113,26 +98,15 @@ const signup = async (req, res) => {
       `INSERT INTO users (user_name, email, password_hash, created_at)
        VALUES ($1, $2, $3, NOW())
        RETURNING user_id, user_name, email, pfp_url`,
-      [user_name.trim(), email.toLowerCase(), passwordHash]
+      [user_name.trim(), normalized, passwordHash]
     );
 
     const user = result.rows[0];
 
-    const token = jwt.sign(
-      { user_id: user.user_id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-
     return res.status(201).json({
       message: "Signup successful",
-      token,
-      user: {
-        user_id: user.user_id,
-        user_name: user.user_name,
-        email: user.email,
-        pfp_url: user.pfp_url,
-      },
+      token: issueAuthToken(user),
+      user: publicAuthUser(user),
     });
   } catch (err) {
     console.error("Signup error:", err);
@@ -148,9 +122,10 @@ const login = async (req, res) => {
   }
 
   try {
-    const result = await pool.query("SELECT * FROM users WHERE email = $1", [
-      email.toLowerCase(),
-    ]);
+    const result = await pool.query(
+      "SELECT * FROM users WHERE email = $1",
+      [normalizeEmail(email)]
+    );
 
     const user = result.rows[0];
 
@@ -164,21 +139,10 @@ const login = async (req, res) => {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    const token = jwt.sign(
-      { user_id: user.user_id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-
     return res.json({
       message: "Login successful",
-      token,
-      user: {
-        user_id: user.user_id,
-        user_name: user.user_name,
-        email: user.email,
-        pfp_url: user.pfp_url,
-      },
+      token: issueAuthToken(user),
+      user: publicAuthUser(user),
     });
   } catch (err) {
     console.error("Login error:", err);
