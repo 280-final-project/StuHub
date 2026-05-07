@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { sendChatMessage } from "@/lib/api";
+import { relatedItemLink } from "@/lib/chatRelatedItems";
 
 const SUGGESTIONS = [
   "What events are happening this week?",
@@ -186,20 +187,11 @@ export default function ChatWidget() {
             <div>{m.text}</div>
             {m.relatedItems && m.relatedItems.length > 0 && (
               <div style={{ marginTop: "0.5rem", display: "flex", flexWrap: "wrap", gap: "0.3rem" }}>
-                {m.relatedItems.map(({ id, type }) => {
-                  const href =
-                    type === "event" ? `/events/${id}` :
-                    type === "deal" ? `/deals` :
-                    type === "resource" ? `/resources` :
-                    "/";
-                  const label =
-                    type === "event" ? "Event" :
-                    type === "deal" ? "Deal" :
-                    type === "resource" ? "Resource" :
-                    "Item";
+                {m.relatedItems.map((item) => {
+                  const { href, label } = relatedItemLink(item);
                   return (
                     <Link
-                      key={`${type}-${id}`}
+                      key={`${item.type}-${item.id}`}
                       href={href}
                       onClick={() => setOpen(false)}
                       style={{
@@ -211,7 +203,7 @@ export default function ChatWidget() {
                         border: "1px solid var(--border)",
                       }}
                     >
-                      {label} #{id}
+                      {label} #{item.id}
                     </Link>
                   );
                 })}
