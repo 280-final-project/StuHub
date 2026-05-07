@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { fetchJSON, apiPatch } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
-import { SJSU_LOCATIONS } from "@/lib/locations";
 import { splitTimeframe, splitLocation } from "@/lib/utils";
+import BuildingRoomFields from "@/components/events/BuildingRoomFields";
 import { toast } from "sonner";
 
 export default function EditEventPage() {
@@ -134,25 +134,12 @@ export default function EditEventPage() {
           </div>
         </div>
 
-        <div className="form-group">
-          <label>Building</label>
-          <select value={building} onChange={(e) => setBuilding(e.target.value)} required>
-            <option value="">Select a building…</option>
-            {SJSU_LOCATIONS.map((loc) => (
-              <option key={loc} value={loc}>{loc}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label>Room (optional)</label>
-          <input
-            type="text"
-            value={room}
-            onChange={(e) => setRoom(e.target.value)}
-            placeholder="e.g. 189"
-          />
-        </div>
+        <BuildingRoomFields
+          building={building}
+          onBuildingChange={setBuilding}
+          room={room}
+          onRoomChange={setRoom}
+        />
 
         <div className="form-group">
           <label>Image URL</label>
