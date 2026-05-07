@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import PreviewSection from "@/components/home/PreviewSection";
+import HomePreviewModal from "@/components/home/HomePreviewModal";
 
 const homeEvents = [
   {
@@ -118,18 +120,10 @@ const quickCards = [
 ];
 
 export default function HomePage() {
-  const [modalOpen, setModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
-  const openModal = (item) => {
-    setSelectedItem(item);
-    setModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalOpen(false);
-    setSelectedItem(null);
-  };
+  const openModal = (item) => setSelectedItem(item);
+  const closeModal = () => setSelectedItem(null);
 
   return (
     <div className="container">
@@ -176,111 +170,29 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Upcoming Events */}
-      <section className="section">
-        <div className="section-head">
-          <h2>Upcoming Events</h2>
-          <Link href="/events" className="text-link">
-            View all →
-          </Link>
-        </div>
-        <div className="home-preview-grid">
-          {homeEvents.map((ev) => (
-            <div
-              className="preview-card card preview-clickable"
-              key={ev.id}
-              onClick={() => openModal(ev)}
-            >
-              <span className="preview-badge">{ev.category}</span>
-              <h3>{ev.title}</h3>
-              <p className="preview-meta">
-                {ev.date} · {ev.location}
-              </p>
-              <p>{ev.description.slice(0, 90)}…</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      <PreviewSection
+        title="Upcoming Events"
+        viewAllHref="/events"
+        items={homeEvents}
+        onItemClick={openModal}
+        truncateDescription
+      />
 
-      {/* Essential Resources */}
-      <section className="section">
-        <div className="section-head">
-          <h2>Essential Resources</h2>
-          <Link href="/resources" className="text-link">
-            View all →
-          </Link>
-        </div>
-        <div className="home-preview-grid">
-          {homeResources.map((r) => (
-            <div
-              className="preview-card card preview-clickable"
-              key={r.id}
-              onClick={() => openModal(r)}
-            >
-              <span className="preview-badge">{r.category}</span>
-              <h3>{r.title}</h3>
-              <p>{r.description}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      <PreviewSection
+        title="Essential Resources"
+        viewAllHref="/resources"
+        items={homeResources}
+        onItemClick={openModal}
+      />
 
-      {/* Featured Deals */}
-      <section className="section">
-        <div className="section-head">
-          <h2>Featured Deals</h2>
-          <Link href="/deals" className="text-link">
-            View all →
-          </Link>
-        </div>
-        <div className="home-preview-grid">
-          {homeDeals.map((d) => (
-            <div
-              className="preview-card card preview-clickable"
-              key={d.id}
-              onClick={() => openModal(d)}
-            >
-              <span className="preview-badge">{d.category}</span>
-              <h3>{d.title}</h3>
-              <p>{d.description}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      <PreviewSection
+        title="Featured Deals"
+        viewAllHref="/deals"
+        items={homeDeals}
+        onItemClick={openModal}
+      />
 
-      {/* Modal */}
-      {modalOpen && selectedItem && (
-        <div className="modal" onClick={closeModal}>
-          <div
-            className="modal-panel home-event-modal-panel"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button className="modal-close" onClick={closeModal}>
-              ×
-            </button>
-            <div className="home-modal-top">
-              <div className="home-modal-icon">{selectedItem.icon}</div>
-              <div className="home-modal-heading">
-                <h2>{selectedItem.title}</h2>
-                {selectedItem.date && (
-                  <p className="home-event-modal-meta">
-                    {selectedItem.date}
-                    {selectedItem.location && ` · ${selectedItem.location}`}
-                  </p>
-                )}
-                {selectedItem.category && (
-                  <span className="preview-badge" style={{ marginTop: "0.5rem" }}>
-                    {selectedItem.category}
-                  </span>
-                )}
-              </div>
-            </div>
-            <p style={{ color: "var(--muted)", lineHeight: 1.7 }}>
-              {selectedItem.description}
-            </p>
-          </div>
-        </div>
-      )}
+      <HomePreviewModal item={selectedItem} onClose={closeModal} />
     </div>
   );
 }
