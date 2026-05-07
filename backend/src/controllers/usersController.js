@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const formatItemResponse = require("../utils/formatItemResponse");
 
 function publicUser(row) {
   if (!row) return null;
@@ -52,18 +53,9 @@ const getMe = async (req, res) => {
         ...publicUser(u.rows[0]),
         email: u.rows[0].email,
       },
-      items: items.rows.map((row) => ({
-        id: row.item_id,
-        title: row.item_name,
-        description: row.item_desc,
-        timeframe: row.timeframe,
-        location: row.loc_content,
-        image: row.img_url,
-        item_type: row.item_type,
-        approval_status: row.approval_status,
-        ai_summary: row.ai_summary,
-        created_at: row.created_at,
-      })),
+      items: items.rows.map((row) =>
+        formatItemResponse(row, { created_at: row.created_at })
+      ),
       reviews: reviews.rows.map((row) => ({
         id: row.review_id,
         header: row.review_header,
@@ -73,18 +65,9 @@ const getMe = async (req, res) => {
         item_name: row.item_name,
         created_at: row.created_at,
       })),
-      registrations: registrations.rows.map((row) => ({
-        id: row.item_id,
-        title: row.item_name,
-        description: row.item_desc,
-        timeframe: row.timeframe,
-        location: row.loc_content,
-        image: row.img_url,
-        item_type: row.item_type,
-        approval_status: row.approval_status,
-        ai_summary: row.ai_summary,
-        registered_at: row.registered_at,
-      })),
+      registrations: registrations.rows.map((row) =>
+        formatItemResponse(row, { registered_at: row.registered_at })
+      ),
     });
   } catch (err) {
     console.error(err);

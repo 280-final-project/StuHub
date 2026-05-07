@@ -1,6 +1,7 @@
 const formatItem = require("../utils/formatItem");
 const summarizeText = require("../utils/summarizeText");
 const pool = require("../config/db");
+const { parseAdminFlag, parseMetadata, parseIsTimed } = require("../utils/requestHelpers");
 
 const ITEM_TYPES = ["event", "deal", "resource", "place"];
 
@@ -111,31 +112,21 @@ const createItem = async (req, res) => {
     if (!ITEM_TYPES.includes(item_type)) {
       return res.status(400).json({ error: `item_type must be one of: ${ITEM_TYPES.join(", ")}` });
     }
-    let metadata = null;
-    if (rawMetadata !== undefined && rawMetadata !== null && rawMetadata !== "") {
-      try {
-        metadata = typeof rawMetadata === "string" ? JSON.parse(rawMetadata) : rawMetadata;
-      } catch {
-        return res.status(400).json({ error: "metadata must be valid JSON" });
-      }
+
+    const metaResult = parseMetadata(rawMetadata);
+    if (!metaResult.ok) {
+      return res.status(400).json({ error: metaResult.error });
     }
+    const metadata = metaResult.value === undefined ? null : metaResult.value;
 
     const user_id = req.user?.user_id;
     const img_url = req.file ? req.file.path : (bodyImgUrl || null);
 
-    let parsedIsTimed = null;
-
-    if (is_timed === "true" || is_timed === true) {
-      parsedIsTimed = true;
-    } else if (is_timed === "false" || is_timed === false) {
-      parsedIsTimed = false;
-    } else if (is_timed === undefined || is_timed === null || is_timed === "") {
-      parsedIsTimed = null;
-    } else {
-      return res.status(400).json({
-        error: "is_timed must be true or false"
-      });
+    const isTimedResult = parseIsTimed(is_timed);
+    if (!isTimedResult.ok) {
+      return res.status(400).json({ error: isTimedResult.error });
     }
+    const parsedIsTimed = isTimedResult.value;
 
     if (!item_name || !loc_content) {
       return res.status(400).json({
@@ -149,7 +140,7 @@ const createItem = async (req, res) => {
       });
     }
 
-    const isAdmin = req.headers["x-admin"] === "true";
+    const isAdmin = parseAdminFlag(req);
 
     const ai_summary = item_type === "event" ? await summarizeText(item_name, item_desc) : null;
 
@@ -255,20 +246,13 @@ const updateItem = async (req, res) => {
     metadata: rawMetadata,
   } = req.body;
   const user_id = req.user.user_id;
-  const isAdmin = req.headers["x-admin"] === "true";
+  const isAdmin = parseAdminFlag(req);
 
-  let metadata;
-  if (rawMetadata !== undefined) {
-    if (rawMetadata === null || rawMetadata === "") {
-      metadata = null;
-    } else {
-      try {
-        metadata = typeof rawMetadata === "string" ? JSON.parse(rawMetadata) : rawMetadata;
-      } catch {
-        return res.status(400).json({ error: "metadata must be valid JSON" });
-      }
-    }
+  const metaResult = parseMetadata(rawMetadata);
+  if (!metaResult.ok) {
+    return res.status(400).json({ error: metaResult.error });
   }
+  const metadata = metaResult.value;
 
   try {
     const existing = await pool.query(
@@ -330,7 +314,7 @@ const updateItem = async (req, res) => {
 const deleteItem = async (req, res) => {
   const { id } = req.params;
   const user_id = req.user.user_id;
-  const isAdmin = req.headers["x-admin"] === "true";
+  const isAdmin = parseAdminFlag(req);
 
   try {
     const existing = await pool.query(

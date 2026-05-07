@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const { parseAdminFlag } = require("../utils/requestHelpers");
 
 function formatReview(row) {
   return {
@@ -78,7 +79,7 @@ const createReview = async (req, res) => {
 const deleteReview = async (req, res) => {
   const { id } = req.params;
   const user_id = req.user.user_id;
-  const isAdmin = req.headers["x-admin"] === "true";
+  const isAdmin = parseAdminFlag(req);
 
   try {
     const existing = await pool.query(

@@ -57,8 +57,8 @@ const googleLogin = async (req, res) => {
         [userName, pfpUrl, idToken, email]
       );
 
-  user = updateResult.rows[0];
-}
+      user = updateResult.rows[0];
+    }
 
     const token = jwt.sign(
       {
