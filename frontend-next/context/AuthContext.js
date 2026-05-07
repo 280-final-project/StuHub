@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { readAuthState, writeAuthState, clearAuthState } from "@/lib/authStorage";
 
 const AuthContext = createContext(null);
 
@@ -22,26 +23,19 @@ export function AuthProvider({ children }) {
   const router = useRouter();
 
   useEffect(() => {
-    const savedToken = localStorage.getItem("token");
-    const savedUser = JSON.parse(localStorage.getItem("user") || "null");
-    const savedIsLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-    const savedIsAdmin = localStorage.getItem("isAdmin") === "true";
-
-    if (savedIsLoggedIn && savedToken && savedUser) {
-      setToken(savedToken);
-      setUser(savedUser);
+    const saved = readAuthState();
+    if (saved) {
+      setToken(saved.token);
+      setUser(saved.user);
       setIsLoggedIn(true);
-      setIsAdmin(savedIsAdmin);
+      setIsAdmin(saved.isAdmin);
     }
     setLoaded(true);
   }, []);
 
   const persistAuth = useCallback((authToken, authUser) => {
     const admin = ADMIN_EMAILS.includes(authUser.email?.toLowerCase());
-    localStorage.setItem("isLoggedIn", "true");
-    localStorage.setItem("token", authToken);
-    localStorage.setItem("user", JSON.stringify(authUser));
-    localStorage.setItem("isAdmin", String(admin));
+    writeAuthState({ token: authToken, user: authUser, isAdmin: admin });
 
     setToken(authToken);
     setUser(authUser);
@@ -68,10 +62,7 @@ export function AuthProvider({ children }) {
   );
 
   const logout = useCallback(() => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("isAdmin");
-    localStorage.setItem("isLoggedIn", "false");
+    clearAuthState();
     setToken(null);
     setUser(null);
     setIsLoggedIn(false);
