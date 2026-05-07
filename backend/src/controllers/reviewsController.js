@@ -1,5 +1,10 @@
 const pool = require("../config/db");
-const { parseAdminFlag, serverError, ensureOwnerOrAdmin } = require("../utils/requestHelpers");
+const {
+  parseAdminFlag,
+  serverError,
+  ensureOwnerOrAdmin,
+  parseRating,
+} = require("../utils/requestHelpers");
 
 function formatReview(row) {
   return {
@@ -43,14 +48,11 @@ const createReview = async (req, res) => {
     return res.status(400).json({ error: "item_id is required" });
   }
 
-  let parsedRating = null;
-  if (rating !== undefined && rating !== null && rating !== "") {
-    const n = Number(rating);
-    if (!Number.isInteger(n) || n < 1 || n > 5) {
-      return res.status(400).json({ error: "rating must be an integer between 1 and 5" });
-    }
-    parsedRating = n;
+  const ratingResult = parseRating(rating);
+  if (!ratingResult.ok) {
+    return res.status(400).json({ error: ratingResult.error });
   }
+  const parsedRating = ratingResult.value;
 
   try {
     const inserted = await pool.query(

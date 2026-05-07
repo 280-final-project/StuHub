@@ -40,10 +40,22 @@ function parseIsTimed(value) {
   return { ok: false, error: "is_timed must be true or false" };
 }
 
+function parseRating(value) {
+  if (value === undefined || value === null || value === "") {
+    return { ok: true, value: null };
+  }
+  const n = Number(value);
+  if (!Number.isInteger(n) || n < 1 || n > 5) {
+    return { ok: false, error: "rating must be an integer between 1 and 5" };
+  }
+  return { ok: true, value: n };
+}
+
 module.exports = {
   parseAdminFlag,
   parseMetadata,
   parseIsTimed,
+  parseRating,
   serverError,
   ensureOwnerOrAdmin,
 };
