@@ -10,6 +10,7 @@ import SummaryBadge from "@/components/ai/SummaryBadge";
 import ReviewList from "@/components/reviews/ReviewList";
 import ReviewForm from "@/components/reviews/ReviewForm";
 import RegistrationPanel from "@/components/events/RegistrationPanel";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { toast } from "sonner";
 
 export default function EventDetailPage() {
@@ -203,23 +204,14 @@ export default function EventDetailPage() {
         <ReviewForm onSubmit={handleReviewSubmit} requireLogin={!token} />
       </div>
 
-      {showConfirm && (
-        <div className="modal" onClick={() => setShowConfirm(false)}>
-          <div className="modal-panel" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setShowConfirm(false)}>×</button>
-            <h2 style={{ marginTop: 0 }}>Remove Event</h2>
-            <p>Are you sure you want to remove this event? This action cannot be undone.</p>
-            <div className="actions" style={{ marginTop: "1.5rem" }}>
-              <button className="btn btn-danger" style={{ padding: "0 1.5rem" }} onClick={handleRemove}>
-                Yes, Remove
-              </button>
-              <button className="btn btn-secondary" style={{ padding: "0 1.5rem" }} onClick={() => setShowConfirm(false)}>
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        open={showConfirm}
+        title="Remove Event"
+        message="Are you sure you want to remove this event? This action cannot be undone."
+        confirmLabel="Yes, Remove"
+        onConfirm={handleRemove}
+        onCancel={() => setShowConfirm(false)}
+      />
     </div>
   );
 }
