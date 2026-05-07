@@ -9,6 +9,7 @@
 require("dotenv").config();
 const bcrypt = require("bcrypt");
 const pool = require("../src/config/db");
+const { findUserIdByEmail, findOrCreateUser } = require("./lib/seedHelpers");
 
 const SALT_ROUNDS = 10;
 
@@ -38,21 +39,18 @@ const USERS = [
   let skipped = 0;
   try {
     for (const u of USERS) {
-      const existing = await pool.query(
-        "SELECT user_id FROM users WHERE email = $1",
-        [u.email]
-      );
-      if (existing.rows.length) {
+      if (await findUserIdByEmail(pool, u.email)) {
         console.log(`  skip (exists): ${u.email}`);
         skipped += 1;
         continue;
       }
-      const hash = await bcrypt.hash(u.password, SALT_ROUNDS);
-      await pool.query(
-        `INSERT INTO users (user_name, email, password_hash, bio, created_at)
-         VALUES ($1, $2, $3, $4, NOW())`,
-        [u.user_name, u.email, hash, u.bio]
-      );
+      const password_hash = await bcrypt.hash(u.password, SALT_ROUNDS);
+      await findOrCreateUser(pool, {
+        user_name: u.user_name,
+        email: u.email,
+        bio: u.bio,
+        password_hash,
+      });
       console.log(`  + ${u.email}  (password: ${u.password})`);
       inserted += 1;
     }

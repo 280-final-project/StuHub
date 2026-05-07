@@ -10,21 +10,11 @@ require("dotenv").config();
 const pool = require("../src/config/db");
 const summarizeText = require("../src/utils/summarizeText");
 const { SYSTEM_USER, EVENTS, DEALS, RESOURCES } = require("./seed_demo_fixtures");
+const { findOrCreateUser } = require("./lib/seedHelpers");
 
 async function ensureSystemUser() {
-  const existing = await pool.query(
-    "SELECT user_id FROM users WHERE email = $1",
-    [SYSTEM_USER.email]
-  );
-  if (existing.rows.length) return existing.rows[0].user_id;
-
-  const inserted = await pool.query(
-    `INSERT INTO users (user_name, email, pfp_url, bio)
-     VALUES ($1, $2, $3, $4)
-     RETURNING user_id`,
-    [SYSTEM_USER.user_name, SYSTEM_USER.email, SYSTEM_USER.pfp_url, SYSTEM_USER.bio]
-  );
-  return inserted.rows[0].user_id;
+  const { user_id } = await findOrCreateUser(pool, SYSTEM_USER);
+  return user_id;
 }
 
 async function existingNames(item_type) {
