@@ -7,6 +7,7 @@ import { fetchJSON, apiPatch, apiDelete } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { Skeleton } from "@/components/ui/Skeleton";
 import StarRating from "@/components/reviews/StarRating";
+import ProfileHeader from "@/components/profile/ProfileHeader";
 import { toast } from "sonner";
 
 function statusColor(status) {
@@ -21,10 +22,6 @@ export default function ProfilePage() {
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState(false);
-  const [bio, setBio] = useState("");
-  const [name, setName] = useState("");
-  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (loaded && !isLoggedIn) router.push("/login");
@@ -38,8 +35,6 @@ export default function ProfilePage() {
         const json = await fetchJSON("/users/me");
         if (cancelled) return;
         setData(json);
-        setBio(json.user.bio || "");
-        setName(json.user.user_name || "");
       } catch (err) {
         if (!cancelled) toast.error(err.message);
       } finally {
@@ -52,8 +47,7 @@ export default function ProfilePage() {
     };
   }, [token]);
 
-  async function handleSave() {
-    setSaving(true);
+  async function handleSaveProfile(name, bio) {
     try {
       const updated = await apiPatch("/users/me", { user_name: name, bio });
       setData((d) => ({ ...d, user: { ...d.user, ...updated } }));
@@ -61,11 +55,10 @@ export default function ProfilePage() {
         persistAuth(token, { ...authUser, name: updated.user_name });
       }
       toast.success("Profile updated.");
-      setEditing(false);
+      return true;
     } catch (err) {
       toast.error(err.message);
-    } finally {
-      setSaving(false);
+      return false;
     }
   }
 
@@ -96,129 +89,10 @@ export default function ProfilePage() {
   if (!data) return null;
 
   const { user, items, reviews, registrations = [] } = data;
-  const initials = (user.user_name || "?").charAt(0).toUpperCase();
 
   return (
     <div className="container section">
-      <div
-        style={{
-          display: "flex",
-          gap: "1.5rem",
-          alignItems: "flex-start",
-          flexWrap: "wrap",
-          marginBottom: "2rem",
-        }}
-      >
-        <div
-          style={{
-            width: 96,
-            height: 96,
-            borderRadius: "50%",
-            background: user.pfp_url ? "transparent" : "var(--primary-soft)",
-            color: "var(--primary)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "2.4rem",
-            fontWeight: 700,
-            overflow: "hidden",
-            flexShrink: 0,
-          }}
-        >
-          {user.pfp_url ? (
-            <img
-              src={user.pfp_url}
-              alt=""
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            />
-          ) : (
-            initials
-          )}
-        </div>
-
-        <div style={{ flex: 1, minWidth: 240 }}>
-          {editing ? (
-            <>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "0.5rem 0.75rem",
-                  fontSize: "1.5rem",
-                  fontWeight: 700,
-                  border: "1px solid var(--border)",
-                  borderRadius: "var(--radius-sm)",
-                  background: "var(--surface)",
-                  color: "var(--text)",
-                  marginBottom: "0.75rem",
-                }}
-              />
-              <textarea
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-                placeholder="Add a short bio…"
-                rows={3}
-                style={{
-                  width: "100%",
-                  padding: "0.5rem 0.75rem",
-                  border: "1px solid var(--border)",
-                  borderRadius: "var(--radius-sm)",
-                  background: "var(--surface)",
-                  color: "var(--text)",
-                  marginBottom: "0.75rem",
-                  fontSize: "0.95rem",
-                  fontFamily: "inherit",
-                  resize: "vertical",
-                }}
-              />
-              <div style={{ display: "flex", gap: "0.5rem" }}>
-                <button
-                  className="btn btn-primary"
-                  onClick={handleSave}
-                  disabled={saving}
-                  style={{ height: 40, padding: "0 1rem" }}
-                >
-                  {saving ? "Saving…" : "Save"}
-                </button>
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => {
-                    setEditing(false);
-                    setName(user.user_name || "");
-                    setBio(user.bio || "");
-                  }}
-                  style={{ height: 40, padding: "0 1rem" }}
-                >
-                  Cancel
-                </button>
-              </div>
-            </>
-          ) : (
-            <>
-              <h1 style={{ marginTop: 0, marginBottom: "0.25rem" }}>{user.user_name}</h1>
-              <p style={{ margin: "0 0 0.5rem 0", color: "var(--muted)", fontSize: "0.9rem" }}>
-                {user.email}
-              </p>
-              {user.bio ? (
-                <p style={{ margin: "0 0 1rem 0", lineHeight: 1.6 }}>{user.bio}</p>
-              ) : (
-                <p style={{ margin: "0 0 1rem 0", color: "var(--muted)", fontStyle: "italic" }}>
-                  No bio yet.
-                </p>
-              )}
-              <button
-                className="btn btn-secondary"
-                onClick={() => setEditing(true)}
-                style={{ height: 36, padding: "0 0.9rem", fontSize: "0.85rem" }}
-              >
-                Edit profile
-              </button>
-            </>
-          )}
-        </div>
-      </div>
+      <ProfileHeader user={user} onSave={handleSaveProfile} />
 
       <div className="section">
         <h2>My Events ({items.length})</h2>
