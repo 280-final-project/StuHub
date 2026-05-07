@@ -2,14 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { fetchJSON, apiPatch, apiDelete } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { Skeleton } from "@/components/ui/Skeleton";
-import StarRating from "@/components/reviews/StarRating";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import MyEventsSection from "@/components/profile/MyEventsSection";
 import RegisteredEventsSection from "@/components/profile/RegisteredEventsSection";
+import MyReviewsSection from "@/components/profile/MyReviewsSection";
 import { toast } from "sonner";
 
 export default function ProfilePage() {
@@ -97,42 +96,7 @@ export default function ProfilePage() {
         onCancel={handleCancelRegistration}
       />
 
-      <div className="section">
-        <h2>My Reviews ({reviews.length})</h2>
-        {reviews.length === 0 ? (
-          <p className="empty">You haven&apos;t posted any reviews yet.</p>
-        ) : (
-          <div className="reviews-list" style={{ marginTop: "1rem" }}>
-            {reviews.map((r) => (
-              <Link
-                key={r.id}
-                href={`/events/${r.item_id}`}
-                className="card"
-                style={{ overflow: "visible", textDecoration: "none" }}
-              >
-                <div className="card-body">
-                  <div
-                    style={{
-                      fontSize: "0.8rem",
-                      color: "var(--muted)",
-                      marginBottom: "0.4rem",
-                    }}
-                  >
-                    on <strong style={{ color: "var(--text)" }}>{r.item_name}</strong>
-                  </div>
-                  {r.rating ? (
-                    <div style={{ marginBottom: "0.4rem" }}>
-                      <StarRating value={r.rating} readOnly size={16} />
-                    </div>
-                  ) : null}
-                  {r.header && <h3 style={{ margin: "0 0 0.3rem 0" }}>{r.header}</h3>}
-                  {r.desc && <p style={{ margin: 0 }}>{r.desc}</p>}
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
+      <MyReviewsSection reviews={reviews} />
     </div>
   );
 }
