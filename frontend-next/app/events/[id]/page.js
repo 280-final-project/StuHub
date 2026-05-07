@@ -9,6 +9,7 @@ import { buildMapEmbedUrl } from "@/lib/utils";
 import SummaryBadge from "@/components/ai/SummaryBadge";
 import ReviewList from "@/components/reviews/ReviewList";
 import ReviewForm from "@/components/reviews/ReviewForm";
+import RegistrationPanel from "@/components/events/RegistrationPanel";
 import { toast } from "sonner";
 
 export default function EventDetailPage() {
@@ -145,44 +146,12 @@ export default function EventDetailPage() {
           <SummaryBadge summary={event.ai_summary} />
 
           {event.item_type === "event" && (
-            <div
-              style={{
-                marginTop: "1.25rem",
-                padding: "0.85rem 1rem",
-                background: "var(--surface-soft)",
-                border: "1px solid var(--border)",
-                borderRadius: "var(--radius-sm)",
-                display: "flex",
-                gap: "0.85rem",
-                alignItems: "center",
-                flexWrap: "wrap",
-              }}
-            >
-              <div style={{ flex: 1, minWidth: 160 }}>
-                <div style={{ fontSize: "0.85rem", color: "var(--muted)" }}>
-                  {event.registration_count > 0
-                    ? `${event.registration_count} ${event.registration_count === 1 ? "person is" : "people are"} attending`
-                    : "Be the first to register"}
-                </div>
-                {event.is_registered && (
-                  <div style={{ fontSize: "0.8rem", color: "var(--success)", marginTop: "0.2rem" }}>
-                    ✓ You&apos;re registered
-                  </div>
-                )}
-              </div>
-              <button
-                type="button"
-                onClick={handleRegisterToggle}
-                className={event.is_registered ? "btn btn-secondary" : "btn btn-primary"}
-                style={{ height: 40, padding: "0 1.1rem", fontSize: "0.9rem" }}
-              >
-                {!token
-                  ? "Sign in to register"
-                  : event.is_registered
-                  ? "Cancel registration"
-                  : "Register"}
-              </button>
-            </div>
+            <RegistrationPanel
+              count={event.registration_count || 0}
+              isRegistered={event.is_registered}
+              isAuthenticated={!!token}
+              onToggle={handleRegisterToggle}
+            />
           )}
 
           {event.description && (
