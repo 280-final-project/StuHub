@@ -2,6 +2,13 @@ function parseAdminFlag(req) {
   return req.headers["x-admin"] === "true";
 }
 
+function ensureOwnerOrAdmin(res, { ownerId, requesterId, isAdmin, action }) {
+  if (isAdmin) return true;
+  if (ownerId === requesterId) return true;
+  res.status(403).json({ error: `Not authorized to ${action}` });
+  return false;
+}
+
 function serverError(res, err, label) {
   if (label) {
     console.error(`${label}:`, err);
@@ -33,4 +40,10 @@ function parseIsTimed(value) {
   return { ok: false, error: "is_timed must be true or false" };
 }
 
-module.exports = { parseAdminFlag, parseMetadata, parseIsTimed, serverError };
+module.exports = {
+  parseAdminFlag,
+  parseMetadata,
+  parseIsTimed,
+  serverError,
+  ensureOwnerOrAdmin,
+};

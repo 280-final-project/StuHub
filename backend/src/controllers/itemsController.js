@@ -1,7 +1,13 @@
 const formatItem = require("../utils/formatItem");
 const summarizeText = require("../utils/summarizeText");
 const pool = require("../config/db");
-const { parseAdminFlag, parseMetadata, parseIsTimed, serverError } = require("../utils/requestHelpers");
+const {
+  parseAdminFlag,
+  parseMetadata,
+  parseIsTimed,
+  serverError,
+  ensureOwnerOrAdmin,
+} = require("../utils/requestHelpers");
 
 const ITEM_TYPES = ["event", "deal", "resource", "place"];
 
@@ -260,8 +266,8 @@ const updateItem = async (req, res) => {
 
     const item = existing.rows[0];
 
-    if (!isAdmin && item.user_id !== user_id) {
-      return res.status(403).json({ error: "Not authorized to edit this item" });
+    if (!ensureOwnerOrAdmin(res, { ownerId: item.user_id, requesterId: user_id, isAdmin, action: "edit this item" })) {
+      return;
     }
 
     const nextName = item_name ?? item.item_name;
@@ -321,8 +327,8 @@ const deleteItem = async (req, res) => {
 
     const item = existing.rows[0];
 
-    if (!isAdmin && item.user_id !== user_id) {
-      return res.status(403).json({ error: "Not authorized to delete this item" });
+    if (!ensureOwnerOrAdmin(res, { ownerId: item.user_id, requesterId: user_id, isAdmin, action: "delete this item" })) {
+      return;
     }
 
     await pool.query(`DELETE FROM items WHERE item_id = $1`, [id]);

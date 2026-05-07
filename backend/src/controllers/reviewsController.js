@@ -1,5 +1,5 @@
 const pool = require("../config/db");
-const { parseAdminFlag, serverError } = require("../utils/requestHelpers");
+const { parseAdminFlag, serverError, ensureOwnerOrAdmin } = require("../utils/requestHelpers");
 
 function formatReview(row) {
   return {
@@ -89,8 +89,13 @@ const deleteReview = async (req, res) => {
       return res.status(404).json({ error: "Review not found" });
     }
 
-    if (!isAdmin && existing.rows[0].user_id !== user_id) {
-      return res.status(403).json({ error: "Not authorized to delete this review" });
+    if (!ensureOwnerOrAdmin(res, {
+      ownerId: existing.rows[0].user_id,
+      requesterId: user_id,
+      isAdmin,
+      action: "delete this review",
+    })) {
+      return;
     }
 
     await pool.query(`DELETE FROM reviews WHERE review_id = $1`, [id]);
