@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { fetchJSON, apiPatch, apiDelete } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { toast } from "sonner";
 
 export default function ManageEvents() {
@@ -209,40 +210,18 @@ export default function ManageEvents() {
         </div>
       )}
 
-      {deleteTarget && (
-        <div className="modal" onClick={() => setDeleteTarget(null)}>
-          <div
-            className="modal-panel"
-            onClick={(e) => e.stopPropagation()}
-            style={{ maxWidth: 440, textAlign: "center" }}
-          >
-            <h2 style={{ marginTop: 0 }}>Delete Event?</h2>
-            <p className="muted">
-              Are you sure you want to permanently delete{" "}
-              <strong>"{deleteTarget.title}"</strong>? This cannot be undone.
-            </p>
-            <div
-              className="actions"
-              style={{ justifyContent: "center", marginTop: "1.5rem" }}
-            >
-              <button
-                className="btn btn-secondary"
-                style={{ height: 44, padding: "0 1.25rem" }}
-                onClick={() => setDeleteTarget(null)}
-              >
-                Cancel
-              </button>
-              <button
-                className="btn btn-danger"
-                style={{ height: 44, padding: "0 1.25rem" }}
-                onClick={() => handleDelete(deleteTarget._id)}
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete Event?"
+        message={
+          deleteTarget
+            ? `Are you sure you want to permanently delete "${deleteTarget.title}"? This cannot be undone.`
+            : ""
+        }
+        confirmLabel="Delete"
+        onConfirm={() => handleDelete(deleteTarget?._id)}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }
