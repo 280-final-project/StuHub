@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { fetchJSON } from "@/lib/api";
 import { useDebounced } from "@/lib/hooks";
+import { mapSjsuEvent, matchesSjsuFilters } from "@/lib/sjsuEvents";
 import SummaryBadge from "@/components/ai/SummaryBadge";
 import { CardGridSkeleton } from "@/components/ui/Skeleton";
 
@@ -69,39 +70,9 @@ export default function EventsPage() {
         const locFilter = location && location !== "All locations" ? location.toLowerCase() : null;
 
         const sjsuItems = (sjsuRes?.events || [])
-          .map((wrapper) => {
-            // Localist wraps each event: { event: {...} }
-            const e = wrapper?.event || wrapper;
-            if (!e?.title) return null;
-            const timeframe = e.first_date || e.last_date || e.date_utc || "";
-            const location = e.location_name || e.location || "";
-            const params = new URLSearchParams({
-              url: e.localist_url || e.url || "",
-              title: e.title || "",
-              time: timeframe,
-              location,
-              image: e.photo_url || "",
-            });
-            return {
-              source: "sjsu",
-              id: `sjsu-${e.id}`,
-              title: e.title,
-              image: e.photo_url || "",
-              user_name: "SJSU",
-              pfp_url: "",
-              timeframe,
-              location,
-              href: `/events/sjsu?${params.toString()}`,
-            };
-          })
+          .map(mapSjsuEvent)
           .filter(Boolean)
-          .filter((e) => {
-            if (q && !(e.title?.toLowerCase().includes(q))) return false;
-            if (locFilter && !(e.location?.toLowerCase().includes(locFilter))) return false;
-            if (from && e.timeframe && e.timeframe < from) return false;
-            if (to && e.timeframe && e.timeframe > to + "Z") return false;
-            return true;
-          });
+          .filter((e) => matchesSjsuFilters(e, { query: q, location: locFilter, from, to }));
 
         setEvents([...localItems, ...sjsuItems]);
       } catch {
