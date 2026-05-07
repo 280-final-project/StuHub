@@ -2,6 +2,15 @@ function parseAdminFlag(req) {
   return req.headers["x-admin"] === "true";
 }
 
+function serverError(res, err, label) {
+  if (label) {
+    console.error(`${label}:`, err);
+  } else {
+    console.error(err);
+  }
+  return res.status(500).json({ error: "Server error" });
+}
+
 function parseMetadata(rawMetadata) {
   if (rawMetadata === undefined) {
     return { ok: true, value: undefined };
@@ -24,4 +33,4 @@ function parseIsTimed(value) {
   return { ok: false, error: "is_timed must be true or false" };
 }
 
-module.exports = { parseAdminFlag, parseMetadata, parseIsTimed };
+module.exports = { parseAdminFlag, parseMetadata, parseIsTimed, serverError };

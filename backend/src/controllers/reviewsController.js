@@ -31,8 +31,7 @@ const getReviewsByItem = async (req, res) => {
 
     res.json(result.rows.map(formatReview));
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+    serverError(res, err);
   }
 };
 
@@ -71,8 +70,7 @@ const createReview = async (req, res) => {
 
     res.status(201).json(formatReview(result.rows[0]));
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+    serverError(res, err);
   }
 };
 
@@ -98,8 +96,7 @@ const deleteReview = async (req, res) => {
     await pool.query(`DELETE FROM reviews WHERE review_id = $1`, [id]);
     res.json({ message: "Review deleted" });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+    serverError(res, err);
   }
 };
 

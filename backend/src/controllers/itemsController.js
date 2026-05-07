@@ -1,7 +1,7 @@
 const formatItem = require("../utils/formatItem");
 const summarizeText = require("../utils/summarizeText");
 const pool = require("../config/db");
-const { parseAdminFlag, parseMetadata, parseIsTimed } = require("../utils/requestHelpers");
+const { parseAdminFlag, parseMetadata, parseIsTimed, serverError } = require("../utils/requestHelpers");
 
 const ITEM_TYPES = ["event", "deal", "resource", "place"];
 
@@ -52,8 +52,7 @@ const getAllItems = async (req, res) => {
 
     res.json(result.rows.map(formatItem));
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+    serverError(res, err);
   }
 };
 
@@ -90,8 +89,7 @@ const getItemById = async (req, res) => {
 
     res.json(formatted);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+    serverError(res, err);
   }
 };
 
@@ -166,8 +164,7 @@ const createItem = async (req, res) => {
 
     res.status(201).json(formatItem(result.rows[0]));
   } catch (err) {
-    console.error("CREATE ITEM ERROR:", err);
-    res.status(500).json({ error: "Server error" });
+    serverError(res, err, "CREATE ITEM ERROR");
   }
 };
 
@@ -183,8 +180,7 @@ const getPendingItems = async (req, res) => {
 
     res.json(result.rows.map(formatItem));
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+    serverError(res, err);
   }
 };
 
@@ -214,8 +210,7 @@ const updateItemApprovalStatus = async (req, res) => {
 
     res.json(formatItem(result.rows[0]));
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+    serverError(res, err);
   }
 };
 
@@ -230,8 +225,7 @@ const getAllItemsForAdmin = async (req, res) => {
 
     res.json(result.rows.map(formatItem));
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+    serverError(res, err);
   }
 };
 
@@ -306,8 +300,7 @@ const updateItem = async (req, res) => {
 
     res.json(formatItem(result.rows[0]));
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+    serverError(res, err);
   }
 };
 
@@ -336,8 +329,7 @@ const deleteItem = async (req, res) => {
 
     res.json({ message: "Item deleted successfully" });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+    serverError(res, err);
   }
 };
 

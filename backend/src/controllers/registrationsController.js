@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const { serverError } = require("../utils/requestHelpers");
 
 async function fetchState(itemId, userId) {
   const countRow = await pool.query(
@@ -44,8 +45,7 @@ const registerForItem = async (req, res) => {
     const state = await fetchState(id, userId);
     res.status(201).json(state);
   } catch (err) {
-    console.error("REGISTER_ERROR:", err);
-    res.status(500).json({ error: "Server error" });
+    serverError(res, err, "REGISTER_ERROR");
   }
 };
 
@@ -61,8 +61,7 @@ const unregisterFromItem = async (req, res) => {
     const state = await fetchState(id, userId);
     res.json(state);
   } catch (err) {
-    console.error("UNREGISTER_ERROR:", err);
-    res.status(500).json({ error: "Server error" });
+    serverError(res, err, "UNREGISTER_ERROR");
   }
 };
 

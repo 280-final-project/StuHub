@@ -70,8 +70,7 @@ const getMe = async (req, res) => {
       ),
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+    serverError(res, err);
   }
 };
 
@@ -107,8 +106,7 @@ const getUserById = async (req, res) => {
       })),
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+    serverError(res, err);
   }
 };
 
@@ -129,8 +127,7 @@ const updateMe = async (req, res) => {
     }
     res.json({ ...publicUser(result.rows[0]), email: result.rows[0].email });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+    serverError(res, err);
   }
 };
 
