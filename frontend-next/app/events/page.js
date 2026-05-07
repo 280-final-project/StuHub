@@ -7,6 +7,7 @@ import { useDebounced } from "@/lib/hooks";
 import { mapSjsuEvent, matchesSjsuFilters } from "@/lib/sjsuEvents";
 import SummaryBadge from "@/components/ai/SummaryBadge";
 import { CardGridSkeleton } from "@/components/ui/Skeleton";
+import EventFiltersBar from "@/components/events/EventFiltersBar";
 
 const LOCATION_OPTIONS = [
   "All locations",
@@ -108,108 +109,19 @@ export default function EventsPage() {
         </Link>
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "0.75rem",
-          alignItems: "flex-end",
-          marginTop: "1.25rem",
-          padding: "1rem",
-          background: "var(--surface-soft)",
-          border: "1px solid var(--border)",
-          borderRadius: "var(--radius-sm)",
-        }}
-      >
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", flex: "1 1 220px" }}>
-          <label style={{ fontSize: "0.75rem", color: "var(--muted)" }}>Search</label>
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Pizza, hackathon, career fair…"
-            style={{
-              height: 40,
-              padding: "0 0.75rem",
-              border: "1px solid var(--border)",
-              borderRadius: "var(--radius-sm)",
-              background: "var(--surface)",
-              color: "var(--text)",
-              fontSize: "0.9rem",
-            }}
-          />
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-          <label style={{ fontSize: "0.75rem", color: "var(--muted)" }}>From</label>
-          <input
-            type="date"
-            value={from}
-            onChange={(e) => setFrom(e.target.value)}
-            style={{
-              height: 40,
-              padding: "0 0.5rem",
-              border: "1px solid var(--border)",
-              borderRadius: "var(--radius-sm)",
-              background: "var(--surface)",
-              color: "var(--text)",
-              fontSize: "0.9rem",
-            }}
-          />
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-          <label style={{ fontSize: "0.75rem", color: "var(--muted)" }}>To</label>
-          <input
-            type="date"
-            value={to}
-            onChange={(e) => setTo(e.target.value)}
-            style={{
-              height: 40,
-              padding: "0 0.5rem",
-              border: "1px solid var(--border)",
-              borderRadius: "var(--radius-sm)",
-              background: "var(--surface)",
-              color: "var(--text)",
-              fontSize: "0.9rem",
-            }}
-          />
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", flex: "0 1 220px" }}>
-          <label style={{ fontSize: "0.75rem", color: "var(--muted)" }}>Location</label>
-          <select
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            style={{
-              height: 40,
-              padding: "0 0.5rem",
-              border: "1px solid var(--border)",
-              borderRadius: "var(--radius-sm)",
-              background: "var(--surface)",
-              color: "var(--text)",
-              fontSize: "0.9rem",
-            }}
-          >
-            {LOCATION_OPTIONS.map((opt) => (
-              <option key={opt} value={opt}>
-                {opt}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {hasActiveFilters && (
-          <button
-            type="button"
-            onClick={clearFilters}
-            className="btn btn-secondary"
-            style={{ height: 40, padding: "0 1rem", fontSize: "0.85rem" }}
-          >
-            Clear
-          </button>
-        )}
-      </div>
+      <EventFiltersBar
+        query={query}
+        onQueryChange={setQuery}
+        from={from}
+        onFromChange={setFrom}
+        to={to}
+        onToChange={setTo}
+        location={location}
+        onLocationChange={setLocation}
+        locationOptions={LOCATION_OPTIONS}
+        hasActiveFilters={hasActiveFilters}
+        onClear={clearFilters}
+      />
 
       {loading ? (
         <CardGridSkeleton count={6} />
