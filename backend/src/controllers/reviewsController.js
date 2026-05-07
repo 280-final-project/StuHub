@@ -1,5 +1,5 @@
 const pool = require("../config/db");
-const { parseAdminFlag } = require("../utils/requestHelpers");
+const { parseAdminFlag, serverError } = require("../utils/requestHelpers");
 
 function formatReview(row) {
   return {
