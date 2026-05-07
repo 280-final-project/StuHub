@@ -5,9 +5,9 @@ import Link from "next/link";
 import { fetchJSON } from "@/lib/api";
 import { useDebounced } from "@/lib/hooks";
 import { mapSjsuEvent, matchesSjsuFilters } from "@/lib/sjsuEvents";
-import SummaryBadge from "@/components/ai/SummaryBadge";
 import { CardGridSkeleton } from "@/components/ui/Skeleton";
 import EventFiltersBar from "@/components/events/EventFiltersBar";
+import EventCard from "@/components/events/EventCard";
 
 const LOCATION_OPTIONS = [
   "All locations",
@@ -132,40 +132,7 @@ export default function EventsPage() {
       ) : (
         <div className="grid" style={{ marginTop: "1.5rem" }}>
           {events.map((ev) => (
-            <Link key={ev.id} href={ev.href} className="card" style={{ textDecoration: "none" }}>
-              {ev.image && (
-                <img src={ev.image} alt={ev.title} className="card-image" />
-              )}
-              <div className="card-body">
-                <h3>{ev.title}</h3>
-                <div className="meta">
-                  {ev.pfp_url && (
-                    <img
-                      src={ev.pfp_url}
-                      alt=""
-                      style={{ width: 22, height: 22, borderRadius: "50%" }}
-                    />
-                  )}
-                  <span>Posted by {ev.user_name}</span>
-                </div>
-                {ev.timeframe && <div className="meta">📅 {ev.timeframe}</div>}
-                {ev.location && <div className="meta">📍 {ev.location}</div>}
-                {ev.source === "local" && <SummaryBadge summary={ev.ai_summary} compact />}
-                <div className="meta">
-                  <span
-                    className="badge"
-                    style={{
-                      fontSize: "0.75rem",
-                      padding: "0.3rem 0.7rem",
-                      background: ev.source === "sjsu" ? "var(--primary-soft)" : "var(--accent)",
-                      color: ev.source === "sjsu" ? "var(--primary)" : "#111",
-                    }}
-                  >
-                    {ev.source === "sjsu" ? "SJSU" : "Community"}
-                  </span>
-                </div>
-              </div>
-            </Link>
+            <EventCard key={ev.id} event={ev} />
           ))}
         </div>
       )}
