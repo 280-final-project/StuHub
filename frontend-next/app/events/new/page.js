@@ -3,13 +3,14 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { apiPost } from "@/lib/api";
 import { getMinDateStr } from "@/lib/utils";
 import BuildingRoomFields from "@/components/events/BuildingRoomFields";
 import { toast } from "sonner";
 
 export default function NewEventPage() {
   const router = useRouter();
-  const { token, isLoggedIn, loaded } = useAuth();
+  const { isLoggedIn, loaded } = useAuth();
 
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
@@ -39,15 +40,7 @@ export default function NewEventPage() {
     if (imageFile) fd.append("image", imageFile);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/items`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: fd,
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || data.message || "Failed to create event");
-      }
+      await apiPost("/items", fd);
       toast.success("Event submitted! It'll be visible after admin approval.");
       router.push("/confirmation");
     } catch (err) {

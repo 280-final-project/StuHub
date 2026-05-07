@@ -2,12 +2,10 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { fetchJSON, apiPatch, apiDelete } from "@/lib/api";
-import { useAuth } from "@/context/AuthContext";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { toast } from "sonner";
 
 export default function ManageEvents() {
-  const { token } = useAuth();
   const [events, setEvents] = useState([]);
   const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(true);
@@ -15,16 +13,14 @@ export default function ManageEvents() {
 
   const loadEvents = useCallback(async () => {
     try {
-      const data = await fetchJSON("/items/admin/all", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const data = await fetchJSON("/items/admin/all");
       setEvents(data);
     } catch (err) {
       console.error("Failed to load events:", err);
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, []);
 
   useEffect(() => {
     loadEvents();
