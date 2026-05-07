@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { fetchJSON } from "@/lib/api";
+import { useDebounced } from "@/lib/hooks";
 import SummaryBadge from "@/components/ai/SummaryBadge";
 import { CardGridSkeleton } from "@/components/ui/Skeleton";
 
@@ -18,15 +19,6 @@ const LOCATION_OPTIONS = [
   "Wellness Center",
   "Event Center",
 ];
-
-function useDebounced(value, delay = 300) {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const t = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(t);
-  }, [value, delay]);
-  return debounced;
-}
 
 export default function EventsPage() {
   const [events, setEvents] = useState([]);
